@@ -15,7 +15,7 @@ router.get("/get-all", async (req, res) => {
 		search_term,
 		search_col,
 		cols: Customer.getColumns,
-		tables: "customers",
+		tables: "customer",
 		availableCols: ["customer_code", "customer_name"]
 	});
 	if (q.errors) {
@@ -46,11 +46,9 @@ router.get("/:customer_code/branches", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${Branch.getColumns}, ${StoreType.getColumns}`,
-		tables: `"branch"
-		JOIN "store_types" ON "store_types"."id" = "branch"."store_type_id"
-		`,
-		where: `"branch"."customer_code" = :customer_code`,
+		cols: `${Branch.getColumns}`,
+		tables: `"branch"`,
+		where: `"branch"."owner_customer_code" = :customer_code`,
 		replacements: {
 			customer_code
 		},

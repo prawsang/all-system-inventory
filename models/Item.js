@@ -129,8 +129,7 @@ Item.belongsTo(Bulk, {
 	as: "bulk"
 });
 Bulk.hasMany(Item, {
-	foreignKey: "from_bulk_id",
-	as: "items"
+	foreignKey: "from_bulk_id"
 })
 
 module.exports = Item;

@@ -61,7 +61,8 @@ const Withdrawal = db.define("withdrawal", {
 	},
 });
 Withdrawal.getColumns = `"withdrawal"."id" AS "withdrawal_id",
-    "withdrawal"."branch_code",
+	"withdrawal"."for_branch_code",
+	"withdrawal"."for_department_code",
     "withdrawal"."created_by_staff_code",
     "withdrawal"."type" AS "withdrawal_type",
     "withdrawal"."date" AS "withdrawal_date",

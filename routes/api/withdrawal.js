@@ -3,6 +3,7 @@ const router = express.Router();
 const Item = require("../../models/Item");
 const Branch = require("../../models/Branch");
 const Customer = require("../../models/Customer");
+const Department = require("../../models/Department");
 const Withdrawal = require("../../models/Withdrawal");
 const Staff = require("../../models/Staff");
 const ItemWithdrawal = require("../../models/junction/ItemWithdrawal");
@@ -34,10 +35,11 @@ router.get("/get-all", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${Withdrawal.getColumns}, ${Branch.getColumns}, ${Customer.getColumns}, ${Staff.getColumns}`,
+		cols: `${Withdrawal.getColumns}, ${Branch.getColumns}, ${Customer.getColumns}, ${Staff.getColumns}, ${Department.getColumns}`,
 		tables: `"withdrawal"
-		JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
-		JOIN "customers" ON "branch"."customer_code" = "customers"."customer_code"
+		LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
+		LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
+		LEFT OUTER JOIN "department" ON "withdrawal"."for_department_code" = "department"."department_code"
 		JOIN "staff" ON "withdrawal"."created_by_staff_code" = "staff"."staff_code"
 		`,
 		where: Withdrawal.filter({
@@ -65,10 +67,13 @@ router.get("/get-all", async (req, res) => {
 			"customer_name",
 			"branch_code",
 			"branch_name",
-			"staff_name"
+			"staff_name",
+			"department_code",
+			"department_name"
 		]
 	});
 	if (q.errors) {
+		console.log(q.errors);
 		res.status(500).json(q);
 	} else {
 		res.json(q);

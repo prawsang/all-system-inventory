@@ -33,13 +33,4 @@ Supplier.getColumns = `
 	"supplier"."email" AS "supplier_email",
 `;
 
-Supplier.belongsTo(Model, {
-    foreignKey: "from_supplier_code",
-	as: "model"
-});
-Model.hasMany(Supplier, {
-	foreignKey: "from_supplier_code",
-	as: "bulks"
-});
-
 module.exports = Supplier;

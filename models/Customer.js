@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 
-const Customer = db.define("customers", {
+const Customer = db.define("customer", {
 	customer_code: {
 		type: Sequelize.STRING,
 		primaryKey: true,
@@ -19,7 +19,7 @@ const Customer = db.define("customers", {
 	}
 });
 
-Customer.getColumns = `"customers"."customer_code",
-	"customers"."name" AS "customer_name"`;
+Customer.getColumns = `"customer"."customer_code",
+	"customer"."name" AS "customer_name"`;
 
 module.exports = Customer;

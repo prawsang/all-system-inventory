@@ -9,12 +9,12 @@ const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");
 const { query } = require("../../utils/query");
 
-router.get("/:id/details", (req, res) => {
-	const { id } = req.params;
+router.get("/:branch_code/details", (req, res) => {
+	const { branch_code } = req.params;
 	Branch.findOne({
 		where: {
-			id: {
-				[Op.eq]: id
+			branch_code: {
+				[Op.eq]: branch_code
 			}
 		},
 		include: [
@@ -62,7 +62,7 @@ router.get("/:id/items/", async (req, res) => {
 		tables: `"withdrawal_has_item"
 			JOIN "item" ON "item"."serial_no" = "withdrawal_has_item"."serial_no"
 			JOIN "withdrawal" ON "withdrawal"."id" = "withdrawal_has_item"."withdrawal_id"
-			JOIN "branch" ON "branch"."branch_code" = "withdrawal"."branch_code"
+			JOIN "branch" ON "branch"."branch_code" = "withdrawal"."for_branch_code"
 		`,
 		where: `
 			NOT "item"."status" = 'IN_STOCK' 

@@ -15,7 +15,7 @@ router.route("/get-all").get(async (req, res) => {
 		search_col,
 		search_term,
 		cols: Model.getColumns,
-		tables: `"models"`,
+		tables: `"model"`,
 		availableCols: ["model_code", "model_name"],
 		replacements: {
 			type

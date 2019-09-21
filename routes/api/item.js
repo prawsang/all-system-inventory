@@ -212,10 +212,9 @@ router.get("/reserve-branch-code/:branch_code", async (req, res) => {
 // 		.isEmpty()
 // 		.withMessage("PO number must be provided.")
 // ];
-const stockValidation = null;
 
 // Edit Item
-router.put("/:serial_no/edit", stockValidation, (req, res) => {
+router.put("/:serial_no/edit", (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).json({ errors: errors.array() });

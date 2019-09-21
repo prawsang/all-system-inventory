@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Customer = require("./Customer");
 
-const Branch = db.define("branches", {
+const Branch = db.define("branch", {
 	branch_code: {
 		type: Sequelize.STRING,
 		primaryKey: true,
@@ -20,21 +20,13 @@ const Branch = db.define("branches", {
 	},
 	address: {
 		type: Sequelize.STRING
-	},
-	province: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
 	}
 });
 
 Branch.getColumns = `
-	"branches"."branch_code",
-	"branches"."name" AS "branch_name",
-	"branches"."address",
-	"branches"."province",
+	"branch"."branch_code",
+	"branch"."name" AS "branch_name",
+	"branch"."address"
 `;
 
 Branch.belongsTo(Customer, {

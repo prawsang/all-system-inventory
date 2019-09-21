@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
+const Supplier = require("./Supplier");
 
 const Model = db.define("model", {
 	id: {
@@ -42,9 +43,8 @@ const Model = db.define("model", {
 	}
 });
 
-Model.getColumns = `"model"."id" AS "model_code",
-    "model"."name" AS "model_name",
-	"model"."type" AS "model_type"`;
+Model.getColumns = `"model"."model_code" AS "model_code",
+    "model"."name" AS "model_name"`;
 	
 Model.belongsTo(Supplier, {
 	foreignKey: "from_supplier_code",
