@@ -41,6 +41,8 @@ const Model = db.define("model", {
 			notEmpty: true
 		}
 	}
+},{
+	freezeTableName: "model"
 });
 
 Model.getColumns = `"model"."model_code" AS "model_code",

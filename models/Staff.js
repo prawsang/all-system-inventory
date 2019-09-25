@@ -25,6 +25,8 @@ const Staff = db.define("staff", {
 			notEmpty: true
 		}
 	}
+},{
+	freezeTableName: "staff"
 });
 
 Staff.getColumns = `

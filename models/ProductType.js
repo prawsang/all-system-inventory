@@ -10,6 +10,8 @@ const ProductType = db.define("product_type", {
 			notContains: "/"
 		}
 	}
+},{
+	freezeTableName: "product_type"
 });
 
 ProductType.getColumns = `"product_type"."name" AS "product_type"`;

@@ -24,6 +24,8 @@ const Supplier = db.define("supplier", {
     email: {
 		type: Sequelize.STRING
 	},
+},{
+	freezeTableName: "supplier"
 });
 
 Supplier.getColumns = `

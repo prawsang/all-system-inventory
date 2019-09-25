@@ -20,6 +20,8 @@ const Department = db.define("department", {
     phone: {
 		type: Sequelize.STRING,
 	}
+},{
+	freezeTableName: "department"
 });
 
 Department.getColumns = `"department"."department_code",

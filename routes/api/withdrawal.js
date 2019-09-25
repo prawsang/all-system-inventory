@@ -118,7 +118,7 @@ router.get("/:id/items", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${Item.getColumns}, ${Model.getColumns}`,
+		cols: `${Item.getColumns}`,
 		tables: `"withdrawal_has_item"
 		JOIN "item" ON "withdrawal_has_item"."serial_no" = "item"."serial_no"
 		`,

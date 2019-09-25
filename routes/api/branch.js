@@ -29,8 +29,8 @@ router.get("/:branch_code/details", (req, res) => {
 });
 
 // List of items in a branch
-router.get("/:id/items/", async (req, res) => {
-	const { id } = req.params;
+router.get("/:branch_code/items/", async (req, res) => {
+	const { branch_code } = req.params;
 	const {
 		limit,
 		page,
@@ -53,6 +53,7 @@ router.get("/:id/items/", async (req, res) => {
 		return_to,
 		return_from
 	});
+	// TODO: Join with bulk, model and supplier tables
 	const q = await query({
 		limit,
 		page,
@@ -67,12 +68,12 @@ router.get("/:id/items/", async (req, res) => {
 		where: `
 			NOT "item"."status" = 'IN_STOCK' 
 			AND NOT "item"."status" = 'RESERVED'
-			AND "branch"."branch_code" = :id
+			AND "branch"."branch_code" = :branch_code
 			${filters ? `AND ${filters}` : ""}
 			${withdrawalFilters ? `AND ${withdrawalFilters}` : ""}
 			`,
 		replacements: {
-			id,
+			branch_code,
 			type,
 			is_broken,
 			install_to,
@@ -85,6 +86,40 @@ router.get("/:id/items/", async (req, res) => {
 	if (q.errors) {
 		res.status(500).json(q);
 		console.log(q.errors);
+	} else {
+		res.json(q);
+	}
+});
+
+// List of reserved items in a branch
+router.get("/:branch_code/reserved-items", async (req, res) => {
+	const { branch_code } = req.params;
+	const { limit, page, search_col, search_term, type } = req.query;
+
+	const filters = Item.filter({
+		type
+	});
+
+	// TODO: Join with bulk, model and supplier tables
+	const q = await query({
+		limit,
+		page,
+		search_col,
+		search_term,
+		cols: `${Item.getColumns}`,
+		tables: `"item"`,
+		where: `"item"."reserved_branch_code" = :branch_code ${filters ? `AND ${filters}` : ""}`,
+		replacements: {
+			branch_code,
+			type
+		},
+		availableCols: [
+			"serial_no",
+			"status",
+		]
+	});
+	if (q.errors) {
+		res.status(500).json(q);
 	} else {
 		res.json(q);
 	}
@@ -140,7 +175,7 @@ router.put("/:branch_code/edit", branchValidation, (req, res) => {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
 
-	const { ibranch_coded } = req.params;
+	const { branch_code } = req.params;
 	const { name, address } = req.body;
 	Branch.update(
 		{

@@ -23,6 +23,8 @@ const Bulk = db.define("bulk", {
 		type: Sequelize.STRING,
 		allowNull: false
 	},
+},{
+	freezeTableName: "bulk"
 });
 
 Bulk.getColumns = `

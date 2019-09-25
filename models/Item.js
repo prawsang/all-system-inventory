@@ -34,13 +34,20 @@ const Item = db.define(
 			type: Sequelize.BOOLEAN,
 			allowNull: false
 		},
+		from_bulk_code: {
+			type:Sequelize.STRING,
+			allowNull: false
+		}
+	},{
+		freezeTableName: "item"
 	}
 );
 Item.getColumns = `"item"."serial_no",
     "item"."remarks",
     "item"."reserved_branch_code",
     "item"."status",
-    "item"."is_broken"`;
+	"item"."is_broken",
+	"item"."from_bulk_code"`;
 
 // Class Methods
 
@@ -125,11 +132,11 @@ Item.belongsTo(Branch, {
 	as: "reserve_branch"
 });
 Item.belongsTo(Bulk, {
-	foreignKey: "from_bulk_id",
+	foreignKey: "from_bulk_code",
 	as: "bulk"
 });
 Bulk.hasMany(Item, {
-	foreignKey: "from_bulk_id"
+	foreignKey: "from_bulk_code"
 })
 
 module.exports = Item;

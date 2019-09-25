@@ -17,6 +17,8 @@ const Customer = db.define("customer", {
 			notEmpty: true
 		}
 	}
+},{
+	freezeTableName: "customer"
 });
 
 Customer.getColumns = `"customer"."customer_code",

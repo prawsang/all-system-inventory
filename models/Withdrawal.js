@@ -11,7 +11,7 @@ const Withdrawal = db.define("withdrawal", {
 		primaryKey: true,
 		autoIncrement: true
 	},
-	branch_code: {
+	for_branch_code: {
 		type: Sequelize.STRING,
 		allowNull: false,
 		validate: {
@@ -59,6 +59,8 @@ const Withdrawal = db.define("withdrawal", {
 	return_by: {
 		type: Sequelize.DATE
 	},
+},{
+	freezeTableName: "withdrawal"
 });
 Withdrawal.getColumns = `"withdrawal"."id" AS "withdrawal_id",
 	"withdrawal"."for_branch_code",
@@ -194,11 +196,11 @@ Withdrawal.filter = data => {
 // Associations
 
 Withdrawal.belongsTo(Branch, {
-	foreignKey: "branch_code",
+	foreignKey: "for_branch_code",
 	as: "branch"
 });
 Branch.hasMany(Withdrawal, {
-	foreignKey: "branch_code",
+	foreignKey: "for_branch_code",
 	as: "withdrawals"
 });
 

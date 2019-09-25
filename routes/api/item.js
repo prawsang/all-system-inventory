@@ -76,7 +76,7 @@ router.get("/:serial_no/details", (req, res) => {
 				item
 			});
 		})
-		.catch(err => res.status(500).json({ errors: err }));
+		.catch(err => console.log(err));
 });
 
 // Get lent items
@@ -89,25 +89,27 @@ router.get("/lent", async (req, res) => {
 		filters = [f, t].filter(e => e).join(" AND ");
 	}
 
-	// TODO: Join with bulk, model and supplier tables
 	const q = await query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Model.getColumns}, 
-			${Item.getColumns},
+		cols: `${Item.getColumns},
+			${Withdrawal.getColumns},
+			${Branch.getColumns},
+			${Customer.getColumns},
 			"tm"."return_by"`,
-		tables: `"stock"
-		JOIN "models" ON "models"."id" = "stock"."model_id"
-		JOIN "withdrawal_has_item" ON "withdrawal_has_item"."serial_no" = "stock"."serial_no"
+		tables: `"item"
+		JOIN "withdrawal_has_item" ON "withdrawal_has_item"."serial_no" = "item"."serial_no"
 		JOIN "withdrawal" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
+		JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
+		JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
 		JOIN (
 			SELECT "serial_no", max(withdrawal.return_by) AS "return_by"
 			FROM "withdrawal"
 			JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
 			GROUP BY "serial_no"
-		) "tm" ON "withdrawal"."return_by" = "tm"."return_by" AND "stock"."serial_no" = "tm"."serial_no"
+		) "tm" ON "withdrawal"."return_by" = "tm"."return_by" AND "item"."serial_no" = "tm"."serial_no"
 		`,
 		where: `"item"."status" = 'LENT' 
 			AND "withdrawal"."type" = 'LENDING' 
@@ -116,10 +118,11 @@ router.get("/lent", async (req, res) => {
 			return_from,
 			return_to,
 		},
-		availableCols: ["serial_no"]
+		availableCols: ["serial_no","branch_name","branch_code"]
 	});
 	if (q.errors) {
 		res.status(500).json(q);
+		console.log(q.errors);
 	} else {
 		res.json(q);
 	}
@@ -137,12 +140,10 @@ router.get("/reserved", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${Branch.getColumns}, ${Customer.getColumns}, ${Model.getColumns}, ${
-			Job.getColumns
-		}, ${Item.getColumns}`,
+		cols: `${Branch.getColumns}, ${Customer.getColumns}, ${Item.getColumns}`,
 		tables: `"item"
 		LEFT OUTER JOIN "branch" ON "item"."reserved_branch_code" = "branch"."branch_code"
-		LEFT OUTER JOIN "customers" ON "branch"."customer_code" = "customers"."customer_code"
+		LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
 		`,
 		where: `"item"."status" = 'RESERVED' ${typeFilter ? `AND ${typeFilter}` : ""}`,
 		replacements: {
@@ -159,40 +160,7 @@ router.get("/reserved", async (req, res) => {
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-	} else {
-		res.json(q);
-	}
-});
-
-// Get all items reserved by branch
-router.get("/reserve-branch-code/:branch_code", async (req, res) => {
-	const { branch_code } = req.params;
-	const { limit, page, search_col, search_term, type } = req.query;
-
-	const filters = Item.filter({
-		type
-	});
-
-	// TODO: Join with bulk, model and supplier tables
-	const q = await query({
-		limit,
-		page,
-		search_col,
-		search_term,
-		cols: `${Item.getColumns}, ${Model.getColumns}`,
-		tables: `"item"`,
-		where: `"stock"."reserved_branch_code" = :branch_code ${filters ? `AND ${filters}` : ""}`,
-		replacements: {
-			branch_code,
-			type
-		},
-		availableCols: [
-			"serial_no",
-			"status",
-		]
-	});
-	if (q.errors) {
-		res.status(500).json(q);
+		console.log(q.errors)
 	} else {
 		res.json(q);
 	}

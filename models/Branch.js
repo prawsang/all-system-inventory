@@ -20,7 +20,13 @@ const Branch = db.define("branch", {
 	},
 	address: {
 		type: Sequelize.STRING
+	},
+	owner_customer_code: {
+		type: Sequelize.STRING,
+		allowNull: false
 	}
+},{
+	freezeTableName: "branch"
 });
 
 Branch.getColumns = `
