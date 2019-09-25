@@ -3,10 +3,13 @@ const db = require("../config/database");
 const Supplier = require("./Supplier");
 
 const Model = db.define("model", {
-	id: {
+	model_code: {
 		type: Sequelize.INTEGER,
 		primaryKey: true,
-		autoIncrement: true
+		validate: {
+			notEmpty: true,
+			notContains: "/"
+		}
 	},
 	name: {
 		type: Sequelize.STRING,

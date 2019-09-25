@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Model = require("../../models/Model");
+const Supplier = require("../../models/Supplier");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { query } = require("../../utils/query");
@@ -8,21 +9,24 @@ const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {
 	const { limit, page, search_col, search_term, type } = req.query;
-	// TODO: Join with supplier and product type tables
+	// TODO: Join with product type table
 	const q = await query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: Model.getColumns,
-		tables: `"model"`,
-		availableCols: ["model_code", "model_name"],
+		cols: `${Model.getColumns}, ${Supplier.getColumns}`,
+		tables: `"model"
+		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"
+		`,
+		availableCols: ["model_code", "model_name", "supplier_code", "supplier_name"],
 		replacements: {
 			type
 		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
+		console.log(q.errors);
 	} else {
 		res.json(q);
 	}
@@ -42,6 +46,10 @@ router.route("/:id/details").get((req, res) => {
 
 // TODO: Connect with supplier and product type tables
 const modelValidation = [
+	check("model_code")
+		.not()
+		.isEmpty()
+		.withMessage("Model name cannot be empty."),
 	check("name")
 		.not()
 		.isEmpty()
@@ -55,10 +63,26 @@ router.post("/add", modelValidation, (req, res) => {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
 
-	// TODO: Connect with supplier and product type tables
-	const { name } = req.body;
+	// TODO: Connect with product type table
+	const { 
+		model_code, 
+		name, 
+		from_supplier_code, 
+		is_product_type_name, 
+		width, 
+		height, 
+		depth, 
+		weight 
+	} = req.body;
 	Model.create({
-		name
+		model_code,
+		name,
+		from_supplier_code,
+		is_product_type_name,
+		width,
+		height,
+		depth,
+		weight,
 	})
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).json({ errors: err }));
@@ -73,10 +97,24 @@ router.put("/:model_code/edit", (req, res) => {
 
 	// TODO: Connect with supplier and product type tables
 	const { model_code } = req.params;
-	const { name } = req.body;
+	const { 
+		name,
+		from_supplier_code, 
+		is_product_type_name, 
+		width, 
+		height, 
+		depth, 
+		weight 
+	} = req.body;
 	Model.update(
 		{
-			name
+			name,
+			from_supplier_code, 
+			is_product_type_name, 
+			width, 
+			height, 
+			depth, 
+			weight 
 		},
 		{
 			where: {

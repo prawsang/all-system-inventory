@@ -126,7 +126,7 @@ router.get("/:branch_code/reserved-items", async (req, res) => {
 });
 
 const branchValidation = [
-	check("customer_code")
+	check("owner_customer_code")
 		.not()
 		.isEmpty()
 		.withMessage("Customer must be provided."),
@@ -153,15 +153,14 @@ router.post("/add", branchValidation, (req, res) => {
 
 	const {
 		branch_code,
-		customer_code,
+		owner_customer_code,
 		name,
 		address,
 	} = req.body;
 	Branch.create({
 		branch_code,
-		owner_customer_code: customer_code,
+		owner_customer_code: owner_customer_code,
 		name,
-		store_type_id,
 		address,
 	})
 		.then(rows => res.send(rows))
