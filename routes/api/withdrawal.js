@@ -142,14 +142,10 @@ router.get("/:id/items", async (req, res) => {
 });
 
 const checkWithdrawal = [
-	check("branch_code")
-		.not()
-		.isEmpty()
-		.withMessage("Branch must be provided."),
 	check("type")
 		.isIn(["INSTALLATION", "LENDING", "TRANSFER"])
 		.withMessage("Invalid or empty type."),
-	check("staff_code")
+	check("created_by_staff_code")
 		.not()
 		.isEmpty()
 		.withMessage("Staff must be provided."),
@@ -172,8 +168,9 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 	}
 
 	const {
-		branch_code,
-		staff_code,
+		for_branch_code,
+		for_department,
+		created_by_staff_code,
 		type,
 		return_by,
 		install_date,
@@ -184,6 +181,8 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		type,
 		return_by,
 		install_date,
+		for_branch_code,
+		for_department,
 	});
 	if (moreValidation.errors.length > 0) {
 		res.status(400).send(moreValidation.errors);
@@ -191,8 +190,9 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 	}
 
 	Withdrawal.create({
-		for_branch_code: branch_code,
-		created_by_staff_name: staff_code,
+		for_branch_code: type === "TRANSFER" ? null : for_branch_code,
+		for_department_code: type === "TRANSFER" ? for_department_code : null,
+		created_by_staff_code,
 		type,
 		return_by: type === "LENDING" ? return_by : null,
 		install_date: type === "INSTALLATION" ? install_date : null,
@@ -216,8 +216,9 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 
 	const { id } = req.params;
 	const {
-		branch_code,
-		staff_code,
+		for_branch_code,
+		for_department_code,
+		created_by_staff_code,
 		type,
 		return_by,
 		date,
@@ -241,8 +242,9 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 	}
 	Withdrawal.update(
 		{
-			branch_code,
-			created_by_staff_code: staff_code,
+			for_branch_code: type === "TRANSFER" ? null : for_branch_code,
+			for_department_code: type === "TRANSFER" ? for_department_code : null,
+			created_by_staff_code,
 			return_by: type === "LENDING" ? return_by : null,
 			install_date: type === "INSTALLATION" ? install_date : null,
 			date
@@ -314,14 +316,18 @@ router.put("/:id/change-status", async (req, res) => {
 				},
 				include: {
 					model: Item,
-					as: items
+					as: "items"
 				}
 			}).then(withdrawal => {
 				items = withdrawal.items;
 			});
-			const r = await Withdrawal.returnItems(items);
+			let item_serials = [];
+			items.forEach(e => {
+				item_serials.push(e.serial_no);
+			})
+			const r = await returnItems(item_serials);
 			if (r.errors.length > 0) res.status(400).json({ errors: r.errors });
-			res.sendStatus(200);
+			else res.sendStatus(200);
 		}
 	} else if (status == "PENDING") {
 		res.status(400).json({ errors: [{ msg: "Cannot change status to PENDING." }] });
@@ -437,7 +443,7 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 
 // Deleting withdrawals (can be done when it is cancelled).
 removeAllItemsAndDelete = id => {
-	db.transaction(t => {
+	return db.transaction(t => {
 		return ItemWithdrawal.findAll(
 			{
 				where: {
@@ -450,10 +456,22 @@ removeAllItemsAndDelete = id => {
 				transaction: t
 			}
 		).then(r =>
-				ItemWithdrawal.destroy(
+			ItemWithdrawal.destroy(
+				{
+					where: {
+						withdrawal_id: {
+							[Op.eq]: id
+						}
+					}
+				},
+				{
+					transaction: t
+				}
+			).then(rr =>
+				Withdrawal.destroy(
 					{
 						where: {
-							withdrawal_id: {
+							id: {
 								[Op.eq]: id
 							}
 						}
@@ -461,21 +479,9 @@ removeAllItemsAndDelete = id => {
 					{
 						transaction: t
 					}
-				).then(rr =>
-					Withdrawal.destroy(
-						{
-							where: {
-								id: {
-									[Op.eq]: id
-								}
-							}
-						},
-						{
-							transaction: t
-						}
-					)
 				)
-			);
+			)
+		);
 	}).then(r => ({
 			errors: []
 		}))

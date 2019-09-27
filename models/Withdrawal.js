@@ -75,13 +75,19 @@ Withdrawal.getColumns = `"withdrawal"."id" AS "withdrawal_id",
 
 // Class Methods
 Withdrawal.validate = data => {
-	const { type, return_by, install_date } = data;
+	const { type, return_by, install_date, for_branch_code, for_department_code } = data;
 	let errors = [];
 	if (type == "LENDING" && (!return_by || return_by == "")) {
 		errors.push({ msg: "Return date is required for lending." });
 	}
 	if (type == "INSTALLATION" && (!install_date || install_date == "")) {
 		errors.push({ msg: "Installation date is required for installation." });
+	}
+	if (type == "TRANSFER" && (!for_department_code)) {
+		errors.push({ msg: "Department code required for transffering"});
+	}
+	if (type !== "TRANSFER" && (!for_branch_code)) {
+		errors.push({ msg: "Branch code required for lending or installation"});
 	}
 	return { errors };
 };

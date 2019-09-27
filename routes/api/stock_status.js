@@ -120,7 +120,8 @@ router.put(
 	}
 );
 
-// Return without History (In case of editing/cancellling withdrawal)
+// Return without History 
+// (In case of editing/canceling withdrawal and reservation cancellation)
 // ANY -> IN_STOCK
 returnItems = async serial_no => {
 	const res = await Item.changeStatus({
@@ -136,6 +137,19 @@ returnItems = async serial_no => {
 		errors
 	};
 };
+router.put("/return-wo-history", checkSerial, async (req,res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
+	}
+
+	// serial_no is an array
+	const { serial_no } = req.body;
+
+	const r = await returnItems(serial_no);
+	if (r.errors.length > 0) res.status(400).json({ errors: r.errors });
+	else res.sendStatus(200);
+})
 
 // Return with History 
 router.put("/return", checkSerial, async (req, res) => {
@@ -147,7 +161,7 @@ router.put("/return", checkSerial, async (req, res) => {
 	// serial_no is an array
 	const { serial_no } = req.body;
 
-	// Transaction
+	// TODO: Transaction
 	// Change status of all items in array to IN_STOCK
 	// Add to return_history table (return_date, serial_no)
 });

@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
-const db = require("../../config/database");
-const Item = require("../item");
+const db = require("../config/database");
+const Item = require("./item");
 
 const Return = db.define(
 	"return",

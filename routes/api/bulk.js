@@ -9,9 +9,11 @@ const { check, validationResult } = require("express-validator/check");
 
 // Required APIs
 // 1. /bulk/get-all - get all bulks
-// 2. /bulk/add - (transaction) add new bulk and add items to it (code for adding items is below)
-// 3. /bulk/edit - edit bulk (edit price_per_unit and of_model_code)
-// 4. /bulk/delete - delete bulk (no cascade delete, meaning, cannot delete if that bulk has items)
+// 2. /bulk/:bulk_code/details - get details of a bulk
+// 3. /bulk/:bulk_code/items - get serial numbers of the items in the bulk (use the predefined query function)
+// 4. /bulk/add - (transaction) add new bulk and add items to it (code for adding items is below)
+// 5. /bulk/edit - edit bulk (edit price_per_unit and of_model_code)
+// 6. /bulk/delete - delete bulk (no cascade delete, meaning, cannot delete if that bulk has items)
 
 const bulkValidation = [
     check("bulk_id")

@@ -62,8 +62,6 @@ router.post("/add", modelValidation, (req, res) => {
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
-
-	// TODO: Connect with product type table
 	const { 
 		model_code, 
 		name, 
@@ -94,8 +92,6 @@ router.put("/:model_code/edit", (req, res) => {
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
-
-	// TODO: Connect with supplier and product type tables
 	const { model_code } = req.params;
 	const { 
 		name,

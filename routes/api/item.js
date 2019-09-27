@@ -4,6 +4,7 @@ const Item = require("../../models/Item");
 const Branch = require("../../models/Branch");
 const Customer = require("../../models/Customer");
 const Withdrawal = require("../../models/Withdrawal");
+const Return = require("../../models/Return");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");
@@ -47,6 +48,7 @@ router.route("/get-all").get(async (req, res) => {
 
 router.get("/:serial_no/details", (req, res) => {
 	// TODO: Join with bulk, model and supplier tables
+	// TODO: Include return history along with withdrawal history. Sort by date newest to oldest.
 	const { serial_no } = req.params;
 	Item.findOne({
 		where: { serial_no: { [Op.eq]: serial_no } },
@@ -63,7 +65,7 @@ router.get("/:serial_no/details", (req, res) => {
 							as: "customer"
 						}
 					}
-				]
+				],
 			},
 			{
 				model: Branch,
