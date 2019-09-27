@@ -84,7 +84,7 @@ Withdrawal.validate = data => {
 		errors.push({ msg: "Installation date is required for installation." });
 	}
 	if (type == "TRANSFER" && (!for_department_code)) {
-		errors.push({ msg: "Department code required for transffering"});
+		errors.push({ msg: "Department code required for transfering"});
 	}
 	if (type !== "TRANSFER" && (!for_branch_code)) {
 		errors.push({ msg: "Branch code required for lending or installation"});
