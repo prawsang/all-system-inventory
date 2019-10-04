@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Model = require("../../models/Model");
+const ProductType = require("../../models/ProductType");
 const Supplier = require("../../models/Supplier");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -9,17 +10,24 @@ const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {
 	const { limit, page, search_col, search_term, type } = req.query;
-	// TODO: Join with product type table
+
+	let filters = null;
+	if (type) {
+		filters = `"model"."is_product_type_name" = :type`;
+	}
+
 	const q = await query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Model.getColumns}, ${Supplier.getColumns}`,
+		cols: `${Model.getColumns}, ${Supplier.getColumns}, ${ProductType.getColumns}`,
 		tables: `"model"
 		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"
+		JOIN "product_type" ON "model"."is_product_type_name" = "product_type"."type_name"
 		`,
-		availableCols: ["model_code", "model_name", "supplier_code", "supplier_name"],
+		where: filters ? filters : null,
+		availableCols: ["model_code", "model_name", "supplier_code", "supplier_name", "product_type_name"],
 		replacements: {
 			type
 		}

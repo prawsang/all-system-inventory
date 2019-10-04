@@ -16,7 +16,6 @@ class EditItems extends React.Component {
 		action: RETURN,
 		serialNos: [],
 		serialNo: "",
-		hasBranch: false
 	};
 
 	handleAddSerial(e) {
@@ -33,7 +32,7 @@ class EditItems extends React.Component {
 		if (action === BROKEN) {
 			Axios.request({
 				method: "PUT",
-				url: "/stock/broken",
+				url: "/item/broken",
 				data: {
 					serial_no: serialNos,
 					broken: true
@@ -42,7 +41,7 @@ class EditItems extends React.Component {
 		} else if (action === RETURN) {
 			Axios.request({
 				method: "PUT",
-				url: "/stock/return",
+				url: "/item/return",
 				data: {
 					serial_no: serialNos
 				}
@@ -50,12 +49,12 @@ class EditItems extends React.Component {
 		} else if (action === RESERVE) {
 			Axios.request({
 				method: "PUT",
-				url: "/stock/reserve",
+				url: "/item/reserve",
 				data: {
 					serial_no: serialNos,
 					reserved_by_branch_code: hasBranch
 						? selectedBranches.length !== 0
-							? selectedBranches[0].id
+							? selectedBranches[0].branch_code
 							: null
 						: null
 				}
@@ -80,7 +79,7 @@ class EditItems extends React.Component {
 	}
 
 	render() {
-		const { action, serialNos, serialNo, hasBranch } = this.state;
+		const { action, serialNos, serialNo } = this.state;
 		const { selectedCustomer } = this.props;
 		return (
 			<div className="content">
@@ -108,20 +107,9 @@ class EditItems extends React.Component {
 									ข้อมูลลูกค้าที่จอง
 								</label>
 								<CustomerSearch />
-								<div className="field is-flex is-ai-center">
-									<label className="label">มีสาขา</label>
-									<input
-										className="checkbox"
-										type="checkbox"
-										checked={hasBranch}
-										onChange={() => {
-											this.setState({ hasBranch: !hasBranch });
-										}}
-									/>
-								</div>
 								<BranchSearch
 									disabled={
-										!selectedCustomer || !hasBranch
+										!selectedCustomer
 									}
 									single={true}
 								/>
@@ -186,7 +174,6 @@ class EditItems extends React.Component {
 const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer,
 	selectedBranches: state.record.selectedBranches,
-	selectedJobCode: state.record.selectedJobCode
 });
 
 const mapDispatchToProps = {

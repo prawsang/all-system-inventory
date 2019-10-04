@@ -14,7 +14,7 @@ class BranchSearch extends React.Component {
 		const {
 			selectedBranches,
 			setSelectedBranches,
-			selectedJobCode,
+			selectedCustomer,
 			disabled,
 			single
 		} = this.props;
@@ -26,7 +26,7 @@ class BranchSearch extends React.Component {
 					this.setState({ branch: e.target.value });
 				}}
 				placeholder="Branch Name"
-				searchUrl={`/job/${selectedJobCode}/branches`}
+				searchUrl={selectedCustomer ? `/customer/${selectedCustomer.customer_code}/branches` : ""}
 				searchTerm={branch}
 				searchName="branch_name"
 				disabled={disabled}
@@ -49,27 +49,23 @@ class BranchSearch extends React.Component {
 													setSelectedBranches([
 														...selectedBranches,
 														{
-															id: e.branch_id,
 															name: e.branch_name,
 															branch_code: e.branch_code,
-															installed: false
 														}
 													]);
 													this.setState({ branch: "" });
 												} else {
 													setSelectedBranches([
 														{
-															id: e.branch_id,
 															name: e.branch_name,
 															branch_code: e.branch_code,
-															installed: false
 														}
 													]);
 													this.setState({ branch: e.branch_name });
 												}
 											}}
 										>
-											{e.branch_name} {e.branch_code && `(${e.branch_code})`}
+											{e.branch_name} ({e.branch_code})
 										</span>
 									))
 								) : (
@@ -90,7 +86,7 @@ class BranchSearch extends React.Component {
 
 const mapStateToProps = state => ({
 	selectedBranches: state.record.selectedBranches,
-	selectedJobCode: state.record.selectedJobCode
+	selectedCustomer: state.record.selectedCustomer
 });
 const mapDispatchToProps = {
 	setSelectedBranches

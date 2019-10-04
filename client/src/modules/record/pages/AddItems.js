@@ -5,24 +5,32 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 class AddItems extends React.Component {
 	state = {
-		type: "",
+		bulkCode: "",
+		pricePerUnit: 0,
+		dateIn: null,
 		model: "",
 		models: [],
+		productTypes: [],
+		selectedProductTypeName: null,
 		remarks: "",
-		poNumber: "",
-		prNumber: "",
 		serialNos: [],
 		serialNo: "",
-		stockLocation: ""
 	};
 
 	getModelsOfType = type => {
 		if (type !== "") {
-			Axios.get(`/model/type/${type}`).then(res => {
+			Axios.get(`/model/get-all?type=${type}`).then(res => {
 				this.setState({ models: res.data.rows });
 				console.log(res);
 			});
 		}
+	};
+
+	getAllProductTypes = () => {
+		Axios.get(`/product-type/get-all`).then(res => {
+			this.setState({ productTypes: res.data.rows });
+			console.log(res);
+		});
 	};
 
 	handleAddSerial(e) {
@@ -34,17 +42,17 @@ class AddItems extends React.Component {
 	}
 
 	handleSubmit() {
-		const { model, remarks, serialNos, poNumber, prNumber, stockLocation } = this.state;
+		const { model, remarks, serialNos, bulkCode, pricePerUnit, date_in } = this.state;
 		Axios.request({
 			method: "POST",
-			url: "/stock/add",
+			url: "/item/add",
 			data: {
-				model_id: model,
+				bulk_code: bulkCode,
+				price_per_unit: pricePerUnit,
+				model_code: model,
 				serial_no: serialNos,
 				remarks,
-				po_number: poNumber,
-				pr_number: prNumber,
-				stock_location: stockLocation
+				dateIn: date_in
 			}
 		}).then(res => this.resetPage());
 	}
@@ -55,12 +63,13 @@ class AddItems extends React.Component {
 			model: "",
 			models: [],
 			remarks: "",
-			poNumber: "",
-			prNumber: "",
 			serialNos: [],
-			serialNo: "",
-			stockLocation: ""
+			serialNo: ""
 		});
+	}
+
+	componentDidMount() {
+		this.getAllProductTypes();
 	}
 
 	render() {
@@ -68,12 +77,14 @@ class AddItems extends React.Component {
 			type,
 			models,
 			model,
+			productTypes,
+			selectedProductTypeName,
 			remarks,
-			poNumber,
-			prNumber,
 			serialNos,
 			serialNo,
-			stockLocation
+			bulkCode,
+			dateIn,
+			pricePerUnit
 		} = this.state;
 
 		return (
@@ -81,23 +92,51 @@ class AddItems extends React.Component {
 				<h3>รับของเข้า Stock</h3>
 				<div className="panel">
 					<div className="panel-content">
+						<div className="field">
+							<label className="label">Bulk Code</label>
+							<input
+								value={bulkCode}
+								onChange={e => this.setState({ bulkCode: e.target.value })}
+								className="input is-fullwidth"
+								placeholder="Bulk Code"
+							/>
+						</div>
+						<div className="field">
+							<label className="label">Price Per Unit</label>
+							<input
+								value={pricePerUnit}
+								onChange={e => this.setState({ pricePerUnit: e.target.value })}
+								className="input is-fullwidth"
+								placeholder="Price Per Unit"
+								type="number"
+							/>
+						</div>
+						<div className="field">
+							<label className="label">Date In</label>
+							<input
+								value={dateIn}
+								onChange={e => this.setState({ dateIn: e.target.value })}
+								className="input is-fullwidth"
+								placeholder="Date In"
+								type="date"
+							/>
+						</div>
 						<div className="field is-flex is-ai-center">
-							<label className="label">Type:</label>
+							<label className="label">Product Type:</label>
 							<div className="select no-mb">
 								<select
-									value={type}
+									value={selectedProductTypeName}
 									onChange={e => {
 										this.setState({ type: e.target.value });
 										this.getModelsOfType(e.target.value);
 									}}
 								>
 									<option value="">Select Type</option>
-									<option value="POS">POS</option>
-									<option value="SCANNER">Scanner</option>
-									<option value="PRINTER">Printer</option>
-									<option value="KEYBOARD">Keyboard</option>
-									<option value="MONITOR">Monitor</option>
-									<option value="CASH_DRAWER">Cash Drawer</option>
+									{ productTypes.map((e,i) => 
+										<option value={e.product_type_name} key={e.product_type_name+i}>
+											{e.product_type_name}
+										</option>
+									) }
 								</select>
 							</div>
 						</div>
@@ -112,8 +151,8 @@ class AddItems extends React.Component {
 									<option value="">เลือกรุ่น</option>
 									{models.length > 0 ? (
 										models.map((e, i) => (
-											<option value={e.model_id} key={e.model_id + i}>
-												{e.model_name}
+											<option value={e.model_code} key={e.model_code + i}>
+												{e.model_name} ({e.model_code})
 											</option>
 										))
 									) : (
@@ -123,33 +162,6 @@ class AddItems extends React.Component {
 									)}
 								</select>
 							</div>
-						</div>
-						<div className="field">
-							<label className="label">Stock Location:</label>
-							<input
-								className="input is-fullwidth"
-								placeholder="Stock Location"
-								value={stockLocation}
-								onChange={e => this.setState({ stockLocation: e.target.value })}
-							/>
-						</div>
-						<div className="field">
-							<label className="label">PO Number:</label>
-							<input
-								className="input is-fullwidth"
-								placeholder="PO Number"
-								value={poNumber}
-								onChange={e => this.setState({ poNumber: e.target.value })}
-							/>
-						</div>
-						<div className="field">
-							<label className="label">PR Number:</label>
-							<input
-								className="input is-fullwidth"
-								placeholder="PR Number"
-								value={prNumber}
-								onChange={e => this.setState({ prNumber: e.target.value })}
-							/>
 						</div>
 						<div className="field">
 							<label className="label">Remarks:</label>

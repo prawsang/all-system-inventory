@@ -25,6 +25,8 @@ const getFromAlias = col => {
 			return `"withdrawal"."status"`;
 		case "serial_no":
 			return `"item"."serial_no"`;
+		case "product_type_name":
+			return `"product_type"."type_name"`;
 		case "supplier_name":
 			return `"supplier"."name"`;
 		case "staff_name":

@@ -1,8 +1,6 @@
 import {
 	SET_SELECTED_CUSTOMER,
 	SET_SELECTED_BRANCHES,
-	SET_SELECTED_PO,
-	SET_SELECTED_JOB_CODE,
 	FETCH_JOBS,
 	RESET_RECORD_DATA
 } from "@/common/action-types";
@@ -10,13 +8,13 @@ import Axios from "axios";
 
 export const setSelectedCustomer = customer => async dispatch => {
 	if (customer) {
-		// Fetch jobs
-		await Axios.get(`/customer/${customer.customer_code}/details`)
+		// Fetch branches
+		await Axios.get(`/customer/${customer.customer_code}/branches`)
 			.then(res => {
-				console.log(res);
+				// console.log(res);
 				dispatch({
 					payload: {
-						jobs: res.data.customer.jobs
+						branches: res.data.customer.branches
 					},
 					type: FETCH_JOBS
 				});
@@ -51,22 +49,6 @@ export const setSelectedBranches = branches => {
 			branches
 		},
 		type: SET_SELECTED_BRANCHES
-	};
-};
-
-export const setSelectedPO = po => ({
-	payload: {
-		po
-	},
-	type: SET_SELECTED_PO
-});
-
-export const setSelectedJobCode = jobCode => {
-	return {
-		payload: {
-			jobCode
-		},
-		type: SET_SELECTED_JOB_CODE
 	};
 };
 

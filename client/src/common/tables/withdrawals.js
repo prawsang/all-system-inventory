@@ -8,8 +8,6 @@ const WithdrawalsTable = ({ data }) => (
 			<tr>
 				<td>Withdrawal ID</td>
 				<td>Type</td>
-				<td>PO Number</td>
-				<td>DO Number</td>
 				<td>Branch</td>
 				<td>Customer</td>
 				<td className="has-no-line-break">ผู้เบิก</td>
@@ -33,22 +31,8 @@ const WithdrawalsTable = ({ data }) => (
 						>
 							<td className="has-no-line-break">{e.withdrawal_id}</td>
 							<td className="has-no-line-break">{e.withdrawal_type}</td>
-							<td>
-								{e.withdrawal_type === "INSTALLATION"
-									? e.po_number
-										? e.po_number
-										: "ยังไม่ได้รับ"
-									: "N/A"}
-							</td>
-							<td>
-								{e.withdrawal_type === "INSTALLATION"
-									? e.do_number
-										? e.do_number
-										: "-"
-									: "N/A"}
-							</td>
 							<td className="has-no-line-break">
-								{e.branch_name} {e.branch_code && `(${e.branch_code})`}
+								{e.branch_name} ({e.branch_code})
 							</td>
 							<td className="has-no-line-break">
 								{e.customer_name} ({e.customer_code})

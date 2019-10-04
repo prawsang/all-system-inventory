@@ -67,7 +67,7 @@ class ItemsTable extends React.Component {
 									>
 										<td>{e.serial_no}</td>
 										<td>{e.model_name}</td>
-										<td>{e.model_type}</td>
+										<td>{e.product_type_name}</td>
 										{showInstallDate && <td>{e.install_date}</td>}
 										{showReturnDate && <td>{e.return_by}</td>}
 										{showDelete && (

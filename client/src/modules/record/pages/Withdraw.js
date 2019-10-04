@@ -19,7 +19,10 @@ class Withdraw extends React.Component {
 		poNumber: "",
 		doNumber: "",
 		remarks: "",
-		staffName: ""
+		staffs: [],
+		departments: [],
+		selectedDepartmentCode: null,
+		selectedStaffCode: null,
 	};
 
 	async handleSubmit() {
@@ -28,12 +31,11 @@ class Withdraw extends React.Component {
 			date,
 			returnDate,
 			installDate,
-			poNumber,
-			doNumber,
 			remarks,
-			staffName
+			selectedStaffCode,
+			selectedDepartmentCode
 		} = this.state;
-		const { selectedBranches, selectedJobCode } = this.props;
+		const { selectedBranches } = this.props;
 
 		await Axios.request({
 			method: "POST",
@@ -43,19 +45,31 @@ class Withdraw extends React.Component {
 				date,
 				return_by: type === LENDING ? returnDate : null,
 				install_date: type === INSTALLATION ? installDate : null,
-				po_number: type === INSTALLATION ? poNumber : null,
-				do_number: type === INSTALLATION ? doNumber : null,
-				job_code: selectedJobCode,
-				branch_id: selectedBranches[0].id,
+				for_branch_code: selectedBranches[0].branch_code,
 				remarks,
-				billed: false,
-				staff_name: staffName
+				created_by_staff_code: selectedStaffCode,
+				for_department_code: selectedDepartmentCode
 			}
 		}).then(res => history.push(`/single/withdrawal/${res.data.id}`));
 	}
 
+	getAllStaff = () => {
+		Axios.get(`/staff/get-all`).then(res => {
+			this.setState({ staffs: res.data.rows });
+			console.log(res);
+		});
+	}
+	getAllDepartments = () => {
+		Axios.get(`/department/get-all`).then(res => {
+			this.setState({ departments: res.data.rows });
+			console.log(res);
+		});
+	}
+
 	componentDidMount() {
 		this.props.resetRecordData();
+		this.getAllStaff();
+		this.getAllDepartments();
 	}
 	componentWillUnmount() {
 		this.props.resetRecordData();
@@ -67,10 +81,11 @@ class Withdraw extends React.Component {
 			date,
 			returnDate,
 			installDate,
-			poNumber,
-			doNumber,
 			remarks,
-			staffName
+			staffs,
+			selectedStaffCode,
+			selectedDepartmentCode,
+			departments
 		} = this.state;
 		const { selectedCustomer } = this.props;
 
@@ -90,7 +105,7 @@ class Withdraw extends React.Component {
 								>
 									<option value={INSTALLATION}>เบิกไปติดตั้ง</option>
 									<option value={LENDING}>ยืมสินค้า</option>
-									<option value={TRANSFER}>โอนสินค้าไปยัง Service Stock</option>
+									<option value={TRANSFER}>โอนสินค้าไปแผนกอื่น</option>
 								</select>
 							</div>
 						</div>
@@ -101,13 +116,21 @@ class Withdraw extends React.Component {
 							value={date}
 							onChange={e => this.setState({ date: e.target.value })}
 						/>
-						<Field
-							type="text"
-							placeholder="Staff Name"
-							label="ผู้เบิก"
-							value={staffName}
-							onChange={e => this.setState({ staffName: e.target.value })}
-						/>
+						<div className="field is-flex is-ai-center">
+							<label className="label has-mr-05 is-bold">Staff:</label>
+							<div className="select no-mb">
+								<select
+									value={selectedStaffCode}
+									onChange={e => {
+										this.setState({ selectedStaffCode: e.target.value });
+									}}
+								>
+									{ staffs.map((e,i) => 	
+										<option value={e.staff_code}>{e.staff_name} ({e.staff_code})</option>
+									)}
+								</select>
+							</div>
+						</div>
 						{type === LENDING && (
 							<Field
 								type="date"
@@ -118,37 +141,40 @@ class Withdraw extends React.Component {
 							/>
 						)}
 						{type === INSTALLATION && (
+							<Field
+								type="date"
+								placeholder="Install Date"
+								label="Install Date"
+								value={installDate}
+								onChange={e => this.setState({ installDate: e.target.value })}
+							/>
+						)}
+						<hr />
+						{ type === TRANSFER ? (
+							<div className="field is-flex is-ai-center">
+								<label className="label has-mr-05 is-bold">Department:</label>
+								<div className="select no-mb">
+									<select
+										value={selectedDepartmentCode}
+										onChange={e => {
+											this.setState({ selectedDepartmentCode: e.target.value });
+										}}
+									>
+										{ departments.map((e,i) => 	
+											<option value={e.department_code}>{e.department_name} ({e.department_code})</option>
+										)}
+									</select>
+								</div>
+							</div>
+						) : (
 							<React.Fragment>
-								<Field
-									type="date"
-									placeholder="Install Date"
-									label="Install Date"
-									value={installDate}
-									onChange={e => this.setState({ installDate: e.target.value })}
-								/>
-								<hr />
-								<Field
-									type="text"
-									placeholder="PO Number"
-									label="PO Number"
-									value={poNumber}
-									onChange={e => this.setState({ poNumber: e.target.value })}
-								/>
-								<Field
-									type="text"
-									placeholder="DO Number"
-									label="DO Number"
-									value={doNumber}
-									onChange={e => this.setState({ doNumber: e.target.value })}
+								<CustomerSearch />
+								<BranchSearch
+									disabled={!selectedCustomer}
+									single={true}
 								/>
 							</React.Fragment>
 						)}
-						<hr />
-						<CustomerSearch />
-						<BranchSearch
-							disabled={!selectedCustomer}
-							single={true}
-						/>
 						<hr />
 						<div className="field">
 							<label className="label" style={{ display: "block" }}>
