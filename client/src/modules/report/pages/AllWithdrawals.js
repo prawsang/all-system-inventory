@@ -17,17 +17,8 @@ const AllWithdrawals = () => (
 					installDate: true,
 					withdrawalType: true,
 					withdrawalStatus: true,
-					billed: true
 				}}
 				columns={[
-					{
-						col: "do_number",
-						name: "DO Number"
-					},
-					{
-						col: "po_number",
-						name: "PO Number"
-					},
 					{
 						col: "customer_name",
 						name: "Customer Name"
@@ -53,7 +44,7 @@ const AllWithdrawals = () => (
 						name: "Status"
 					},
 					{
-						col: "staff_name",
+						col: "created_by_staff_name",
 						name: "ผู้เบิก"
 					}
 				]}

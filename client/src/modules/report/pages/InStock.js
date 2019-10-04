@@ -30,6 +30,10 @@ class InStock extends React.Component {
 							{
 								col: "model_name",
 								name: "Model Name"
+							},
+							{
+								col: "product_type_name",
+								name: "Product Type"
 							}
 						]}
 					/>

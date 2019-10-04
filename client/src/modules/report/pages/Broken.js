@@ -5,8 +5,8 @@ import BrokenTable from "@/common/tables/items";
 
 const Broken = () => (
 	<FetchDataFromServer
-		url="/stock/get-all"
-		params="broken=true"
+		url="/item/get-all"
+		params="is-broken=true"
 		render={data => (
 			<Table
 				data={data}
@@ -25,8 +25,8 @@ const Broken = () => (
 						name: "Model Name"
 					},
 					{
-						col: "model_type",
-						name: "Model Type"
+						col: "product_type_name",
+						name: "Product Type"
 					}
 				]}
 			/>

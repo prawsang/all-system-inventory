@@ -25,7 +25,7 @@ const Borrowed = ({ data }) => (
 							>
 								<td>{e.serial_no}</td>
 								<td>{e.model_name}</td>
-								<td>{e.model_type}</td>
+								<td>{e.product_type_name}</td>
 								<td>{e.return_by}</td>
 								<td>
 									{moment(e.return_by).isBefore() ? (

@@ -36,7 +36,7 @@ class ModelsTable extends React.Component {
 								data.rows.map((e, i) => (
 									<tr key={i + e.model_name} className="is-short">
 										<td className="has-no-line-break">{e.model_name}</td>
-										<td className="is-fullwidth">{e.model_type}</td>
+										<td className="is-fullwidth">{e.is_product_type_name}</td>
 										<td className="no-pr">
 											<button
 												className="button"
@@ -44,9 +44,13 @@ class ModelsTable extends React.Component {
 													this.setState({
 														showEdit: true,
 														selected: {
-															id: e.model_id,
+															model_code: e.model_code,
 															name: e.model_name,
-															type: e.model_type
+															product_type_name: e.product_type_name,
+															weight: e.weight,
+															width: e.width,
+															height: e.height,
+															depth:e.depth
 														}
 													})
 												}
