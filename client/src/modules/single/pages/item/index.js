@@ -40,20 +40,28 @@ class Item extends React.Component {
 										<span>{data.item.status}</span>
 									</div>
 									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Bulk Code:</label>
+										<span>{data.item.bulk.bulk_code}</span>
+									</div>
+									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Model Name:</label>
 										<span>{data.item.bulk.model.name}</span>
 									</div>
 									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Type:</label>
-										<span>{data.item.bulk.model.product_type.name}</span>
+										<label className="is-bold has-mr-05">Price Per Unit:</label>
+										<span>{data.item.bulk.price_per_unit}</span>
 									</div>
 									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">เสีย:</label>
+										<label className="is-bold has-mr-05">Product Type:</label>
+										<span>{data.item.bulk.model.product_type.type_name}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Broken?</label>
 										<span>
 											{data.item.is_broken ? (
-												<span className="danger is-bold">เสีย</span>
+												<span className="danger is-bold">Broken</span>
 											) : (
-												"ไม่เสีย"
+												"Not Broken"
 											)}
 										</span>
 									</div>

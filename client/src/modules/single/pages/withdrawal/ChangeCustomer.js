@@ -21,29 +21,26 @@ class ChangeCustomer extends React.Component {
 	}
 
 	handleEdit() {
-		const { data, selectedJobCode, selectedBranches } = this.props;
+		const { data, selectedBranches } = this.props;
 		const {
-			po_number,
-			do_number,
 			type,
 			return_by,
 			date,
 			install_date,
-			staff_name
+			created_by_staff_code,
+			for_department_code
 		} = data;
 		Axios.request({
 			method: "PUT",
 			url: `/withdrawal/${data.id}/edit`,
 			data: {
-				job_code: selectedJobCode,
-				branch_id: selectedBranches[0].id,
-				po_number: po_number,
-				do_number: do_number,
-				staff_name: staff_name,
+				created_by_staff_code,
 				type: type,
 				return_by: return_by,
 				date: date,
 				install_date: install_date,
+				for_branch_code: selectedBranches[0].branch_code,
+				for_department_code,
 			}
 		}).then(res => window.location.reload());
 	}

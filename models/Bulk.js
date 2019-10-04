@@ -3,7 +3,7 @@ const db = require("../config/database");
 const Model = require("./Model");
 
 const Bulk = db.define("bulk", {
-	bulk_id: {
+	bulk_code: {
 		type: Sequelize.STRING,
         primaryKey: true,
         validate: {
@@ -28,7 +28,7 @@ const Bulk = db.define("bulk", {
 });
 
 Bulk.getColumns = `
-	"bulk"."bulk_id",
+	"bulk"."bulk_code",
 	"bulk"."date_in",
     "bulk"."price_per_unit",
     "bulk"."of_model_code"

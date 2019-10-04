@@ -4,6 +4,11 @@ const Item = require("../../models/Item");
 const Branch = require("../../models/Branch");
 const Customer = require("../../models/Customer");
 const Withdrawal = require("../../models/Withdrawal");
+const Bulk = require("../../models/Bulk");
+const Model = require("../../models/Model");
+const Staff = require("../../models/Staff");
+const ProductType = require("../../models/ProductType");
+const Supplier = require("../../models/Supplier");
 const Return = require("../../models/Return");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -47,7 +52,6 @@ router.route("/get-all").get(async (req, res) => {
 });
 
 router.get("/:serial_no/details", (req, res) => {
-	// TODO: Join with bulk, model and supplier tables
 	// TODO: Include return history along with withdrawal history. Sort by date newest to oldest.
 	const { serial_no } = req.params;
 	Item.findOne({
@@ -64,12 +68,29 @@ router.get("/:serial_no/details", (req, res) => {
 							model: Customer,
 							as: "customer"
 						}
+					},{
+						model: Staff,
+						as: "staff"
 					}
 				],
 			},
 			{
 				model: Branch,
 				as: "reserve_branch"
+			},{
+				model: Bulk,
+				as: "bulk",
+				include: [{
+					model: Model,
+					as: "model",
+					include: [{
+						model: Supplier,
+						as: "supplier"
+					},{
+						model: ProductType,
+						as: "product_type"
+					}]
+				}]
 			}
 		]
 	})
@@ -192,10 +213,11 @@ router.put("/:serial_no/edit", (req, res) => {
 
 	// TODO: able to change bulk (in case of human error when adding stock)
 	const { serial_no } = req.params;
-	const { remarks } = req.body;
+	const { remarks, is_broken } = req.body;
 	Item.update(
 		{
-			remarks
+			remarks,
+			is_broken
 		},
 		{
 			where: {

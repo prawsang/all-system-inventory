@@ -3,6 +3,8 @@ const router = express.Router();
 const Branch = require("../../models/Branch");
 const Item = require("../../models/Item");
 const Withdrawal = require("../../models/Withdrawal");
+const Model = require("../../models/Model");
+const ProductType = require("../../models/ProductType");
 const Customer = require("../../models/Customer");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -53,17 +55,20 @@ router.get("/:branch_code/items/", async (req, res) => {
 		return_to,
 		return_from
 	});
-	// TODO: Join with bulk, model and supplier tables
+	// TODO: Join with bulk, model and supplier tables - DONE
 	const q = await query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Item.getColumns}, ${Withdrawal.getColumns}`,
+		cols: `${Item.getColumns}, ${Withdrawal.getColumns}, ${Model.getColumns}, ${ProductType.getColumns}`,
 		tables: `"withdrawal_has_item"
 			JOIN "item" ON "item"."serial_no" = "withdrawal_has_item"."serial_no"
 			JOIN "withdrawal" ON "withdrawal"."id" = "withdrawal_has_item"."withdrawal_id"
 			JOIN "branch" ON "branch"."branch_code" = "withdrawal"."for_branch_code"
+			JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
+			JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
+			JOIN "product_type" ON "product_type"."type_name" = "model"."is_product_type_name"
 		`,
 		where: `
 			NOT "item"."status" = 'IN_STOCK' 

@@ -92,6 +92,12 @@ router.get("/:id/details", (req, res) => {
 					model: Customer,
 					as: "customer"
 				}
+			},{
+				model: Staff,
+				as: "staff",
+			},{
+				model: Department,
+				as: "department",
 			}
 		]
 	})
@@ -227,10 +233,12 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 	const moreValidation = await Withdrawal.validate({
 		type,
 		return_by,
-		install_date
+		install_date,
+		for_branch_code,
+		for_department_code
 	});
 	if (moreValidation.errors.length > 0) {
-		res.status(400).json({ errors });
+		res.status(400).json({ errors: moreValidation.errors });
 		return;
 	}
 

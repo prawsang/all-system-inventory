@@ -10,27 +10,12 @@ import Edit from "./Edit";
 class Customer extends React.Component {
 	state = {
 		edit: false,
-		activeTable: 0, // 0 = branches, 1 = jobs
 		showAddBranchModal: false,
-		showAddJobModal: false
 	};
-
-	showAddModal() {
-		const { activeTable } = this.state;
-		if (activeTable === 0) {
-			this.setState({ showAddBranchModal: true, showAddJobModal: false });
-		} else {
-			this.setState({ showAddBranchModal: false, showAddJobModal: true });
-		}
-	}
-
-	hideAddModal() {
-		this.setState({ showAddBranchModal: false, showAddJobModal: false });
-	}
 
 	render() {
 		const { data } = this.props;
-		const { edit, activeTable, showAddBranchModal } = this.state;
+		const { edit, showAddBranchModal } = this.state;
 		if (data) {
 			if (!data.customer) return <p>ไม่พบรายการ</p>;
 		}
@@ -68,29 +53,14 @@ class Customer extends React.Component {
 							</div>
 							<div
 								className="is-flex is-jc-space-between is-ai-flex-start"
-								style={{ padding: "0 30px" }}
+								style={{ padding: "0 0 30px 30px" }}
 							>
-								<div className="tabs">
-									<div
-										className={`tab-item ${
-											activeTable === 0 ? "is-active" : ""
-										}`}
-										onClick={() => {
-											this.setState({ activeTable: 0 });
-											this.props.setPage(1);
-										}}
-									>
-										Branches
-									</div>
-								</div>
-								<button className="button" onClick={() => this.showAddModal()}>
+								<button className="button" onClick={() => this.setState({ showAddBranchModal: true })}>
 									Add
 								</button>
 							</div>
 							<div>
 								<FetchDataFromServer
-									className={activeTable === 0 ? "" : "is-hidden"}
-									disabled={activeTable !== 0}
 									url={
 										data && `/customer/${data.customer.customer_code}/branches`
 									}
@@ -108,14 +78,6 @@ class Customer extends React.Component {
 												{
 													col: "branch_name",
 													name: "Branch Name"
-												},
-												{
-													col: "store_type_name",
-													name: "Store Type"
-												},
-												{
-													col: "province",
-													name: "Province"
 												}
 											]}
 										/>
@@ -124,7 +86,7 @@ class Customer extends React.Component {
 							</div>
 							<AddBranch
 								customer={data.customer}
-								close={() => this.hideAddModal()}
+								close={() => this.setState({ showAddBranchModal: false })}
 								active={showAddBranchModal}
 							/>
 							<Edit

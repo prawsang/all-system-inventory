@@ -40,7 +40,7 @@ const ItemPage = props => {
 	const { serial_no } = props.match.params;
 	return (
 		<FetchDataFromServer
-			url={`/stock/${serial_no}/details`}
+			url={`/item/${serial_no}/details`}
 			render={data => <Item data={data} />}
 		/>
 	);

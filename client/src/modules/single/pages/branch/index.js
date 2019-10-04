@@ -76,7 +76,7 @@ class Branch extends React.Component {
 								<FetchDataFromServer
 									className={activeTable === 0 ? "" : "is-hidden"}
 									disabled={activeTable !== 0}
-									url={data && `/branch/${data.branch.id}/items`}
+									url={data && `/branch/${data.branch.branch_code}/items`}
 									render={d => (
 										<Table
 											data={d}
@@ -110,7 +110,7 @@ class Branch extends React.Component {
 								<FetchDataFromServer
 									className={activeTable === 2 ? "" : "is-hidden"}
 									disabled={activeTable !== 2}
-									url={data && `/stock/reserve-branch-id/${data.branch.id}`}
+									url={data && `/branch/${data.branch.branch_code}/reserved-items`}
 									render={d => (
 										<Table
 											data={d}

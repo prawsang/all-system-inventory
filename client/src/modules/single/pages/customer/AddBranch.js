@@ -7,25 +7,13 @@ class AddBranch extends React.Component {
 		branchCode: "",
 		name: "",
 		address: "",
-		province: "",
-		storeTypeId: 0,
-		storeTypes: [],
-		glBranch: "",
-		shortCode: ""
 	};
-	componentDidMount() {
-		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.rows }));
-	}
 
 	addBranch() {
 		const {
 			branchCode,
 			name,
 			address,
-			province,
-			storeTypeId,
-			glBranch,
-			shortCode
 		} = this.state;
 		const { customer } = this.props;
 		Axios.request({
@@ -36,10 +24,6 @@ class AddBranch extends React.Component {
 				branch_code: branchCode,
 				name,
 				address,
-				province,
-				store_type_id: storeTypeId,
-				gl_branch: glBranch,
-				short_code: shortCode
 			}
 		}).then(res => window.location.reload());
 	}
@@ -49,11 +33,6 @@ class AddBranch extends React.Component {
 			branchCode,
 			name,
 			address,
-			province,
-			storeTypeId,
-			storeTypes,
-			glBranch,
-			shortCode
 		} = this.state;
 		const { close, active, customer } = this.props;
 
@@ -88,49 +67,6 @@ class AddBranch extends React.Component {
 							placeholder="Address"
 							onChange={e => this.setState({ address: e.target.value })}
 							value={address}
-						/>
-					</div>
-					<div className="field">
-						<label className="label">Province</label>
-						<input
-							className="input is-fullwidth"
-							placeholder="Province"
-							onChange={e => this.setState({ province: e.target.value })}
-							value={province}
-						/>
-					</div>
-					<div className="field">
-						<label className="label">Store Type</label>
-						<div className="select">
-							<select
-								className="select is-fullwidth "
-								onChange={e => this.setState({ storeTypeId: e.target.value })}
-								value={storeTypeId}
-							>
-								{storeTypes.map((e, i) => (
-									<option value={e.store_type_id} key={i + e.store_type_id}>
-										{e.store_type_name}
-									</option>
-								))}
-							</select>
-						</div>
-					</div>
-					<div className="field">
-						<label className="label">GL Branch</label>
-						<input
-							className="input is-fullwidth"
-							placeholder="GL Branch"
-							onChange={e => this.setState({ glBranch: e.target.value })}
-							value={glBranch}
-						/>
-					</div>
-					<div className="field">
-						<label className="label">Short Code</label>
-						<input
-							className="input is-fullwidth"
-							placeholder="Short Code"
-							onChange={e => this.setState({ shortCode: e.target.value })}
-							value={shortCode}
 						/>
 					</div>
 					<div className="buttons">

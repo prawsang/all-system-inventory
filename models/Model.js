@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Supplier = require("./Supplier");
+const ProductType = require("./ProductType");
 
 const Model = db.define("model", {
 	model_code: {
@@ -51,7 +52,7 @@ const Model = db.define("model", {
 Model.getColumns = `"model"."model_code" AS "model_code",
 	"model"."name" AS "model_name"`;
 	
-Model.belongsTo(Supplier, {
+Model.belongsTo(ProductType, {
 	foreignKey: "is_product_type_name",
 	as: "product_type"
 });

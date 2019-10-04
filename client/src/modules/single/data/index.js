@@ -11,7 +11,7 @@ export const BranchData = ({ data, withCustomer }) => {
 				Branch
 				<span
 					className="is-clickable accent has-ml-10 is-6"
-					onClick={() => history.push(`/single/branch/${data.id}`)}
+					onClick={() => history.push(`/single/branch/${data.branch_code}`)}
 				>
 					<FontAwesomeIcon icon={faExternalLinkAlt} />
 				</span>
@@ -36,31 +36,6 @@ export const BranchData = ({ data, withCustomer }) => {
 					</div>
 				</div>
 			)}
-		</div>
-	);
-};
-
-export const JobData = ({ data }) => {
-	if (!data) return <p className="no-mt has-mb-10 is-gray-4">No Job</p>;
-	return (
-		<div>
-			<h5 className="no-mt has-mb-10">
-				Job
-				<span
-					className="is-clickable accent has-ml-10 is-6"
-					onClick={() => history.push(`/single/job/${data.job_code}`)}
-				>
-					<FontAwesomeIcon icon={faExternalLinkAlt} />
-				</span>
-			</h5>
-			<div className="has-mb-10">
-				<label className="is-bold has-mr-05">Job Code:</label>
-				<span>{data.job_code}</span>
-			</div>
-			<div className="has-mb-10">
-				<label className="is-bold has-mr-05">Job Name:</label>
-				<span>{data.name}</span>
-			</div>
 		</div>
 	);
 };

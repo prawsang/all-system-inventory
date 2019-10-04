@@ -34,10 +34,13 @@ const AllWithdrawals = () => (
 					{
 						col: "branch_code",
 						name: "Branch Code"
+					},{
+						col: "department_name",
+						name: "Department Name"
 					},
 					{
-						col: "withdrawal_type",
-						name: "Type"
+						col: "department_code",
+						name: "Department Code"
 					},
 					{
 						col: "withdrawal_status",

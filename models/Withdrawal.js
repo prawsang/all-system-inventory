@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Staff = require("./Staff");
 const Branch = require("./Branch");
+const Department = require("./Department");
 const Item = require("./Item");
 const Op = Sequelize.Op;
 
@@ -207,6 +208,15 @@ Withdrawal.belongsTo(Branch, {
 });
 Branch.hasMany(Withdrawal, {
 	foreignKey: "for_branch_code",
+	as: "withdrawals"
+});
+
+Withdrawal.belongsTo(Department, {
+	foreignKey: "for_department_code",
+	as: "department"
+});
+Department.hasMany(Withdrawal, {
+	foreignKey: "for_department_code",
 	as: "withdrawals"
 });
 

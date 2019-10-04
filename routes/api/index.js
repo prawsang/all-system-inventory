@@ -10,6 +10,7 @@ router.use("/withdrawal", require("./withdrawal"));
 router.use("/product-type", require("./product_type"));
 router.use("/staff", require("./staff"));
 router.use("/department", require("./department"));
+router.use("/bulk", require("./bulk"));
 
 // TODO: Import bulk, supplier, and product type routers
 

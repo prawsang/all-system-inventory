@@ -21,7 +21,6 @@ class Withdrawal extends React.PureComponent {
 		showDeleteConfirm: false,
 		editRemarks: false,
 		changeCustomer: false,
-		editBilling: false,
 		items: null
 	};
 
@@ -112,7 +111,7 @@ class Withdrawal extends React.PureComponent {
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">ผู้เบิก:</label>
-										<span>{data.withdrawal.staff.staff_name}</span>
+										<span>{data.withdrawal.staff.name}</span>
 									</div>
 									{data.withdrawal.type === "LENDING" && (
 										<div className="has-mb-10">
@@ -149,19 +148,30 @@ class Withdrawal extends React.PureComponent {
 									</div>
 								</div>
 								<hr />
-								<button
-									className="button has-mb-10"
-									onClick={() => this.setState({ changeCustomer: true })}
-									disabled={data.withdrawal.status !== "PENDING"}
-								>
-									Change
-								</button>
-								<div style={{ marginBottom: "2em" }}>
-									<CustomerData data={data.withdrawal.branch.customer} />
-								</div>
-								<div style={{ marginBottom: "2em" }}>
-									<BranchData data={data.withdrawal.branch} />
-								</div>
+								{ data.withdrawal.type !== "TRANSFER" ? (
+									<React.Fragment>
+										<button
+											className="button has-mb-10"
+											onClick={() => this.setState({ changeCustomer: true })}
+											disabled={data.withdrawal.status !== "PENDING"}
+										>
+											Change
+										</button>
+										<div style={{ marginBottom: "2em" }}>
+											<CustomerData data={data.withdrawal.branch.customer} />
+										</div>
+										<div style={{ marginBottom: "2em" }}>
+											<BranchData data={data.withdrawal.branch} />
+										</div>
+									</React.Fragment>
+								) : (
+									<React.Fragment>
+										<div className="has-mb-10">
+											<label className="is-bold has-mr-05">Department:</label>
+											<span>{data.withdrawal.department.name} ({data.withdrawal.for_department_code})</span>
+										</div>
+									</React.Fragment>
+								)}
 								<hr />
 								<Link to={`/single/withdrawal/${data.withdrawal.id}/add-items`}>
 									<button
@@ -212,11 +222,13 @@ class Withdrawal extends React.PureComponent {
 								active={editRemarks}
 								close={() => this.setState({ editRemarks: false })}
 							/>
-							<ChangeCustomer
-								data={data.withdrawal}
-								active={changeCustomer}
-								close={() => this.setState({ changeCustomer: false })}
-							/>
+							{ data.withdrawal.type !== "TRANSFER" && (
+								<ChangeCustomer
+									data={data.withdrawal}
+									active={changeCustomer}
+									close={() => this.setState({ changeCustomer: false })}
+								/>
+							)}
 							<CancelConfirm
 								onSubmit={() => this.cancelWithdrawal()}
 								close={() => this.setState({ showCancelConfirm: false })}
