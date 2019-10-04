@@ -49,7 +49,12 @@ const Model = db.define("model", {
 });
 
 Model.getColumns = `"model"."model_code" AS "model_code",
-    "model"."name" AS "model_name"`;
+	"model"."name" AS "model_name"`;
+	
+Model.belongsTo(Supplier, {
+	foreignKey: "is_product_type_name",
+	as: "product_type"
+});
 	
 Model.belongsTo(Supplier, {
 	foreignKey: "from_supplier_code",

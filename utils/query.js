@@ -10,37 +10,27 @@ const checkColName = (name, cols) => {
 const getFromAlias = col => {
 	switch (col) {
 		case "customer_name":
-			return `"customers"."name"`;
-		case "customer_code":
-			return `"customers"."customer_code"`;
-		case "job_name":
-			return `"jobs"."name"`;
-		case "branch_id":
-			return `"branches"."id"`;
+			return `"customer"."name"`;
 		case "branch_name":
-			return `"branches"."name"`;
-		case "po_date":
-			return `"purchase_orders"."date"`;
-		case "store_type_name":
-			return `"store_types"."name"`;
-		case "model_id":
-			return `"models"."id"`;
+			return `"branch"."name"`;
+		case "model_code":
+			return `"model"."model_code"`;
 		case "model_name":
-			return `"models"."name"`;
-		case "model_type":
-			return `"models"."type"`;
+			return `"model"."name"`;
 		case "withdrawal_type":
-			return `"withdrawals"."type"`;
+			return `"withdrawal"."type"`;
 		case "withdrawal_date":
-			return `"withdrawals"."date"`;
+			return `"withdrawal"."date"`;
 		case "withdrawal_status":
-			return `"withdrawals"."status"`;
-		case "store_type_name":
-			return `"store_types"."name"`;
+			return `"withdrawal"."status"`;
 		case "serial_no":
-			return `"stock"."serial_no"`;
-		case "po_number":
-			return `"purchase_orders"."po_number"`;
+			return `"item"."serial_no"`;
+		case "supplier_name":
+			return `"supplier"."name"`;
+		case "staff_name":
+			return `"staff"."name"`;
+		case "department_name":
+			return `"department"."name"`;
 		default:
 			return `"${col}"`;
 	}
