@@ -5,7 +5,7 @@ import BorrowedTable from "../tables/Borrowed";
 
 const Borrowed = () => (
 	<FetchDataFromServer
-		url="/stock/borrowed"
+		url="/item/lent"
 		render={data => (
 			<Table
 				data={data}

@@ -44,7 +44,7 @@ class Menu extends React.Component {
 							marginBottom: 10
 						}}
 					/> */}
-					<small className="is-6 is-bold">Stock Management</small>
+					<small className="is-6 is-bold">All System Inventory</small>
 				</div>
 				<ul className="side-bar-menu">
 					<SideBarLink link="/search-item">
@@ -71,12 +71,8 @@ class Menu extends React.Component {
 							/>
 						</div>
 						<ul className={`panel menu dropright ${showReportMenu || "is-hidden"}`}>
-							<Link link="/report/all-po">PO ทั้งหมด</Link>
-							<Link link="/report/install-wo-po">การติดตั้งที่ยังไม่ได้รับ PO</Link>
-							<Link link="/report/branch-no-install">สาขาที่ยังไม่ได้ติดตั้ง</Link>
 							<Link link="/report/broken">ของเสีย</Link>
-							<Link link="/report/borrowed">ของยืม</Link>
-							<Link link="/report/not-billed">การติดตั้งที่ยังไม่ได้วางบิล</Link>
+							<Link link="/report/lent">ของยืม</Link>
 							<Link link="/report/in-stock">Stock คงเหลือ</Link>
 							<Link link="/report/all-withdrawals">ใบเบิกทั้งหมด</Link>
 						</ul>
@@ -84,10 +80,6 @@ class Menu extends React.Component {
 					<SideBarLink link="/record/edit-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faListUl} />
 						ปรับปรุงรายการ
-					</SideBarLink>
-					<SideBarLink link="/record/po">
-						<FontAwesomeIcon className="icon has-mr-05" icon={faReceipt} />
-						บันทึกใบสั่งซื้อ (PO)
 					</SideBarLink>
 					<SideBarLink link="/record/withdraw-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleUp} />
@@ -118,7 +110,6 @@ class Menu extends React.Component {
 						</div>
 						<ul className={`panel menu dropright ${showEditMenu || "is-hidden"}`}>
 							<Link link="/report/customers">ข้อมูลลูกค้า</Link>
-							<Link link="/report/store-types">Store Types</Link>
 							<Link link="/report/models">รุ่นสินค้า</Link>
 						</ul>
 					</li>

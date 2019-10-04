@@ -14,7 +14,7 @@ class Report extends React.Component {
 			<div className="content">
 				<Switch>
 					<Route path="/report/broken" component={Broken} />
-					<Route path="/report/borrowed" component={Borrowed} />
+					<Route path="/report/lent" component={Borrowed} />
 					<Route path="/report/in-stock" component={InStock} />
 					<Route path="/report/customers" component={CustomersTable} />
 					<Route path="/report/models" component={Models} />

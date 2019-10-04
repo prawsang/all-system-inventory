@@ -11,7 +11,7 @@ class InStock extends React.Component {
 		const { type } = this.state;
 		return (
 			<FetchDataFromServer
-				url="/stock/get-all"
+				url="/item/get-all"
 				params={`${type === "ALL" ? "" : `type=${type}`}&status=in_stock`}
 				render={data => (
 					<Table
