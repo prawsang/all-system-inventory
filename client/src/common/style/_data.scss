@@ -1,0 +1,69 @@
+table {
+	line-height: 1.3;
+	thead {
+		border-bottom: 3px solid $gray-4;
+		td {
+			font-weight: bold;
+			padding: 20px;
+		}
+	}
+	tbody {
+		&.is-hoverable:hover {
+			background-color: $gray-5;
+			transition: background-color 0.1s ease-in;
+		}
+		tr {
+			border-bottom: 1px solid $gray-4;
+			&.is-hoverable:hover {
+				background-color: white;
+				box-shadow: 0 0 10px 2px $gray-4;
+			}
+			td {
+				padding: 20px;
+			}
+		}
+		tr.is-short {
+			td {
+				padding: 10px 20px;
+			}
+		}
+	}
+	a {
+		color: $primary;
+		font-weight: bold;
+		text-decoration: none;
+		&:hover {
+			color: $primary-dark;
+		}
+	}
+}
+
+.list-item {
+	display: block;
+	padding: 10px;
+	&.is-clickable {
+		transition: all 0.1s ease-in-out;
+	}
+	&.is-clickable:hover {
+		background-color: $primary;
+		color: white;
+	}
+	&.is-disabled {
+		transition: none;
+		color: $gray-4;
+	}
+}
+
+.snippet {
+	background-color: $gray-5;
+	border: 1px solid $gray-4;
+	border-radius: 4px;
+	margin-bottom: 0.5em;
+	padding: 0.5em 1em;
+	.checkbox {
+		border: 1px solid $gray-3;
+		&:checked {
+			border: 1px solid $primary;
+		}
+	}
+}

@@ -1,0 +1,64 @@
+@media print {
+	body,
+	html {
+		background-color: white !important;
+	}
+	nav,
+	.side-bar {
+		display: none;
+	}
+	.container {
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+	.buttons {
+		display: none;
+	}
+	.print-preview-page {
+		border: none !important;
+		margin: none;
+	}
+}
+
+.print-preview-page {
+	background-color: white;
+	border: 1px solid $gray-4;
+	box-sizing: border-box;
+	height: 296mm;
+	font-size: 10pt;
+	padding: 10mm;
+	page-break-after: always;
+	width: 210mm;
+	&:not(:first-child) {
+		margin-top: -1px;
+	}
+	p {
+		line-height: 1.5;
+	}
+	.block {
+		border: 2px solid black;
+		padding: 10px;
+		&.header {
+			padding: 5px;
+		}
+	}
+	table {
+		thead {
+			border-color: black !important;
+			border-width: 2px;
+		}
+		td {
+			border: 2px solid black !important;
+			padding: 10px;
+		}
+		tr.serial {
+			td {
+				padding: 8px;
+				word-break: break-word;
+			}
+		}
+	}
+}
+.print-preview {
+	color: black !important;
+}

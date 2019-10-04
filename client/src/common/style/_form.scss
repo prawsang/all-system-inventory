@@ -1,0 +1,245 @@
+.field {
+	position: relative;
+	margin-bottom: 1em;
+	.panel.menu {
+		border-radius: 10px;
+		color: $gray-2;
+		margin-top: 5px;
+		min-width: 200px;
+		position: absolute;
+		top: 50px;
+		left: 0;
+		z-index: 999;
+	}
+}
+
+.label {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 1em;
+	margin-right: 0.5em;
+}
+.field.is-flex .label {
+	margin-bottom: 0;
+}
+
+.form {
+	&:not(:last-child) {
+		margin-bottom: 1.5em;
+	}
+}
+
+.input {
+	border: 1px solid $gray-4;
+	background-color: white;
+	border-radius: 999px;
+	color: $gray-2;
+	font-size: 1em;
+	font-family: $base-fonts;
+	padding: 0.5em 0.5em 0.5em 1em;
+	-webkit-appearance: none;
+	&::placeholder {
+		color: $gray-3;
+	}
+	&:focus {
+		border-color: transparent;
+		box-shadow: 0 0 10px $primary-fade;
+		outline: none;
+	}
+	&:disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	&.is-danger {
+		background-color: $danger-fade;
+		border-color: $danger;
+		&:focus {
+			box-shadow: 0 0 10px $danger-fade;
+		}
+	}
+}
+.textarea {
+	border-radius: 15px;
+	padding: 1em;
+	min-height: 150px;
+	min-width: 300px;
+}
+@media screen and (max-width: 767px) {
+	.input {
+		min-width: 100px;
+	}
+}
+
+.checkbox {
+	background-color: $gray-4;
+	border-radius: 6px;
+	box-sizing: border-box;
+	height: 20px;
+	position: relative;
+	width: 20px;
+	-webkit-appearance: none;
+
+	&:focus,
+	&:active {
+		outline: none;
+	}
+
+	&:checked {
+		background-color: $primary;
+		&:after {
+			border-color: white;
+			border-style: solid;
+			border-width: 0 3px 3px 0;
+			content: "";
+			height: 8px;
+			position: absolute;
+			top: 3px;
+			left: 6px;
+			transform: rotate(45deg);
+			width: 4px;
+		}
+	}
+}
+
+.is-disabled {
+	.input:disabled {
+		opacity: 1;
+	}
+}
+
+.button {
+	&,
+	&.is-primary {
+		background-color: $primary;
+		border: 1px solid $primary;
+		border-radius: 999px;
+		color: white;
+		font-family: $base-fonts;
+		font-size: 1em;
+		padding: 10px 15px;
+	}
+
+	&:focus {
+		outline: none;
+	}
+	&:not(:last-child) {
+		margin-bottom: 0.5em;
+		margin-right: 0.5em;
+	}
+
+	&.is-rectangle {
+		border-radius: 0;
+	}
+	&:hover,
+	&.is-primary:hover {
+		background-color: $primary-dark;
+		border: 1px solid $primary-dark;
+		cursor: pointer;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	&.is-danger {
+		background-color: $danger;
+		border: 1px solid $danger;
+		&:hover {
+			background-color: $danger-dark;
+			border: 1px solid $danger-dark;
+		}
+	}
+
+	&.is-warning {
+		background-color: $warning;
+		border: 1px solid $warning;
+		&:hover {
+			background-color: $warning-dark;
+			border: 1px solid $warning-dark;
+		}
+	}
+
+	&.is-success {
+		background-color: $success;
+		border: 1px solid $success;
+		&:hover {
+			background-color: $success-dark;
+			border: 1px solid $success-dark;
+		}
+	}
+
+	&.is-light {
+		background-color: white;
+		border: 1px solid $gray-4;
+		color: $gray-2;
+		&:hover {
+			background-color: $gray-5;
+		}
+	}
+}
+
+.is-flex {
+	.button {
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}
+
+.buttons {
+	align-items: center;
+	display: flex;
+	margin-bottom: 0.5em;
+	.button {
+		margin-bottom: 0;
+		&:last-child {
+			margin-right: 0;
+		}
+	}
+}
+
+.select {
+	display: inline-block;
+	margin-right: 0.5em;
+	position: relative;
+
+	select {
+		background-color: white;
+		border: 1px solid $gray-4;
+		border-radius: 999px;
+		color: $gray-2;
+		cursor: pointer;
+		font-family: $base-fonts;
+		font-size: 1em;
+		min-width: 100px;
+		padding: 0.5em 40px 0.5em 1em;
+		-moz-appearance: none;
+		-webkit-appearance: none;
+
+		&:hover {
+			background-color: $gray-5;
+		}
+		&:focus,
+		&:active {
+			border-color: transparent;
+			box-shadow: 0 0 10px $primary-fade;
+			outline: none;
+		}
+	}
+
+	&:after {
+		border-color: $primary;
+		border-style: solid;
+		border-width: 0 3px 3px 0;
+		content: "";
+		height: 8px;
+		// margin-right: 8px;
+		position: absolute;
+		right: 16px;
+		top: 50%;
+		transform: rotate(45deg) translate(-6px, -6px);
+		width: 8px;
+	}
+}
