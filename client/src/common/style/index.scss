@@ -1,0 +1,269 @@
+@import "reset";
+@import "variables";
+@import "typography";
+@import "nav";
+@import "data";
+@import "form";
+@import "print";
+
+html,
+body {
+	min-height: 100vh;
+	overflow-x: hidden;
+	width: 100vw;
+}
+
+body {
+	background-color: $gray-5;
+}
+
+.container {
+	margin: auto;
+	width: 90%;
+	&.main {
+		margin-top: 20px;
+		margin-bottom: 40px;
+		&.fixed-nav {
+			margin-top: 80px;
+		}
+		&.with-side-bar {
+			margin-left: 250px;
+			padding: 0 40px;
+			width: auto;
+		}
+	}
+}
+
+@media screen and (max-width: 767px) {
+	.container.main.with-side-bar {
+		margin-left: 0;
+		padding: 0 20px;
+	}
+}
+
+.panel {
+	box-shadow: 0 3px 12px $gray-4;
+	background-color: white;
+	border-radius: 15px;
+	margin-top: 20px;
+	.panel-head {
+		background-color: $primary;
+		color: white;
+		border-radius: 15px 15px 0 0;
+	}
+	.panel-content {
+		padding: 30px;
+	}
+}
+@media screen and (max-width: 767px) {
+	.panel .panel-content {
+		padding: 15px;
+	}
+}
+
+/* Modifiers */
+.is-clickable {
+	cursor: pointer;
+}
+.is-fullwidth {
+	box-sizing: border-box;
+	width: 100%;
+}
+.is-hidden {
+	display: none !important;
+}
+.is-hidden-desktop {
+	display: none;
+}
+@media screen and (max-width: 767px) {
+	.is-hidden-mobile {
+		display: none !important;
+	}
+	.is-hidden-desktop {
+		display: block;
+	}
+}
+.is-disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* Padding */
+.no-padding {
+	padding: 0 !important;
+}
+.no-pt {
+	padding-top: 0 !important;
+}
+.no-pb {
+	padding-bottom: 0 !important;
+}
+.no-pr {
+	padding-right: 0 !important;
+}
+.no-pl {
+	padding-left: 0 !important;
+}
+
+/* Margin */
+.no-mt {
+	margin-top: 0 !important;
+}
+.no-ml {
+	margin-left: 0 !important;
+}
+.no-mb {
+	margin-bottom: 0 !important;
+}
+.no-mr {
+	margin-right: 0 !important;
+}
+.no-margin {
+	margin: 0 !important;
+}
+.has-ml-05 {
+	margin-left: 0.5em !important;
+}
+.has-mr-05 {
+	margin-right: 0.5em !important;
+}
+.has-mt-05 {
+	margin-top: 0.5em !important;
+}
+.has-mb-05 {
+	margin-bottom: 0.5em !important;
+}
+.has-ml-10 {
+	margin-left: 1em !important;
+}
+.has-mr-10 {
+	margin-right: 1em !important;
+}
+.has-mt-10 {
+	margin-top: 1em !important;
+}
+.has-mb-10 {
+	margin-bottom: 1em !important;
+}
+
+/* Flex */
+.is-flex {
+	display: flex;
+}
+.is-flex-fullwidth {
+	flex-basis: 100%;
+}
+.is-ai-flex-start {
+	align-items: flex-start;
+}
+.is-ai-center {
+	align-items: center;
+}
+.is-ai-flex-end {
+	align-items: flex-end;
+}
+.is-ai-stretch {
+	align-items: stretch;
+}
+.is-jc-center {
+	justify-content: center;
+}
+.is-jc-space-between {
+	justify-content: space-between;
+}
+.is-jc-flex-end {
+	justify-content: flex-end;
+}
+.is-wrap {
+	flex-wrap: wrap;
+}
+
+/* Tabs */
+.tabs {
+	display: flex;
+	margin-bottom: 1em;
+	.tab-item {
+		border: 1px solid $gray-4;
+		cursor: pointer;
+		padding: 0.75em 1em;
+		&:hover {
+			background-color: $gray-5;
+		}
+		&:not(:last-child) {
+			border-right: none;
+		}
+		&:first-child {
+			border-top-left-radius: 999px;
+			border-bottom-left-radius: 999px;
+		}
+		&:last-child {
+			border-top-right-radius: 999px;
+			border-bottom-right-radius: 999px;
+		}
+
+		&.is-active {
+			background-color: $primary;
+			border-color: $primary;
+			color: white;
+			&:hover {
+				background-color: $primary-dark;
+				border-color: $primary-dark;
+			}
+		}
+	}
+}
+
+.modal-background {
+	background-color: rgba(0, 0, 0, 0.7);
+	height: 100vh;
+	overflow-y: scroll;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100vw;
+	z-index: 999;
+	.panel {
+		box-shadow: 0 3px 12px $gray-1;
+		margin: auto;
+		margin-top: 50px;
+		margin-bottom: 50px;
+		max-width: 60%;
+		min-width: 500px;
+		width: auto;
+		&.dropdown {
+			box-shadow: 0 3px 12px $gray-4;
+		}
+	}
+}
+@media screen and (max-width: 767px) {
+	.modal-background .panel {
+		min-width: 300px;
+	}
+}
+
+/* columns */
+.row {
+	display: flex;
+}
+.col-3,
+.col-4,
+.col-6 {
+	flex-basis: 100%;
+	width: 100%;
+}
+@media screen and (min-width: 768px) {
+	.col-3 {
+		flex-basis: 25%;
+		width: 25%;
+	}
+	.col-4 {
+		flex-basis: 33%;
+		width: 33%;
+	}
+	.col-6 {
+		flex-basis: 50%;
+		width: 50%;
+	}
+}
