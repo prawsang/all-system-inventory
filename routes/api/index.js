@@ -3,6 +3,7 @@ const router = express.Router();
 
 router.get("/", (req, res) => res.sendStatus(200));
 router.use("/model", require("./model"));
+router.use("/supplier", require("./supplier"));
 router.use("/branch", require("./branch"));
 router.use("/customer", require("./customer"));
 router.use("/item", require("./item"));
