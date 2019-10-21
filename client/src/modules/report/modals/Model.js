@@ -93,8 +93,8 @@ class NewModel extends React.Component {
 						onChange={e => this.setState({ modelName: e.target.value })}
 					/>
 				</div>
-				<div className="field is-flex">
-					<label className="label">Weight (kg)</label>
+				<div className="field is-flex is-ai-center">
+					<label className="label has-no-line-break">Weight (kg)</label>
 					<input
 						className="input is-fullwidth"
 						placeholder="Weight (kg)"
@@ -103,8 +103,8 @@ class NewModel extends React.Component {
 						onChange={e => this.setState({ weight: e.target.value })}
 					/>
 				</div>
-				<div className="field is-flex">
-					<label className="label">Width (cm)</label>
+				<div className="field is-flex is-ai-center">
+					<label className="label has-no-line-break">Width (cm)</label>
 					<input
 						className="input is-fullwidth"
 						placeholder="Width (cm)"
@@ -113,8 +113,8 @@ class NewModel extends React.Component {
 						onChange={e => this.setState({ width: e.target.value })}
 					/>
 				</div>
-				<div className="field is-flex">
-					<label className="label">Height (cm)</label>
+				<div className="field is-flex is-ai-center">
+					<label className="label has-no-line-break">Height (cm)</label>
 					<input
 						className="input is-fullwidth"
 						placeholder="Height (cm)"
@@ -123,8 +123,8 @@ class NewModel extends React.Component {
 						onChange={e => this.setState({ height: e.target.value })}
 					/>
 				</div>
-				<div className="field is-flex">
-					<label className="label">Depth (cm)</label>
+				<div className="field is-flex is-ai-center">
+					<label className="label has-no-line-break">Depth (cm)</label>
 					<input
 						className="input is-fullwidth"
 						placeholder="Depth (cm)"

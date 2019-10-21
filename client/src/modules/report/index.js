@@ -5,7 +5,8 @@ import Broken from "./pages/Broken";
 import Borrowed from "./pages/Borrowed";
 import InStock from "./pages/InStock";
 import CustomersTable from "./pages/CustomersTable";
-import Models from "./pages/Models";
+import Suppliers from "./pages/Suppliers";
+import ProductTypes from "./pages/ProductTypes";
 import AllWithdrawals from "./pages/AllWithdrawals";
 
 class Report extends React.Component {
@@ -17,7 +18,8 @@ class Report extends React.Component {
 					<Route path="/report/lent" component={Borrowed} />
 					<Route path="/report/in-stock" component={InStock} />
 					<Route path="/report/customers" component={CustomersTable} />
-					<Route path="/report/models" component={Models} />
+					<Route path="/report/suppliers" component={Suppliers} />
+					<Route path="/report/product-types" component={ProductTypes} />
 					<Route path="/report/all-withdrawals" component={AllWithdrawals} />
 				</Switch>
 			</div>

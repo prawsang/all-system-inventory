@@ -1,9 +1,9 @@
 import React from "react";
-import Model from "../modals/Model";
+import ProductType from "../modals/ProductType";
 import Modal from "@/common/components/Modal";
 import Axios from "axios";
 
-class ModelsTable extends React.Component {
+class ProductTypesTable extends React.Component {
 	state = {
 		showEdit: false,
 		showDeleteConfirm: false,
@@ -13,7 +13,7 @@ class ModelsTable extends React.Component {
 		const { selected } = this.state;
 		Axios.request({
 			method: "DELETE",
-			url: `/model/${selected.model_code}`
+			url: `/product-type/${selected.id}`
 		}).then(res => window.location.reload());
 	}
 	render() {
@@ -24,8 +24,7 @@ class ModelsTable extends React.Component {
 				<table className="is-fullwidth is-rounded">
 					<thead>
 						<tr>
-							<td>Model Name</td>
-							<td>Type</td>
+							<td>Product Type Name</td>
 							<td />
 							<td />
 						</tr>
@@ -34,9 +33,8 @@ class ModelsTable extends React.Component {
 						{data &&
 							(data.rows.length > 0 &&
 								data.rows.map((e, i) => (
-									<tr key={i + e.model_name} className="is-short">
-										<td className="has-no-line-break">{e.model_name}</td>
-										<td className="is-fullwidth">{e.is_product_type_name}</td>
+									<tr key={i + e.product_type_name} className="is-short">
+										<td className="has-no-line-break is-fullwidth">{e.product_type_name}</td>
 										<td className="no-pr">
 											<button
 												className="button"
@@ -44,13 +42,7 @@ class ModelsTable extends React.Component {
 													this.setState({
 														showEdit: true,
 														selected: {
-															model_code: e.model_code,
-															name: e.model_name,
-															product_type_name: e.product_type_name,
-															weight: e.weight,
-															width: e.width,
-															height: e.height,
-															depth:e.depth
+															product_type_name: e.product_type_name
 														}
 													})
 												}
@@ -65,7 +57,7 @@ class ModelsTable extends React.Component {
 													this.setState({
 														showDeleteConfirm: true,
 														selected: {
-															model_code: e.model_code,
+															product_type_name: e.product_type_name
 														}
 													})
 												}
@@ -82,7 +74,7 @@ class ModelsTable extends React.Component {
 					close={() => this.setState({ showEdit: false })}
 					title="Edit"
 				>
-					<Model data={selected} modalType="EDIT" />
+					<ProductType data={selected} modalType="EDIT" />
 				</Modal>
 				<Modal
 					active={showDeleteConfirm}
@@ -107,4 +99,4 @@ class ModelsTable extends React.Component {
 	}
 }
 
-export default ModelsTable;
+export default ProductTypesTable;
