@@ -161,9 +161,10 @@ router.put("/return", checkSerial, async (req, res) => {
 	// serial_no is an array
 	const { serial_no } = req.body;
 
-	// TODO: Transaction
-	// Change status of all items in array to IN_STOCK
-	// Add to return_history table (return_date, serial_no)
+	/* TODO: Transaction
+	1. Change status of all items in array to IN_STOCK (see returnItems function)
+	2. Add all items to return_history table (return_datetime, serial_no)
+	*/
 });
 
 // Mark Broken/Not Broken

@@ -40,6 +40,7 @@ router.get("/get-all", async (req, res) => {
 	}
 });
 
+// Validation
 const bulkValidation = [
     check("bulk_id")
 		.not()
@@ -66,6 +67,7 @@ const itemValidation = [
 		.withMessage("Serial No. of items must be provided."),
 ]
 
+// Add a bulk along with items
 router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => {
     const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
@@ -73,9 +75,16 @@ router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => 
     }
     
 	const { remarks, serial_no } = req.body;
+	// serial_no is an array of serial numbers of the items about to be added
 	let errors = [];
-    // The code below is for adding items
-	// TODO: Connect with bulk, model and supplier tables
+	/* 
+		The code below is for adding items into the items table
+		TODO: Connect with bulk, model and supplier tables
+		HINT: Make a transaction with the following steps
+			1. Create a bulk
+			2. Add the items (using the code below) with from_bulk_code: (the code of the bulk
+				that was just created in step 1)
+	*/
 	await Promise.all(
 		serial_no.map(async no => {
 			await Item.create({
@@ -87,7 +96,8 @@ router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => 
 			}).catch(err => errors.push(err));
 		})
     );
-    // End add items code
+	// End add items code
+	
 	if (errors.length > 0) res.status(500).json({ errors });
 	else res.sendStatus(200);
 });

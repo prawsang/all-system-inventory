@@ -12,6 +12,7 @@ const { check, validationResult } = require("express-validator/check");
 // 2. /product-type/add - add a product type
 // 3. /product-type/edit - edit a product type
 // 4. /product-type/delete - delete a product type (no cascade delete)
+// Add and delete must have validation (see examples from other files)
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;

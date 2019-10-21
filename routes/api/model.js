@@ -52,7 +52,6 @@ router.route("/:id/details").get((req, res) => {
 		.catch(err => res.status(500).json({ errors: err }));
 });
 
-// TODO: Connect with supplier and product type tables
 const modelValidation = [
 	check("model_code")
 		.not()
