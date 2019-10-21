@@ -20,7 +20,16 @@ const { query } = require("../../utils/query");
 // 6. /bulk/delete - delete bulk (no cascade delete, meaning, cannot delete if that bulk has items)
 
 router.get("/get-all", async (req, res) => {
-	const { limit, page, search_col, search_term } = req.query;
+	const { limit, page, search_col, search_term, from, to } = req.query;
+
+	let dateFilter = null;
+
+	if (from || to) {
+		const f = from ? `"bulk"."date_in" >= :from` : null;
+		const t = to ? `"bulk"."date_in" <= :to` : null;
+		dateFilter = [f, t].filter(e => e).join(" AND ");
+	}
+
 	const q = await query({
 		limit,
 		page,
@@ -30,6 +39,11 @@ router.get("/get-all", async (req, res) => {
         tables: `"bulk"
 		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
 		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"`,
+		where: dateFilter,
+		replacements: {
+			from,
+			to
+		},
 		availableCols: ["bulk_code","model_name","model_code","supplier_name","supplier_code"]
 	});
 	if (q.errors) {
