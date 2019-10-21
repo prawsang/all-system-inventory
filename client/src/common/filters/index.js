@@ -124,8 +124,8 @@ class Filters extends React.Component {
 										value: "TRANSFER"
 									},
 									{
-										name: "Borrow",
-										value: "BORROW"
+										name: "Lending",
+										value: "LENDING"
 									}
 								]}
 							/>
@@ -150,6 +150,10 @@ class Filters extends React.Component {
 									{
 										name: "Transferred",
 										value: "TRANSFERRED"
+									},
+									{
+										name: "Pending",
+										value: "PENDING"
 									},
 									{
 										name: "Reserved",
@@ -184,8 +188,8 @@ class Filters extends React.Component {
 										value: "PENDING"
 									},
 									{
-										name: "Printed",
-										value: "PRINTED"
+										name: "Confirmed",
+										value: "CONFIRMED"
 									},
 									{
 										name: "Cancelled",
