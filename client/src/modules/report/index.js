@@ -7,6 +7,7 @@ import InStock from "./pages/InStock";
 import CustomersTable from "./pages/CustomersTable";
 import Suppliers from "./pages/Suppliers";
 import ProductTypes from "./pages/ProductTypes";
+import Bulks from "./pages/Bulks";
 import AllWithdrawals from "./pages/AllWithdrawals";
 
 class Report extends React.Component {
@@ -19,6 +20,7 @@ class Report extends React.Component {
 					<Route path="/report/in-stock" component={InStock} />
 					<Route path="/report/customers" component={CustomersTable} />
 					<Route path="/report/suppliers" component={Suppliers} />
+					<Route path="/report/bulks" component={Bulks} />
 					<Route path="/report/product-types" component={ProductTypes} />
 					<Route path="/report/all-withdrawals" component={AllWithdrawals} />
 				</Switch>

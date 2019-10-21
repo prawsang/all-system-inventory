@@ -1,6 +1,6 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import SuppliersTable from "@/common/tables/supplier";
+import SuppliersTable from "../tables/Suppliers";
 import TableWithNew from "@/common/components/TableWithNew";
 import NewSupplier from "../modals/NewSupplier";
 

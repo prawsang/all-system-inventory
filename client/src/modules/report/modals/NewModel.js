@@ -1,7 +1,7 @@
 import React from "react";
 import Axios from "axios";
 
-class NewModel extends React.Component {
+class ModelModal extends React.Component {
 	state = {
 		modelCode: "",
 		modelName: "",
@@ -13,37 +13,7 @@ class NewModel extends React.Component {
 		selectedProductType: null
 	};
 	componentDidMount() {
-		const { modalType, data } = this.props;
 		this.getAllProductTypes();
-		if (modalType === "EDIT") {
-			this.setState({
-				modelCode: data.model_code,
-				modelName: data.name,
-				width: data.width,
-				height: data.height,
-				depth: data.depth,
-				weight: data.weight,
-				selectedProductType: data.product_type_name
-			});
-		}
-	}
-	componentDidUpdate(prevProps, prevState) {
-		if (prevProps !== this.props) {
-			if (prevProps.data !== this.props.data) {
-				const { modalType, data } = this.props;
-				if (modalType === "EDIT") {
-					this.setState({
-						modelCode: data.model_code,
-						modelName: data.name,
-						width: data.width,
-						height: data.height,
-						depth: data.depth,
-						weight: data.weight,
-						selectedProductType: data.product_type_name
-					});
-				}
-			}
-		}
 	}
 	handleSubmit() {
 		const { modelName, modelCode, width, height, depth, weight, selectedProductType } = this.state;
@@ -154,4 +124,4 @@ class NewModel extends React.Component {
 	}
 }
 
-export default NewModel;
+export default ModelModal;

@@ -1,5 +1,5 @@
 import React from "react";
-import Model from "../modals/Model";
+// import Model from "../modals/Model";
 import Modal from "@/common/components/Modal";
 import Axios from "axios";
 
@@ -18,7 +18,7 @@ class ModelsTable extends React.Component {
 	}
 	render() {
 		const { data } = this.props;
-		const { showEdit, showDeleteConfirm, selected } = this.state;
+		const { showDeleteConfirm } = this.state;
 		return (
 			<React.Fragment>
 				<table className="is-fullwidth is-rounded">
@@ -26,7 +26,7 @@ class ModelsTable extends React.Component {
 						<tr>
 							<td>Model Name</td>
 							<td>Type</td>
-							<td />
+							{/* <td /> */}
 							<td />
 						</tr>
 					</thead>
@@ -37,7 +37,7 @@ class ModelsTable extends React.Component {
 									<tr key={i + e.model_name} className="is-short">
 										<td className="has-no-line-break">{e.model_name}</td>
 										<td className="is-fullwidth">{e.is_product_type_name}</td>
-										<td className="no-pr">
+										{/* <td className="no-pr">
 											<button
 												className="button"
 												onClick={() =>
@@ -57,7 +57,7 @@ class ModelsTable extends React.Component {
 											>
 												Edit
 											</button>
-										</td>
+										</td> */}
 										<td>
 											<button
 												className="button is-danger"
@@ -77,13 +77,13 @@ class ModelsTable extends React.Component {
 								)))}
 					</tbody>
 				</table>
-				<Modal
+				{/* <Modal
 					active={showEdit}
 					close={() => this.setState({ showEdit: false })}
 					title="Edit"
 				>
 					<Model data={selected} modalType="EDIT" />
-				</Modal>
+				</Modal> */}
 				<Modal
 					active={showDeleteConfirm}
 					close={() => this.setState({ showDeleteConfirm: false })}
