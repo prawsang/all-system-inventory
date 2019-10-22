@@ -23,11 +23,11 @@ const Item = db.define(
 		},
 		status: {
 			type: Sequelize.ENUM,
-			values: ["IN_STOCK", "INSTALLED", "RESERVED", "LENT", "TRANSFERRED"],
+			values: ["IN_STOCK", "INSTALLED", "RESERVED", "LENT", "TRANSFERRED", "PENDING"],
 			allowNull: false,
 			validate: {
 				notEmpty: true,
-				isIn: [["IN_STOCK", "INSTALLED", "RESERVED", "LENT", "TRANSFERRED"]]
+				isIn: [["IN_STOCK", "INSTALLED", "RESERVED", "LENT", "TRANSFERRED", "PENDING"]]
 			}
 		},
 		is_broken: {
