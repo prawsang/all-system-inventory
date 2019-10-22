@@ -298,11 +298,12 @@ router.put("/:id/change-status", async (req, res) => {
 	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (status == "CONFIRMED") {
 		if (!isPending) {
-			res.statusStatus(200);
+			res.sendStatus(421);
 			return;
 		} else {
-			const changeStatus = await Withdrawal.changeStatus(id, status);
-			if (changeStatus.errors.length > 0) {
+			const changeStatus = await confirmItems(id);
+
+			if (changeStatus.length > 0) {
 				res.status(500).send(changeStatus.errors);
 			} else {
 				res.sendStatus(200);

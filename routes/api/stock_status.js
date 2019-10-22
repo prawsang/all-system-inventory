@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const Item = require("../../models/Item");
+const ItemWithdrawal = require("../../models/junction/ItemWithdrawal");
+const Withdrawal = require("../../models/Withdrawal");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const db = require("../../config/database");
 const { check, validationResult } = require("express-validator/check");
 
 const checkSerial = [
@@ -13,8 +16,8 @@ const checkSerial = [
 		.withMessage("Invalid or Empty Serial No.")
 ];
 
-// Install
-// IN_STOCK/RESERVED -> INSTALLED
+// Install (pending)
+// IN_STOCK/RESERVED -> PENDING
 // Removes the reserved_branch_code of the items
 // Check if the item is reserved by the provided branch
 installItems = async (serial_no, branch_code) => {
@@ -39,8 +42,7 @@ installItems = async (serial_no, branch_code) => {
 					} else {
 						await Item.update(
 							{
-								status: "INSTALLED",
-								reserved_branch_code: null,
+								status: "PENDING",
 							},
 							{
 								where: {
@@ -61,6 +63,46 @@ installItems = async (serial_no, branch_code) => {
 		updatedSerials,
 		errors
 	};
+};
+// Confirm Install
+// PENDING -> INSTALLED
+confirmItems = async id => {
+	return db.transaction(t => {
+		return db.query(
+			`UPDATE "item"
+			SET "status" = 'INSTALLED'
+			FROM "withdrawal_has_item"
+			WHERE "item"."serial_no" = "withdrawal_has_item"."serial_no"
+			AND "withdrawal_has_item"."withdrawal_id" = :id
+			`,
+			{
+				replacements: {
+					id
+				},
+				type: db.QueryTypes.UPDATE,
+				transaction: t
+			}
+		).then(rr =>
+			Withdrawal.update(
+				{
+					status: "CONFIRMED"
+				},
+				{
+					where: {
+						id: {
+							[Op.eq]: id
+						}
+					}
+				},
+				{
+					transaction: t
+				}
+			)
+		)
+	}).then(r => ({
+			errors: []
+		}))
+		.catch(err => ({ errors: [{msg: "This withdrawal cannot be confirmed."}]}));
 };
 
 // Transfer
@@ -207,6 +249,7 @@ router.put(
 module.exports = {
 	router,
 	installItems,
+	confirmItems,
 	transferItems,
 	lendItems,
 	returnItems
