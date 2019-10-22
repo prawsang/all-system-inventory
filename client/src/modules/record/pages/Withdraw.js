@@ -16,8 +16,6 @@ class Withdraw extends React.Component {
 		date: "",
 		returnDate: "",
 		installDate: "",
-		poNumber: "",
-		doNumber: "",
 		remarks: "",
 		staffs: [],
 		departments: [],
@@ -36,7 +34,7 @@ class Withdraw extends React.Component {
 			selectedDepartmentCode
 		} = this.state;
 		const { selectedBranches } = this.props;
-
+		
 		await Axios.request({
 			method: "POST",
 			url: "/withdrawal/add",
@@ -74,7 +72,7 @@ class Withdraw extends React.Component {
 	componentWillUnmount() {
 		this.props.resetRecordData();
 	}
-
+	
 	render() {
 		const {
 			type,

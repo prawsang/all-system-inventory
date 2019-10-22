@@ -24,6 +24,18 @@ class Withdrawal extends React.PureComponent {
 		items: null
 	};
 
+	confirmWithdrawal() {
+		const { data } = this.props;
+		Axios.request({
+			method: "PUT",
+			url: `/withdrawal/${data.withdrawal.id}/change-status`,
+			data: {
+				status: "CONFIRMED"
+			}
+		})
+		// .then(res => window.location.reload());
+	}
+
 	cancelWithdrawal() {
 		const { data } = this.props;
 		Axios.request({
@@ -74,6 +86,13 @@ class Withdrawal extends React.PureComponent {
 						<React.Fragment>
 							<div className="panel-content no-pb" style={{ position: "relative" }}>
 								<div style={{ float: "right" }}>
+									<button
+										className="button"
+										onClick={() => this.confirmWithdrawal()}
+										disabled={data.withdrawal.status !== "PENDING"}
+									>
+										Confirm
+									</button>
 									<button
 										className="button is-danger"
 										onClick={() =>
