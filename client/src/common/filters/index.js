@@ -160,8 +160,8 @@ class Filters extends React.Component {
 										value: "RESERVED"
 									},
 									{
-										name: "Borrowed",
-										value: "BORROWED"
+										name: "Lent",
+										value: "LENT"
 									},
 									{
 										name: "Installed",

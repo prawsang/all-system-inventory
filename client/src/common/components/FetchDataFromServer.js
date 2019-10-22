@@ -59,7 +59,7 @@ class FetchDataFromServer extends React.Component {
 		if (string.length > 0) {
 			return string.join("&");
 		}
-		return null;
+		return null
 	}
 
 	compareFilters(prev, curr) {
@@ -76,17 +76,18 @@ class FetchDataFromServer extends React.Component {
 			return_to
 		} = curr;
 		const {
-			from_prev,
-			to_prev,
-			installed_prev,
-			broken_prev,
-			status_prev,
-			type_prev,
-			install_from_prev,
-			install_to_prev,
-			return_from_prev,
-			return_to_prev
+			from: from_prev,
+			to: to_prev,
+			installed: installed_prev,
+			broken: broken_prev,
+			status: status_prev,
+			type: type_prev,
+			install_from: install_from_prev,
+			install_to: install_to_prev,
+			return_from: return_from_prev,
+			return_to: return_to_prev
 		} = prev;
+		console.log(prev, curr);
 		if (
 			from == from_prev &&
 			to == to_prev &&
