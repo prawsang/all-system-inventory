@@ -5,23 +5,47 @@ import Axios from "axios";
 
 class SearchField extends React.Component {
 	state = {
-		data: null
+		data: null,
+		searchedDataFrontEnd: null
 	};
 	handleSearch() {
-		const { searchUrl, searchTerm, searchName } = this.props;
-		if (searchTerm.length < 3) {
+		const { searchUrl, searchTerm, searchName, frontEnd } = this.props;
+		if (searchTerm.length < 3 && !frontEnd) {
 			this.setState({ data: null });
 		} else {
 			Axios.get(`${searchUrl}?search_col=${searchName}&search_term=${searchTerm}`).then(
 				res => {
 					this.setState({ data: res.data });
+					if (frontEnd) {
+						this.setState({ searchedDataFrontEnd: res.data.rows })
+					}
 					console.log(res);
 				}
 			);
 		}
 	}
+	handleSearchFrontEnd() {
+		const { searchTerm, searchName } = this.props;
+		const { data } = this.state;
+		if (searchTerm.length >= 3) {
+			this.setState({
+				searchedDataFrontEnd: data ? data.rows.filter(e => e[searchName].includes(searchTerm)) : null
+			});
+		}
+	}
 	handleKeyPress(e) {
+		const { frontEnd } = this.props;
 		if (e.key === "Enter") {
+			if (frontEnd) {
+				this.handleSearchFrontEnd();
+			} else {
+				this.handleSearch();
+			}
+		}
+	}
+	componentDidMount() {
+		const { frontEnd } = this.props;
+		if (frontEnd) {
 			this.handleSearch();
 		}
 	}
@@ -33,10 +57,10 @@ class SearchField extends React.Component {
 			placeholder,
 			list,
 			showResults,
-			// hideResults,
-			disabled
+			frontEnd,
+			disabled,
 		} = this.props;
-		const { data } = this.state;
+		const { data, searchedDataFrontEnd } = this.state;
 		return (
 			<div className={`field ${disabled && "is-disabled"}`} onFocus={showResults}>
 				<label className="label has-no-line-break">{label}</label>
@@ -56,7 +80,9 @@ class SearchField extends React.Component {
 					>
 						<FontAwesomeIcon icon={faSearch} />
 					</button>
-					{list(data)}
+					{list(frontEnd ? {
+						rows: searchedDataFrontEnd
+					} : data)}
 				</div>
 			</div>
 		);

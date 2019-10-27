@@ -20,6 +20,7 @@ class StaffSearch extends React.Component {
 				}}
 				placeholder="Staff Name"
 				label="ผู้เบิก"
+				frontEnd={true}
 				searchUrl="/staff/get-all"
 				searchTerm={staff}
 				searchName="staff_name"

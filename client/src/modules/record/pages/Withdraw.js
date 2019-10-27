@@ -51,12 +51,6 @@ class Withdraw extends React.Component {
 		}).then(res => history.push(`/single/withdrawal/${res.data.id}`));
 	}
 
-	getAllStaff = () => {
-		Axios.get(`/staff/get-all`).then(res => {
-			this.setState({ staffs: res.data.rows });
-			console.log(res);
-		});
-	}
 	getAllDepartments = () => {
 		Axios.get(`/department/get-all`).then(res => {
 			this.setState({ departments: res.data.rows });
@@ -66,7 +60,6 @@ class Withdraw extends React.Component {
 
 	componentDidMount() {
 		this.props.resetRecordData();
-		this.getAllStaff();
 		this.getAllDepartments();
 	}
 	componentWillUnmount() {
@@ -80,8 +73,6 @@ class Withdraw extends React.Component {
 			returnDate,
 			installDate,
 			remarks,
-			staffs,
-			selectedStaffCode,
 			selectedDepartmentCode,
 			departments
 		} = this.state;
