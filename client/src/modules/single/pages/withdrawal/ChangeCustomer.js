@@ -3,7 +3,7 @@ import Modal from "@/common/components/Modal";
 import { connect } from "react-redux";
 import {
 	setSelectedCustomer,
-	setSelectedBranches,
+	setSelectedBranch,
 	resetRecordData
 } from "@/actions/record";
 import CustomerSearch from "@/modules/record/components/search/CustomerSearch";
@@ -15,9 +15,9 @@ class ChangeCustomer extends React.Component {
 		this.props.resetRecordData();
 
 		const { branch } = this.props.data;
-		const { setSelectedCustomer, setSelectedBranches } = this.props;
+		const { setSelectedCustomer, setSelectedBranch } = this.props;
 		setSelectedCustomer(branch.customer);
-		setSelectedBranches([branch]);
+		setSelectedBranch(branch);
 	}
 
 	handleEdit() {
@@ -63,7 +63,7 @@ class ChangeCustomer extends React.Component {
 				</div>
 				<div className="field">
 					<label className="label has-mb-05">Branch Name:</label>
-					<BranchSearch single={true} disabled={!selectedCustomer} />
+					<BranchSearch disabled={!selectedCustomer} />
 				</div>
 				<div className="buttons no-mb">
 					<button className="button" onClick={() => this.handleEdit()}>
@@ -80,12 +80,12 @@ class ChangeCustomer extends React.Component {
 
 const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer,
-	selectedBranches: state.record.selectedBranches,
+	selectedBranch: state.record.selectedBranch,
 });
 
 const mapDispatchToProps = {
 	setSelectedCustomer,
-	setSelectedBranches,
+	setSelectedBranch,
 	resetRecordData
 };
 

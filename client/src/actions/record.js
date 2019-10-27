@@ -1,54 +1,54 @@
 import {
 	SET_SELECTED_CUSTOMER,
-	SET_SELECTED_BRANCHES,
-	FETCH_JOBS,
-	RESET_RECORD_DATA
+	SET_SELECTED_BRANCH,
+	SET_SELECTED_SUPPLIER,
+	SET_SELECTED_MODEL,
+	SET_SELECTED_STAFF,
+	RESET_RECORD_DATA,
 } from "@/common/action-types";
-import Axios from "axios";
 
-export const setSelectedCustomer = customer => async dispatch => {
-	if (customer) {
-		// Fetch branches
-		await Axios.get(`/customer/${customer.customer_code}/branches`)
-			.then(res => {
-				// console.log(res);
-				dispatch({
-					payload: {
-						branches: res.data.customer.branches
-					},
-					type: FETCH_JOBS
-				});
-			})
-			.catch(err => {
-				dispatch({
-					payload: {
-						jobs: []
-					},
-					type: FETCH_JOBS
-				});
-			});
-	} else {
-		dispatch({
-			payload: {
-				jobs: []
-			},
-			type: FETCH_JOBS
-		});
-	}
-	dispatch({
+export const setSelectedCustomer = customer => {
+	return {
 		payload: {
 			customer
 		},
 		type: SET_SELECTED_CUSTOMER
-	});
+	}
 };
 
-export const setSelectedBranches = branches => {
+export const setSelectedBranch = branch => {
 	return {
 		payload: {
-			branches
+			branch
 		},
-		type: SET_SELECTED_BRANCHES
+		type: SET_SELECTED_BRANCH
+	};
+};
+
+export const setSelectedSupplier = supplier => {
+	return {
+		payload: {
+			supplier
+		},
+		type: SET_SELECTED_SUPPLIER
+	};
+};
+
+export const setSelectedModel = model => {
+	return {
+		payload: {
+			model
+		},
+		type: SET_SELECTED_MODEL
+	};
+};
+
+export const setSelectedStaff = staff => {
+	return {
+		payload: {
+			staff
+		},
+		type: SET_SELECTED_STAFF
 	};
 };
 

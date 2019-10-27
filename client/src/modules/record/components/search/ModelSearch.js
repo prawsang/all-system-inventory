@@ -1,32 +1,32 @@
 import React from "react";
 import SearchField from "../SearchField";
-import { setSelectedBranch } from "@/actions/record";
+import { setSelectedModel } from "@/actions/record";
 import { connect } from "react-redux";
 
-class BranchSearch extends React.Component {
+class ModelSearch extends React.Component {
 	state = {
 		showResults: false,
-		branch: ""
+		model: ""
 	};
 
 	render() {
-		const { showResults, branch } = this.state;
+		const { showResults, model } = this.state;
 		const {
-			setSelectedBranch,
-			selectedCustomer,
+			setSelectedModel,
+			selectedSupplier,
 			disabled
 		} = this.props;
 
 		return (
 			<SearchField
-				value={branch}
+				value={model}
 				onChange={e => {
-					this.setState({ branch: e.target.value });
+					this.setState({ model: e.target.value });
 				}}
 				placeholder="Branch Name"
-				searchUrl={selectedCustomer ? `/customer/${selectedCustomer.customer_code}/branches` : ""}
-				searchTerm={branch}
-				searchName="branch_name"
+				searchUrl={selectedSupplier ? `/supplier/${selectedSupplier.supplier_code}/models` : ""}
+				searchTerm={model}
+				searchName="model_name"
 				disabled={disabled}
 				showResults={() => this.setState({ showResults: true })}
 				hideResults={() => this.setState({ showResults: false })}
@@ -40,19 +40,19 @@ class BranchSearch extends React.Component {
 								data.rows.length > 0 ? (
 									data.rows.map((e, i) => (
 										<span
-											key={e.branch_name + i}
+											key={e.model_name + i}
 											className="list-item is-clickable"
 											onClick={() => {
-												setSelectedBranch(
+												setSelectedModel(
 													{
-														name: e.branch_name,
-														branch_code: e.branch_code,
+														name: e.model_name,
+														model_code: e.model_code,
 													}
 												);
-												this.setState({ branch: e.branch_name });
+												this.setState({ model: e.model_name });
 											}}
 										>
-											{e.branch_name} ({e.branch_code})
+											{e.model_name} ({e.model_code})
 										</span>
 									))
 								) : (
@@ -72,14 +72,14 @@ class BranchSearch extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	selectedBranch: state.record.selectedBranch,
-	selectedCustomer: state.record.selectedCustomer
+	selectedModel: state.record.selectedModel,
+	selectedSupplier: state.record.selectedSupplier
 });
 const mapDispatchToProps = {
-	setSelectedBranch
+	setSelectedModel
 };
 
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(BranchSearch);
+)(ModelSearch);
