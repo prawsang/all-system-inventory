@@ -17,7 +17,7 @@ const SuppliersTable = ({ data }) => (
 							className="is-hoverable is-clickable"
 							key={i + e.supplier_code}
 							onClick={event => {
-								history.push(`/single/branch/${e.supplier_code}`);
+								history.push(`/single/supplier/${e.supplier_code}`);
 								event.stopPropagation();
 							}}
 						>
