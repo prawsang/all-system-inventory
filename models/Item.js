@@ -113,15 +113,15 @@ Item.checkStatus = (serial_no, status) => {
 
 // Filtering
 Item.filter = data => {
-	const { broken, status } = data;
-	let brokenFilter = broken
-		? broken === "true"
+	const { is_broken, status } = data;
+	let brokenFilter = is_broken
+		? is_broken === "true"
 			? `"item"."is_broken"`
 			: `NOT "item"."is_broken"`
 		: null;
 	let statusFilter = status ? `"item"."status" = :status` : null;
 
-	// TODO: Add filtering for an item's bulk, model, and supplier
+	// TODO: Add filtering for an item's type
 
 	return [brokenFilter, statusFilter].filter(e => e).join(" AND ");
 };

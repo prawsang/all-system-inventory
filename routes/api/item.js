@@ -3,6 +3,7 @@ const router = express.Router();
 const Item = require("../../models/Item");
 const Branch = require("../../models/Branch");
 const Customer = require("../../models/Customer");
+const Department = require("../../models/Department");
 const Withdrawal = require("../../models/Withdrawal");
 const Bulk = require("../../models/Bulk");
 const Model = require("../../models/Model");
@@ -40,8 +41,7 @@ router.route("/get-all").get(async (req, res) => {
 			type
 		},
 		availableCols: [
-			"serial_no",
-			"status",
+			"serial_no"
 		]
 	});
 	if (q.errors) {
@@ -71,6 +71,9 @@ router.get("/:serial_no/details", (req, res) => {
 					},{
 						model: Staff,
 						as: "staff"
+					},{
+						model: Department,
+						as: "department"
 					}
 				],
 			},
