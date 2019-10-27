@@ -2,35 +2,18 @@ import React from "react";
 import Axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { connect } from "react-redux";
+import ModelSearch from "../components/search/ModelSearch";
+import SupplierSearch from "../components/search/SupplierSearch";
 
 class AddItems extends React.Component {
 	state = {
 		bulkCode: "",
 		pricePerUnit: 0,
 		dateIn: null,
-		model: "",
-		models: [],
-		productTypes: [],
-		selectedProductTypeName: null,
 		remarks: "",
 		serialNos: [],
-		serialNo: "",
-	};
-
-	getModelsOfType = type => {
-		if (type !== "") {
-			Axios.get(`/model/get-all?type=${type}`).then(res => {
-				this.setState({ models: res.data.rows });
-				console.log(res);
-			});
-		}
-	};
-
-	getAllProductTypes = () => {
-		Axios.get(`/product-type/get-all`).then(res => {
-			this.setState({ productTypes: res.data.rows });
-			console.log(res);
-		});
+		serialNo: ""
 	};
 
 	handleAddSerial(e) {
@@ -42,14 +25,23 @@ class AddItems extends React.Component {
 	}
 
 	handleSubmit() {
-		const { model, remarks, serialNos, bulkCode, pricePerUnit, date_in } = this.state;
+		const { remarks, serialNos, bulkCode, pricePerUnit, date_in } = this.state;
+		const { selectedModel } = this.props;
+		console.log({
+			bulk_code: bulkCode,
+				price_per_unit: pricePerUnit,
+				of_model_code: selectedModel.model_code,
+				serial_no: serialNos,
+				remarks,
+				dateIn: date_in
+		})
 		Axios.request({
 			method: "POST",
-			url: "/item/add",
+			url: "/bulk/add",
 			data: {
 				bulk_code: bulkCode,
 				price_per_unit: pricePerUnit,
-				model_code: model,
+				of_model_code: selectedModel.model_code,
 				serial_no: serialNos,
 				remarks,
 				dateIn: date_in
@@ -59,26 +51,16 @@ class AddItems extends React.Component {
 
 	resetPage() {
 		this.setState({
-			type: "",
-			model: "",
-			models: [],
+			bulkCode: "",
+			pricePerUnit: 0,
+			dateIn: null,
 			remarks: "",
 			serialNos: [],
 			serialNo: ""
 		});
 	}
-
-	componentDidMount() {
-		this.getAllProductTypes();
-	}
-
 	render() {
 		const {
-			type,
-			models,
-			model,
-			productTypes,
-			selectedProductTypeName,
 			remarks,
 			serialNos,
 			serialNo,
@@ -86,6 +68,7 @@ class AddItems extends React.Component {
 			dateIn,
 			pricePerUnit
 		} = this.state;
+		const { selectedSupplier } = this.props;
 
 		return (
 			<div className="content">
@@ -121,48 +104,8 @@ class AddItems extends React.Component {
 								type="date"
 							/>
 						</div>
-						<div className="field is-flex is-ai-center">
-							<label className="label">Product Type:</label>
-							<div className="select no-mb">
-								<select
-									value={selectedProductTypeName}
-									onChange={e => {
-										this.setState({ type: e.target.value });
-										this.getModelsOfType(e.target.value);
-									}}
-								>
-									<option value="">Select Type</option>
-									{ productTypes.map((e,i) => 
-										<option value={e.product_type_name} key={e.product_type_name+i}>
-											{e.product_type_name}
-										</option>
-									) }
-								</select>
-							</div>
-						</div>
-						<div className="field is-flex is-ai-center">
-							<label className="label">Model:</label>
-							<div className={`select no-mb ${type === "" && "is-disabled"}`}>
-								<select
-									value={model}
-									onChange={e => this.setState({ model: e.target.value })}
-									disabled={type === ""}
-								>
-									<option value="">เลือกรุ่น</option>
-									{models.length > 0 ? (
-										models.map((e, i) => (
-											<option value={e.model_code} key={e.model_code + i}>
-												{e.model_name} ({e.model_code})
-											</option>
-										))
-									) : (
-										<option value="" disabled>
-											No Models
-										</option>
-									)}
-								</select>
-							</div>
-						</div>
+						<SupplierSearch />
+						<ModelSearch disabled={!selectedSupplier}/>
 						<div className="field">
 							<label className="label">Remarks:</label>
 							<textarea
@@ -221,4 +164,12 @@ class AddItems extends React.Component {
 	}
 }
 
-export default AddItems;
+const mapStateToProps = state => ({
+	selectedModel: state.record.selectedModel,
+	selectedSupplier: state.record.selectedSupplier
+});
+
+export default connect(
+	mapStateToProps,
+	null
+)(AddItems);

@@ -155,7 +155,6 @@ class Withdraw extends React.Component {
 								<CustomerSearch />
 								<BranchSearch
 									disabled={!selectedCustomer}
-									single={true}
 								/>
 							</React.Fragment>
 						)}
