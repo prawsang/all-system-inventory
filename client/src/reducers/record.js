@@ -30,17 +30,17 @@ const record = (state = initialState, action) => {
 		case SET_SELECTED_SUPPLIER:
 				return {
 					...state,
-					selectedBranch: action.payload.supplier
+					selectedSupplier: action.payload.supplier
 				};
 		case SET_SELECTED_MODEL:
 			return {
 				...state,
-				selectedBranch: action.payload.model
+				selectedModel: action.payload.model
 			};
 		case SET_SELECTED_STAFF:
 			return {
 				...state,
-				selectedBranch: action.payload.staff
+				selectedStaff: action.payload.staff
 			};
 		case RESET_RECORD_DATA:
 			return {

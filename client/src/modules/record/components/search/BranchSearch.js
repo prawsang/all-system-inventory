@@ -28,6 +28,7 @@ class BranchSearch extends React.Component {
 				searchTerm={branch}
 				searchName="branch_name"
 				disabled={disabled}
+				label="Branch"
 				showResults={() => this.setState({ showResults: true })}
 				hideResults={() => this.setState({ showResults: false })}
 				list={data => (

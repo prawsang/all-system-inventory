@@ -1,34 +1,35 @@
 import React from "react";
 import SearchField from "../SearchField";
-import { setSelectedSupplier } from "@/actions/record";
+import { setSelectedStaff } from "@/actions/record";
 import { connect } from "react-redux";
 
-class SupplierSearch extends React.Component {
+class StaffSearch extends React.Component {
 	state = {
 		showResults: false,
-		supplier: ""
+		staff: ""
 	};
 	render() {
-		const { showResults, supplier } = this.state;
-		const { selectedSupplier, setSelectedSupplier, disabled } = this.props;
+		const { showResults, staff } = this.state;
+		const { selectedStaff, setSelectedStaff, disabled } = this.props;
 		return (
 			<SearchField
-				value={selectedSupplier ? selectedSupplier.name : supplier}
+				value={selectedStaff ? selectedStaff.name : staff}
 				onChange={e => {
-					this.setState({ supplier: e.target.value });
-					setSelectedSupplier(null);
+					this.setState({ staff: e.target.value });
+					setSelectedStaff(null);
 				}}
-				placeholder="Supplier Name"
-				searchUrl="/supplier/get-all"
-				searchTerm={supplier}
-				searchName="supplier_name"
+				placeholder="Staff Name"
+				label="ผู้เบิก"
+				searchUrl="/staff/get-all"
+				searchTerm={staff}
+				searchName="staff_name"
 				disabled={disabled}
 				showResults={() => this.setState({ showResults: true })}
 				hideResults={() => this.setState({ showResults: false })}
 				list={data => (
 					<div className={`${showResults || "is-hidden"}`}>
-						<SupplierSearchList
-							suppliers={data && data.rows}
+						<StaffSearchList
+							staffs={data && data.rows}
 							hideResults={() => this.setState({ showResults: false })}
 						/>
 					</div>
@@ -38,23 +39,23 @@ class SupplierSearch extends React.Component {
 	}
 }
 
-const List = ({ suppliers, setSelectedSupplier, hideResults }) => {
+const List = ({ staffs, setSelectedStaff, hideResults }) => {
 	return (
 		<div className="panel menu dropdown" onClick={hideResults}>
-			{suppliers ? (
-				suppliers.length > 0 ? (
-					suppliers.map((e, i) => (
+			{staffs ? (
+				staffs.length > 0 ? (
+					staffs.map((e, i) => (
 						<span
-							key={e.supplier_name + i}
+							key={e.staff_name + i}
 							className="list-item is-clickable"
 							onClick={() =>
-								setSelectedSupplier({
-									supplier_code: e.supplier_code,
-									name: e.supplier_name
+								setSelectedStaff({
+									staff_code: e.staff_code,
+									name: e.staff_name
 								})
 							}
 						>
-							{e.supplier_name} ({e.supplier_code})
+							{e.staff_name} ({e.staff_code})
 						</span>
 					))
 				) : (
@@ -68,13 +69,13 @@ const List = ({ suppliers, setSelectedSupplier, hideResults }) => {
 };
 
 const mapStateToProps = state => ({
-	selectedSupplier: state.record.selectedSupplier
+	selectedStaff: state.record.selectedStaff
 });
 const mapDispatchToProps = {
-	setSelectedSupplier
+	setSelectedStaff
 };
 
-const SupplierSearchList = connect(
+const StaffSearchList = connect(
 	null,
 	mapDispatchToProps
 )(List);
@@ -82,4 +83,4 @@ const SupplierSearchList = connect(
 export default connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(SupplierSearch);
+)(StaffSearch);

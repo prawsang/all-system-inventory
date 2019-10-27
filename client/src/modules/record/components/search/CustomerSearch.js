@@ -22,6 +22,7 @@ class CustomerSearch extends React.Component {
 				searchUrl="/customer/get-all"
 				searchTerm={customer}
 				searchName="customer_name"
+				label="Customer"
 				disabled={disabled}
 				showResults={() => this.setState({ showResults: true })}
 				hideResults={() => this.setState({ showResults: false })}

@@ -1,6 +1,7 @@
 import React from "react";
 import CustomerSearch from "../components/search/CustomerSearch";
 import BranchSearch from "../components/search/BranchSearch";
+import StaffSearch from "../components/search/StaffSearch";
 import { connect } from "react-redux";
 import Axios from "axios";
 import { resetRecordData } from "@/actions/record";
@@ -30,10 +31,9 @@ class Withdraw extends React.Component {
 			returnDate,
 			installDate,
 			remarks,
-			selectedStaffCode,
 			selectedDepartmentCode
 		} = this.state;
-		const { selectedBranches } = this.props;
+		const { selectedBranches, selectedStaff } = this.props;
 		
 		await Axios.request({
 			method: "POST",
@@ -45,7 +45,7 @@ class Withdraw extends React.Component {
 				install_date: type === INSTALLATION ? installDate : null,
 				for_branch_code: selectedBranches[0].branch_code,
 				remarks,
-				created_by_staff_code: selectedStaffCode,
+				created_by_staff_code: selectedStaff.staff_code,
 				for_department_code: selectedDepartmentCode
 			}
 		}).then(res => history.push(`/single/withdrawal/${res.data.id}`));
@@ -114,21 +114,7 @@ class Withdraw extends React.Component {
 							value={date}
 							onChange={e => this.setState({ date: e.target.value })}
 						/>
-						<div className="field is-flex is-ai-center">
-							<label className="label has-mr-05 is-bold">Staff:</label>
-							<div className="select no-mb">
-								<select
-									value={selectedStaffCode}
-									onChange={e => {
-										this.setState({ selectedStaffCode: e.target.value });
-									}}
-								>
-									{ staffs.map((e,i) => 	
-										<option value={e.staff_code}>{e.staff_name} ({e.staff_code})</option>
-									)}
-								</select>
-							</div>
-						</div>
+						<StaffSearch />
 						{type === LENDING && (
 							<Field
 								type="date"
@@ -212,6 +198,7 @@ const Field = ({ value, onChange, placeholder, className, label, type, inputClas
 const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer,
 	selectedBranches: state.record.selectedBranches,
+	selectedStaff: state.record.selectedStaff
 });
 
 const mapDispatchToProps = {

@@ -28,6 +28,7 @@ class SearchField extends React.Component {
 	render() {
 		const {
 			value,
+			label,
 			onChange,
 			placeholder,
 			list,
@@ -38,6 +39,7 @@ class SearchField extends React.Component {
 		const { data } = this.state;
 		return (
 			<div className={`field ${disabled && "is-disabled"}`} onFocus={showResults}>
+				<label className="label has-no-line-break">{label}</label>
 				<div className="is-flex">
 					<input
 						className="input is-flex-fullwidth"

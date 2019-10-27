@@ -24,6 +24,7 @@ class ModelSearch extends React.Component {
 					this.setState({ model: e.target.value });
 				}}
 				placeholder="Branch Name"
+				label="Model"
 				searchUrl={selectedSupplier ? `/supplier/${selectedSupplier.supplier_code}/models` : ""}
 				searchTerm={model}
 				searchName="model_name"

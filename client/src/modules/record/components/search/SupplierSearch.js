@@ -23,6 +23,7 @@ class SupplierSearch extends React.Component {
 				searchTerm={supplier}
 				searchName="supplier_name"
 				disabled={disabled}
+				label="Supplier"
 				showResults={() => this.setState({ showResults: true })}
 				hideResults={() => this.setState({ showResults: false })}
 				list={data => (
