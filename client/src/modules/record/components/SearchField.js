@@ -75,11 +75,22 @@ class SearchField extends React.Component {
 			placeholder,
 			listItem,
 			disabled,
-			responsibleFor
+			responsibleFor,
+			setSelectedObject
 		} = this.props;
 		const { showResults, value } = this.state;
 		return (
-			<div className={`field ${disabled && "is-disabled"}`} onFocus={() => this.setState({ showResults: true })}>
+			<div 
+				className={`field ${disabled && "is-disabled"}`} 
+				onFocus={() =>{
+					this.setState({ showResults: true });
+				}} 
+				onBlur={() => {
+					if (!this.props[responsibleFor]) {
+						this.setState({ value: ""});
+					}
+				}}
+			>
 				<label className="label has-no-line-break">{label}</label>
 				<div className="is-flex">
 					<input
@@ -129,7 +140,8 @@ const mapStateToProps = state => ({
 	selectedModel: state.record.selectedModel,
 	selectedStaff: state.record.selectedStaff,
 	selectedDepartment: state.record.selectedDepartment,
-	selectedProductType: state.record.selectedProductType
+	selectedProductType: state.record.selectedProductType,
+	selectedBulk: state.record.selectedBulk
 })
 const mapDispatchToProps = {
 	setSelectedObject

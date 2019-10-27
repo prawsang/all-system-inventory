@@ -1,6 +1,7 @@
 import React from "react";
 import CustomerSearch from "../components/search/CustomerSearch";
 import BranchSearch from "../components/search/BranchSearch";
+import DepartmentSearch from "../components/search/DepartmentSearch";
 import StaffSearch from "../components/search/StaffSearch";
 import { connect } from "react-redux";
 import Axios from "axios";
@@ -18,10 +19,6 @@ class Withdraw extends React.Component {
 		returnDate: "",
 		installDate: "",
 		remarks: "",
-		staffs: [],
-		departments: [],
-		selectedDepartmentCode: null,
-		selectedStaffCode: null,
 	};
 
 	async handleSubmit() {
@@ -31,9 +28,8 @@ class Withdraw extends React.Component {
 			returnDate,
 			installDate,
 			remarks,
-			selectedDepartmentCode
 		} = this.state;
-		const { selectedBranches, selectedStaff } = this.props;
+		const { selectedBranches, selectedStaff, selectedDepartment } = this.props;
 		
 		await Axios.request({
 			method: "POST",
@@ -46,21 +42,13 @@ class Withdraw extends React.Component {
 				for_branch_code: selectedBranches[0].branch_code,
 				remarks,
 				created_by_staff_code: selectedStaff.staff_code,
-				for_department_code: selectedDepartmentCode
+				for_department_code: selectedDepartment.department_code
 			}
 		}).then(res => history.push(`/single/withdrawal/${res.data.id}`));
 	}
 
-	getAllDepartments = () => {
-		Axios.get(`/department/get-all`).then(res => {
-			this.setState({ departments: res.data.rows });
-			console.log(res);
-		});
-	}
-
 	componentDidMount() {
 		this.props.resetRecordData();
-		this.getAllDepartments();
 	}
 	componentWillUnmount() {
 		this.props.resetRecordData();
@@ -73,8 +61,6 @@ class Withdraw extends React.Component {
 			returnDate,
 			installDate,
 			remarks,
-			selectedDepartmentCode,
-			departments
 		} = this.state;
 		const { selectedCustomer } = this.props;
 
@@ -126,21 +112,7 @@ class Withdraw extends React.Component {
 						)}
 						<hr />
 						{ type === TRANSFER ? (
-							<div className="field is-flex is-ai-center">
-								<label className="label has-mr-05 is-bold">Department:</label>
-								<div className="select no-mb">
-									<select
-										value={selectedDepartmentCode}
-										onChange={e => {
-											this.setState({ selectedDepartmentCode: e.target.value });
-										}}
-									>
-										{ departments.map((e,i) => 	
-											<option value={e.department_code}>{e.department_name} ({e.department_code})</option>
-										)}
-									</select>
-								</div>
-							</div>
+							<DepartmentSearch />
 						) : (
 							<React.Fragment>
 								<CustomerSearch />
