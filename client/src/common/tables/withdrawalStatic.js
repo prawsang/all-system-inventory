@@ -10,6 +10,7 @@ const WithdrawalsTable = ({ data }) => (
 				<td>Type</td>
 				<td>Branch</td>
 				<td>Customer</td>
+				<td>Department</td>
 				<td className="has-no-line-break">ผู้เบิก</td>
 				<td>Date</td>
 				<td className="has-no-line-break">Install Date</td>
@@ -32,10 +33,13 @@ const WithdrawalsTable = ({ data }) => (
 							<td className="has-no-line-break">{e.id}</td>
 							<td className="has-no-line-break">{e.type}</td>
 							<td className="has-no-line-break">
-								{e.branch.name}{" "}({e.branch.branch_code})
+								{e.type !== "TRANSFER" ? `${e.branch.name} (${e.branch.branch_code})` : "N/A"}
 							</td>
 							<td className="has-no-line-break">
-								{e.branch.customer.name} ({e.branch.customer.customer_code})
+								{e.type !== "TRANSFER" ? `${e.branch.customer.name} (${e.branch.customer.customer_code})` : "N/A"}
+							</td>
+							<td className="has-no-line-break">
+								{e.type === "TRANSFER" ? `${e.department.name} (${e.department.department_code})` : "N/A"}
 							</td>
 							<td className="has-no-line-break">{e.staff.name}</td>
 							<td className="has-no-line-break">{formatDate(e.date)}</td>
