@@ -1,18 +1,19 @@
 import React from "react";
 import Modal from "@/common/components/Modal";
 import Axios from "axios";
-import SearchSelect from "@/common/components/SearchSelect";
+import { connect } from "react-redux";
+import { setSelectedObject } from "@/actions/record";
+import BulkSearch from "@/modules/record/components/search/BulkSearch";
 
-class Edititem extends React.Component {
+class EditItem extends React.Component {
 	state = {
 		remarks: "",
 		isBroken: false,
-		selectedBulkCode: null,
-		bulks: []
 	};
 
 	edit() {
-		const { remarks, isBroken, selectedBulkCode } = this.state;
+		const { remarks, isBroken } = this.state;
+		const { selectedBulk } = this.props;
 		const { item } = this.props;
 		Axios.request({
 			method: "PUT",
@@ -20,44 +21,32 @@ class Edititem extends React.Component {
 			data: {
 				is_broken: isBroken,
 				remarks,
-				from_bulk_code: selectedBulkCode
+				from_bulk_code: selectedBulk.name
 			}
 		}).then(res => window.location.reload());
 	}
 
-	getAllBulkCodes = () => {
-		Axios.get(`/bulk/get-all`).then(res => {
-			this.setState({ bulks: res.data.rows });
-		})
-	}
-
 	componentDidMount() {
 		const { item } = this.props;
-		this.getAllBulkCodes();
+		this.props.setSelectedObject({
+			selectedBulk: {
+				name: item.from_bulk_code
+			}
+		})
 		this.setState({
 			remarks: item.remarks,
 			isBroken: item.is_broken,
-			selectedBulkCode: item.from_bulk_code
 		});
 	}
 
 	render() {
-		const { remarks, isBroken, selectedBulkCode, bulks } = this.state;
+		const { remarks, isBroken } = this.state;
 		const { close, active } = this.props;
 
 		return (
 			<Modal active={active} close={close} title="Edit Item">
 				<div className="form">
-					<div className="field">
-						<label className="label">Bulk Code</label>
-						<div className="select">
-							<select value={selectedBulkCode} onChange={e => this.setState({ selectedBulkCode: e.target.value })}>
-								{ bulks.map((e,i) => (
-									<option value={e.bulk_code}>{e.bulk_code}</option>
-								))}
-							</select>
-						</div>
-					</div>
+					<BulkSearch />
 					<div className="field">
 						<label className="label">Broken</label>
 						<div className="select">
@@ -85,4 +74,15 @@ class Edititem extends React.Component {
 	}
 }
 
-export default Edititem;
+const mapStateToProps = state => ({
+	selectedBulk: state.record.selectedBulk
+})
+
+const mapDispatchToProps = {
+	setSelectedObject
+}
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(EditItem);

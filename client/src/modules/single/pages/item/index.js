@@ -73,7 +73,7 @@ class Item extends React.Component {
 								<hr />
 								<div>
 									<h5 className="no-mt has-mb-10">Reserved By</h5>
-									{data.item.reserved_by_branch && (
+									{data.item.reserved_branch_code && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Branch:</label>
 											<span
@@ -81,17 +81,17 @@ class Item extends React.Component {
 												onClick={() =>
 													history.push(
 														`/single/branch/${
-															data.item.reserved_by_branch.id
+															data.item.reserve_branch.branch_code
 														}`
 													)
 												}
 											>
-												{data.item.reserved_by_branch.name}{" "}
-												{data.item.reserved_by_branch.branch_code}
+												{data.item.reserve_branch.name}{" "}
+												({data.item.reserve_branch.branch_code})
 											</span>
 										</div>
 									)}
-									{!data.item.reserved_by_branch && (
+									{!data.item.reserved_branch_code && (
 										<span>This item is not reserved.</span>
 									)}
 								</div>
