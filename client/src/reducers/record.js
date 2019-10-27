@@ -10,7 +10,8 @@ const initialState = {
 	selectedModel: null,
 	selectedStaff: null,
 	selectedDepartment: null,
-	selectedProductType: null
+	selectedProductType: null,
+	selectedBulk: null
 };
 
 const record = (state = initialState, action) => {
@@ -28,7 +29,8 @@ const record = (state = initialState, action) => {
 				selectedModel: null,
 				selectedStaff: null,
 				selectedDepartment: null,
-				selectedProductType: null
+				selectedProductType: null,
+				selectedBulk: null
 			};
 		default:
 			return state;
