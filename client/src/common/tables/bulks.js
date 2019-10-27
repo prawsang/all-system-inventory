@@ -19,7 +19,7 @@ const BulksTable = ({ data }) => (
 							className="is-hoverable is-clickable"
 							key={i + e.bulk_code}
 							onClick={event => {
-								history.push(`/single/branch/${e.bulk_code}`);
+								history.push(`/single/bulk/${e.bulk_code}`);
 								event.stopPropagation();
 							}}
 						>
