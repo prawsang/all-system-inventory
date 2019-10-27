@@ -2,6 +2,9 @@ import React from "react";
 import Modal from "@/common/components/Modal";
 import Field from "../../components/Field";
 import Axios from "axios";
+import StaffSearch from "@/modules/record/components/search/StaffSearch";
+import { connect } from "react-redux";
+import { setSelectedObject } from "@/actions/record";
 
 class EditModal extends React.Component {
 	state = {
@@ -9,16 +12,7 @@ class EditModal extends React.Component {
 		remarks: "",
 		installDate: "",
 		returnDate: "",
-		staffs: [],
-		selectedStaffCode: null
 	};
-
-	getAllStaff = () => {
-		Axios.get(`/staff/get-all`).then(res => {
-			this.setState({ staffs: res.data.rows });
-			console.log(res);
-		});
-	}
 
 	componentDidMount() {
 		const {
@@ -28,9 +22,10 @@ class EditModal extends React.Component {
 			remarks,
 			install_date,
 			return_by,
-			staff_name
+			staff
 		} = this.props.data;
-		this.getAllStaff();
+		const { setSelectedObject } = this.props;
+		console.log(staff);
 		this.setState({
 			date: date ? date : "",
 			poNumber: po_number ? po_number : "",
@@ -38,13 +33,18 @@ class EditModal extends React.Component {
 			remarks: remarks ? remarks : "",
 			installDate: install_date ? install_date : "",
 			returnDate: return_by ? return_by : "",
-			staffName: staff_name ? staff_name : ""
 		});
+		setSelectedObject({
+			selectedStaff: {
+				staff_code: staff.staff_code,
+				name: staff.name
+			}
+		})
 	}
 
 	handleEdit() {
 		const { data } = this.props;
-		const { date, installDate, returnDate, staffName, selectedStaffCode } = this.state;
+		const { date, installDate, returnDate, selectedStaff } = this.state;
 		Axios.request({
 			method: "PUT",
 			url: `/withdrawal/${data.id}/edit`,
@@ -55,14 +55,14 @@ class EditModal extends React.Component {
 				return_by: returnDate,
 				date,
 				install_date: installDate,
-				created_by_staff_code: selectedStaffCode
+				created_by_staff_code: selectedStaff.staff_code
 			}
 		}).then(res => window.location.reload());
 	}
 
 	render() {
 		const { active, close, data } = this.props;
-		const { date, installDate, returnDate, staffs, selectedStaffCode } = this.state;
+		const { date, installDate, returnDate } = this.state;
 		return (
 			<Modal active={active} close={close} title="แก้ไขใบเบิก">
 				<Field editable={false} value={data.id} label="หมายเลขใบเบิก" />
@@ -74,21 +74,7 @@ class EditModal extends React.Component {
 					value={date}
 					onChange={e => this.setState({ date: e.target.value })}
 				/>
-				<div className="field is-flex is-ai-center">
-					<label className="label has-mr-05 is-bold">Staff:</label>
-					<div className="select no-mb">
-						<select
-							value={selectedStaffCode}
-							onChange={e => {
-								this.setState({ selectedStaffCode: e.target.value });
-							}}
-						>
-							{ staffs.map((e,i) => 	
-								<option value={e.staff_code}>{e.staff_name} ({e.staff_code})</option>
-							)}
-						</select>
-					</div>
-				</div>
+				<StaffSearch />
 				{data.type === "LENDING" && (
 					<Field
 						editable={true}
@@ -120,4 +106,15 @@ class EditModal extends React.Component {
 	}
 }
 
-export default EditModal;
+const mapStateToProps = state => ({
+	selectedStaff: state.record.selectedStaff
+})
+
+const mapDispatchToProps = {
+	setSelectedObject
+}
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(EditModal);

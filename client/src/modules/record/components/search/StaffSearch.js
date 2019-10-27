@@ -1,6 +1,6 @@
 import React from "react";
 import SearchField from "../SearchField";
-import { setSelectedStaff } from "@/actions/record";
+import { setSelectedObject } from "@/actions/record";
 import { connect } from "react-redux";
 
 class StaffSearch extends React.Component {
@@ -10,13 +10,15 @@ class StaffSearch extends React.Component {
 	};
 	render() {
 		const { showResults, staff } = this.state;
-		const { selectedStaff, setSelectedStaff, disabled } = this.props;
+		const { selectedStaff, setSelectedObject, disabled } = this.props;
 		return (
 			<SearchField
 				value={selectedStaff ? selectedStaff.name : staff}
 				onChange={e => {
 					this.setState({ staff: e.target.value });
-					setSelectedStaff(null);
+					setSelectedObject({
+						selectedStaff: null
+					});
 				}}
 				placeholder="Staff Name"
 				label="ผู้เบิก"
@@ -40,7 +42,7 @@ class StaffSearch extends React.Component {
 	}
 }
 
-const List = ({ staffs, setSelectedStaff, hideResults }) => {
+const List = ({ staffs, setSelectedObject, hideResults }) => {
 	return (
 		<div className="panel menu dropdown" onClick={hideResults}>
 			{staffs ? (
@@ -50,7 +52,7 @@ const List = ({ staffs, setSelectedStaff, hideResults }) => {
 							key={e.staff_name + i}
 							className="list-item is-clickable"
 							onClick={() =>
-								setSelectedStaff({
+								setSelectedObject({
 									staff_code: e.staff_code,
 									name: e.staff_name
 								})
@@ -73,7 +75,7 @@ const mapStateToProps = state => ({
 	selectedStaff: state.record.selectedStaff
 });
 const mapDispatchToProps = {
-	setSelectedStaff
+	setSelectedObject
 };
 
 const StaffSearchList = connect(

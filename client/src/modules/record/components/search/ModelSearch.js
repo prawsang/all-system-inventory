@@ -1,6 +1,6 @@
 import React from "react";
 import SearchField from "../SearchField";
-import { setSelectedModel } from "@/actions/record";
+import { setSelectedObject } from "@/actions/record";
 import { connect } from "react-redux";
 
 class ModelSearch extends React.Component {
@@ -12,7 +12,7 @@ class ModelSearch extends React.Component {
 	render() {
 		const { showResults, model } = this.state;
 		const {
-			setSelectedModel,
+			setSelectedObject,
 			selectedSupplier,
 			disabled
 		} = this.props;
@@ -22,6 +22,7 @@ class ModelSearch extends React.Component {
 				value={model}
 				onChange={e => {
 					this.setState({ model: e.target.value });
+					setSelectedObject({ selectedModel: null });
 				}}
 				placeholder="Branch Name"
 				label="Model"
@@ -44,12 +45,12 @@ class ModelSearch extends React.Component {
 											key={e.model_name + i}
 											className="list-item is-clickable"
 											onClick={() => {
-												setSelectedModel(
-													{
+												setSelectedObject({ 
+													selectedModel: {
 														name: e.model_name,
 														model_code: e.model_code,
 													}
-												);
+												});
 												this.setState({ model: e.model_name });
 											}}
 										>
@@ -77,7 +78,7 @@ const mapStateToProps = state => ({
 	selectedSupplier: state.record.selectedSupplier
 });
 const mapDispatchToProps = {
-	setSelectedModel
+	setSelectedObject
 };
 
 export default connect(

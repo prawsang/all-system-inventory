@@ -1,6 +1,6 @@
 import React from "react";
 import SearchField from "../SearchField";
-import { setSelectedCustomer } from "@/actions/record";
+import { setSelectedObject } from "@/actions/record";
 import { connect } from "react-redux";
 
 class CustomerSearch extends React.Component {
@@ -10,13 +10,13 @@ class CustomerSearch extends React.Component {
 	};
 	render() {
 		const { showResults, customer } = this.state;
-		const { selectedCustomer, setSelectedCustomer, disabled } = this.props;
+		const { selectedCustomer, setSelectedObject, disabled } = this.props;
 		return (
 			<SearchField
 				value={selectedCustomer ? selectedCustomer.name : customer}
 				onChange={e => {
 					this.setState({ customer: e.target.value });
-					setSelectedCustomer(null);
+					setSelectedObject({ selectedCustomer: null });
 				}}
 				placeholder="Customer Name"
 				searchUrl="/customer/get-all"
@@ -39,7 +39,7 @@ class CustomerSearch extends React.Component {
 	}
 }
 
-const List = ({ customers, setSelectedCustomer, hideResults }) => {
+const List = ({ customers, setSelectedObject, hideResults }) => {
 	return (
 		<div className="panel menu dropdown" onClick={hideResults}>
 			{customers ? (
@@ -49,10 +49,10 @@ const List = ({ customers, setSelectedCustomer, hideResults }) => {
 							key={e.customer_name + i}
 							className="list-item is-clickable"
 							onClick={() =>
-								setSelectedCustomer({
+								setSelectedObject({ selectedCustomer: {
 									customer_code: e.customer_code,
 									name: e.customer_name
-								})
+								}})
 							}
 						>
 							{e.customer_name} ({e.customer_code})
@@ -72,7 +72,7 @@ const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer
 });
 const mapDispatchToProps = {
-	setSelectedCustomer
+	setSelectedObject
 };
 
 const CustomerSearchList = connect(

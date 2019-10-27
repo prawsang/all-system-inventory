@@ -1,6 +1,6 @@
 import React from "react";
 import SearchField from "../SearchField";
-import { setSelectedSupplier } from "@/actions/record";
+import { setSelectedObject } from "@/actions/record";
 import { connect } from "react-redux";
 
 class SupplierSearch extends React.Component {
@@ -10,13 +10,15 @@ class SupplierSearch extends React.Component {
 	};
 	render() {
 		const { showResults, supplier } = this.state;
-		const { selectedSupplier, setSelectedSupplier, disabled } = this.props;
+		const { selectedSupplier, setSelectedObject, disabled } = this.props;
 		return (
 			<SearchField
 				value={selectedSupplier ? selectedSupplier.name : supplier}
 				onChange={e => {
 					this.setState({ supplier: e.target.value });
-					setSelectedSupplier(null);
+					setSelectedObject({
+						selectedSupplier: null
+					});
 				}}
 				placeholder="Supplier Name"
 				searchUrl="/supplier/get-all"
@@ -39,7 +41,7 @@ class SupplierSearch extends React.Component {
 	}
 }
 
-const List = ({ suppliers, setSelectedSupplier, hideResults }) => {
+const List = ({ suppliers, setSelectedObject, hideResults }) => {
 	return (
 		<div className="panel menu dropdown" onClick={hideResults}>
 			{suppliers ? (
@@ -49,10 +51,10 @@ const List = ({ suppliers, setSelectedSupplier, hideResults }) => {
 							key={e.supplier_name + i}
 							className="list-item is-clickable"
 							onClick={() =>
-								setSelectedSupplier({
+								setSelectedObject({ selectedSupplier: {
 									supplier_code: e.supplier_code,
 									name: e.supplier_name
-								})
+								}})
 							}
 						>
 							{e.supplier_name} ({e.supplier_code})
@@ -72,7 +74,7 @@ const mapStateToProps = state => ({
 	selectedSupplier: state.record.selectedSupplier
 });
 const mapDispatchToProps = {
-	setSelectedSupplier
+	setSelectedObject
 };
 
 const SupplierSearchList = connect(

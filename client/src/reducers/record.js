@@ -1,9 +1,5 @@
 import {
-	SET_SELECTED_CUSTOMER,
-	SET_SELECTED_BRANCH,
-	SET_SELECTED_SUPPLIER,
-	SET_SELECTED_MODEL,
-	SET_SELECTED_STAFF,
+	SET_SELECTED_OBJECT,
 	RESET_RECORD_DATA,
 } from "@/common/action-types";
 
@@ -12,35 +8,17 @@ const initialState = {
 	selectedBranch: null,
 	selectedSupplier: null,
 	selectedModel: null,
-	selectedStaff: null
+	selectedStaff: null,
+	selectedDepartment: null,
+	selectedProductType: null
 };
 
 const record = (state = initialState, action) => {
 	switch (action.type) {
-		case SET_SELECTED_CUSTOMER:
+		case SET_SELECTED_OBJECT:
 			return {
 				...state,
-				selectedCustomer: action.payload.customer
-			};
-		case SET_SELECTED_BRANCH:
-			return {
-				...state,
-				selectedBranch: action.payload.branch
-			};
-		case SET_SELECTED_SUPPLIER:
-				return {
-					...state,
-					selectedSupplier: action.payload.supplier
-				};
-		case SET_SELECTED_MODEL:
-			return {
-				...state,
-				selectedModel: action.payload.model
-			};
-		case SET_SELECTED_STAFF:
-			return {
-				...state,
-				selectedStaff: action.payload.staff
+				...action.payload
 			};
 		case RESET_RECORD_DATA:
 			return {
@@ -48,7 +26,9 @@ const record = (state = initialState, action) => {
 				selectedBranch: null,
 				selectedSupplier: null,
 				selectedModel: null,
-				selectedStaff: null
+				selectedStaff: null,
+				selectedDepartment: null,
+				selectedProductType: null
 			};
 		default:
 			return state;

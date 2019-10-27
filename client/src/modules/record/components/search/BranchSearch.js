@@ -1,6 +1,6 @@
 import React from "react";
 import SearchField from "../SearchField";
-import { setSelectedBranch } from "@/actions/record";
+import { setSelectedObject } from "@/actions/record";
 import { connect } from "react-redux";
 
 class BranchSearch extends React.Component {
@@ -12,7 +12,7 @@ class BranchSearch extends React.Component {
 	render() {
 		const { showResults, branch } = this.state;
 		const {
-			setSelectedBranch,
+			setSelectedObject,
 			selectedCustomer,
 			disabled
 		} = this.props;
@@ -22,6 +22,9 @@ class BranchSearch extends React.Component {
 				value={branch}
 				onChange={e => {
 					this.setState({ branch: e.target.value });
+					setSelectedObject({
+						selectedBranch: null
+					})
 				}}
 				placeholder="Branch Name"
 				searchUrl={selectedCustomer ? `/customer/${selectedCustomer.customer_code}/branches` : ""}
@@ -44,12 +47,12 @@ class BranchSearch extends React.Component {
 											key={e.branch_name + i}
 											className="list-item is-clickable"
 											onClick={() => {
-												setSelectedBranch(
-													{
+												setSelectedObject({
+													selectedBranch: {
 														name: e.branch_name,
 														branch_code: e.branch_code,
 													}
-												);
+												});
 												this.setState({ branch: e.branch_name });
 											}}
 										>
@@ -77,7 +80,7 @@ const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer
 });
 const mapDispatchToProps = {
-	setSelectedBranch
+	setSelectedObject
 };
 
 export default connect(

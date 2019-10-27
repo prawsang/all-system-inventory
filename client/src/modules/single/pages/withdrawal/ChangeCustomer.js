@@ -2,8 +2,7 @@ import React from "react";
 import Modal from "@/common/components/Modal";
 import { connect } from "react-redux";
 import {
-	setSelectedCustomer,
-	setSelectedBranch,
+	setSelectedObject,
 	resetRecordData
 } from "@/actions/record";
 import CustomerSearch from "@/modules/record/components/search/CustomerSearch";
@@ -12,16 +11,16 @@ import Axios from "axios";
 
 class ChangeCustomer extends React.Component {
 	componentDidMount() {
-		this.props.resetRecordData();
-
 		const { branch } = this.props.data;
-		const { setSelectedCustomer, setSelectedBranch } = this.props;
-		setSelectedCustomer(branch.customer);
-		setSelectedBranch(branch);
+		const { setSelectedObject } = this.props;
+		setSelectedObject({
+			selectedCustomer: branch.customer,
+			selectedBranch: branch
+		});
 	}
 
 	handleEdit() {
-		const { data, selectedBranches } = this.props;
+		const { data, selectedBranch } = this.props;
 		const {
 			type,
 			return_by,
@@ -39,7 +38,7 @@ class ChangeCustomer extends React.Component {
 				return_by: return_by,
 				date: date,
 				install_date: install_date,
-				for_branch_code: selectedBranches[0].branch_code,
+				for_branch_code: selectedBranch.branch_code,
 				for_department_code,
 			}
 		}).then(res => window.location.reload());
@@ -84,8 +83,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-	setSelectedCustomer,
-	setSelectedBranch,
+	setSelectedObject,
 	resetRecordData
 };
 
