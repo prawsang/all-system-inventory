@@ -20,6 +20,7 @@ class EditBranch extends React.Component {
 			data: {
 				name,
 				address,
+				owner_customer_code: branch.owner_customer_code
 			}
 		}).then(res => window.location.reload());
 	}
