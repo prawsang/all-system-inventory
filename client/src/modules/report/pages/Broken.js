@@ -6,7 +6,7 @@ import BrokenTable from "@/common/tables/items";
 const Broken = () => (
 	<FetchDataFromServer
 		url="/item/get-all"
-		params="is-broken=true"
+		params="is_broken=true"
 		render={data => (
 			<Table
 				data={data}

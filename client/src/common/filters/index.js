@@ -6,6 +6,7 @@ import { Select, Date, Checkbox } from "./form";
 import Filter from "./filter";
 import moment from "moment";
 import { dashedDate } from "../date";
+import ProductTypeFilter from "./ProductTypeFilter";
 
 class Filters extends React.Component {
 	toggleBooleanFilter(value) {
@@ -69,38 +70,7 @@ class Filters extends React.Component {
 						onChange={() => setFilters({ type: this.toggleFilter(type) })}
 						value={type === null ? false : true}
 						render={value => (
-							<Select
-								disabled={!value}
-								label="Item Type"
-								value={type}
-								onChange={e => setFilters({ type: e.target.value })}
-								options={[
-									{
-										name: "POS",
-										value: "POS"
-									},
-									{
-										name: "Scanners",
-										value: "SCANNER"
-									},
-									{
-										name: "Printers",
-										value: "PRINTER"
-									},
-									{
-										name: "Monitors",
-										value: "MONITOR"
-									},
-									{
-										name: "Keyboards",
-										value: "KEYBOARD"
-									},
-									{
-										name: "Cash Drawers",
-										value: "CASH_DRAWER"
-									}
-								]}
-							/>
+							<ProductTypeFilter disabled={!value} />
 						)}
 					/>
 				)}
