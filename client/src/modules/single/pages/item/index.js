@@ -41,7 +41,18 @@ class Item extends React.Component {
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Bulk Code:</label>
-										<span>{data.item.bulk.bulk_code}</span>
+										<span
+											className="accent is-clickable"
+											onClick={() =>
+												history.push(
+													`/single/bulk/${
+														data.item.bulk.bulk_code
+													}`
+												)
+											}
+										>
+											{data.item.bulk.bulk_code}
+										</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Model Name:</label>
