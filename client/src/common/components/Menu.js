@@ -110,8 +110,9 @@ class Menu extends React.Component {
 						</div>
 						<ul className={`panel menu dropright ${showEditMenu || "is-hidden"}`}>
 							<Link link="/report/customers">ข้อมูลลูกค้า</Link>
-							<Link link="/report/bulks">ล็อตสินค้าทั้งหมด</Link>
 							<Link link="/report/suppliers">Supplier ทั้งหมด</Link>
+							<Link link="/report/bulks">ล็อตสินค้าทั้งหมด</Link>
+							<Link link="/report/product-types">ประเภทสินค้าทั้งหมด</Link>
 							<Link link="/report/departments">แผนกทั้งหมด</Link>
 							<Link link="/report/staff">พนักงานทั้งหมด</Link>
 						</ul>
