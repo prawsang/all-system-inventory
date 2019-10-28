@@ -34,4 +34,17 @@ router.get("/get-all", async (req, res) => {
 	}
 });
 
+router.get("/:supplier_code/details", (req, res) => {
+	const { supplier_code } = req.params;
+	Supplier.findOne({
+		where: {
+			supplier_code: {
+				[Op.eq]: supplier_code
+			}
+		}
+	})
+		.then(supplier => res.send({ supplier }))
+		.catch(err => res.status(500).json({ errors: err }));
+});
+
 module.exports = router;
