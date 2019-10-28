@@ -51,10 +51,10 @@ class NewModel extends React.Component {
 		return (
 			<div>
 				<div className="field">
-					<label className="label">Model Code</label>
+					<label className="label">Product Type</label>
 					<input
 						className="input is-fullwidth"
-						placeholder="Model Code"
+						placeholder="Product Type Name"
 						value={typeName}
 						onChange={e => this.setState({ typeName: e.target.value })}
 					/>

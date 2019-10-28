@@ -1,6 +1,6 @@
 import React from "react";
 import TableWithNew from "@/common/components/TableWithNew";
-import CustomersTable from "../tables/Customers";
+import CustomersTable from "@/common/tables/customers";
 import NewCustomer from "../modals/NewCustomer";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
