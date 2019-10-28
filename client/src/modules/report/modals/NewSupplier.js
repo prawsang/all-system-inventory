@@ -13,7 +13,7 @@ class NewSupplier extends React.Component {
 			method: "POST",
 			url: "/supplier/add",
 			data: {
-				customer_code: supplierCode,
+				supplier_code: supplierCode,
 				name: supplierName
 			}
 		}).then(res => history.push(`/single/supplier/${supplierCode}`));

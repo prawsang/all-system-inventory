@@ -4,6 +4,7 @@ import Branch from "./pages/branch/";
 import Item from "./pages/item/";
 import Customer from "./pages/customer/";
 import Withdrawal from "./pages/withdrawal/";
+import Supplier from "./pages/supplier";
 import AddItemsToWithdrawal from "./pages/withdrawal/addItems";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
@@ -15,6 +16,7 @@ class Single extends React.Component {
 					<Route path="/single/branch/:branch_id" component={BranchPage} />
 					<Route path="/single/item/:serial_no" component={ItemPage} />
 					<Route path="/single/customer/:customer_code" component={CustomerPage} />
+					<Route path="/single/supplier/:supplier_code" component={SupplierPage} />
 					<Route
 						path="/single/withdrawal/:id/add-items"
 						component={AddItemsToWithdrawal}
@@ -62,6 +64,16 @@ const WithdrawalPage = props => {
 		<FetchDataFromServer
 			url={`/withdrawal/${id}/details`}
 			render={data => <Withdrawal data={data} id={id} />}
+		/>
+	);
+};
+
+const SupplierPage = props => {
+	const { supplier_code } = props.match.params;
+	return (
+		<FetchDataFromServer
+			url={`/supplier/${supplier_code}/details`}
+			render={data => <Supplier data={data} />}
 		/>
 	);
 };
