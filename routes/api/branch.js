@@ -55,7 +55,7 @@ router.get("/:branch_code/items/", async (req, res) => {
 		return_to,
 		return_from
 	});
-	// TODO: Join with bulk, model and supplier tables - DONE
+	
 	const q = await query({
 		limit,
 		page,

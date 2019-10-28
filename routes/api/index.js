@@ -13,6 +13,4 @@ router.use("/staff", require("./staff"));
 router.use("/department", require("./department"));
 router.use("/bulk", require("./bulk"));
 
-// TODO: Import bulk, supplier, and product type routers
-
 module.exports = router;
