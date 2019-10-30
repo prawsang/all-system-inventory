@@ -34,13 +34,4 @@ Bulk.getColumns = `
     "bulk"."of_model_code"
 `;
 
-Bulk.belongsTo(Model, {
-    foreignKey: "of_model_code",
-	as: "model"
-});
-Model.hasMany(Bulk, {
-	foreignKey: "of_model_code",
-	as: "bulks"
-});
-
 module.exports = Bulk;

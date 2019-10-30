@@ -2,8 +2,11 @@ const express = require("express");
 const router = express.Router();
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const Customer = require("../../models/Customer");
-const Branch = require("../../models/Branch");
+const models = require("../../models/");
+const {
+	Customer,
+	Branch
+} = models;
 const { check, validationResult } = require("express-validator/check");
 const { query } = require("../../utils/query");
 

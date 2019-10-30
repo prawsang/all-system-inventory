@@ -3,8 +3,13 @@
 const express = require("express");
 const router = express.Router();
 const Sequelize = require("sequelize");
-const Staff = require("../../models/Staff");
-const Department = require("../../models/Department");
+const Op = Sequelize.Op;
+const models = require("../../models/");
+const {
+	Staff,
+	Department,
+	Withdrawal
+} = models;
 const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 

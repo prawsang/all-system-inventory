@@ -1,12 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const Item = require("../../models/Item");
-const Branch = require("../../models/Branch");
-const Customer = require("../../models/Customer");
-const Department = require("../../models/Department");
-const Withdrawal = require("../../models/Withdrawal");
-const Staff = require("../../models/Staff");
-const ItemWithdrawal = require("../../models/junction/ItemWithdrawal");
+const models = require("../../models/");
+const {
+	Item,
+	Branch,
+	Customer,
+	Department,
+	Withdrawal,
+	Staff,
+	ItemWithdrawal
+} = models;
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../../config/database");

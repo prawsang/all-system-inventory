@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Bulk = require("./Bulk");
 const Branch = require("./Branch");
+const Return = require("./Return");
 const Op = Sequelize.Op;
 
 const Item = db.define(
@@ -126,17 +127,5 @@ Item.filter = data => {
 	return [brokenFilter, statusFilter].filter(e => e).join(" AND ");
 };
 
-// Associations
-Item.belongsTo(Branch, {
-	foreignKey: "reserved_branch_code",
-	as: "reserve_branch"
-});
-Item.belongsTo(Bulk, {
-	foreignKey: "from_bulk_code",
-	as: "bulk"
-});
-Bulk.hasMany(Item, {
-	foreignKey: "from_bulk_code"
-})
 
 module.exports = Item;

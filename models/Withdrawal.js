@@ -200,46 +200,4 @@ Withdrawal.filter = data => {
 		.join(" AND ");
 };
 
-// Associations
-
-Withdrawal.belongsTo(Branch, {
-	foreignKey: "for_branch_code",
-	as: "branch"
-});
-Branch.hasMany(Withdrawal, {
-	foreignKey: "for_branch_code",
-	as: "withdrawals"
-});
-
-Withdrawal.belongsTo(Department, {
-	foreignKey: "for_department_code",
-	as: "department"
-});
-Department.hasMany(Withdrawal, {
-	foreignKey: "for_department_code",
-	as: "withdrawals"
-});
-
-Withdrawal.belongsTo(Staff, {
-	foreignKey: "created_by_staff_code",
-	as: "staff"
-});
-Staff.hasMany(Withdrawal, {
-	foreignKey: "created_by_staff_code",
-	as: "withdrawals"
-});
-
-Withdrawal.belongsToMany(Item, {
-	through: "withdrawal_has_item",
-	foreignKey: "withdrawal_id",
-	otherKey: "serial_no",
-	as: "items"
-});
-Item.belongsToMany(Withdrawal, {
-	through: "withdrawal_has_item",
-	foreignKey: "serial_no",
-	otherKey: "withdrawal_id",
-	as: "withdrawals"
-});
-
 module.exports = Withdrawal;

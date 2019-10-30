@@ -64,19 +64,5 @@ Model.getColumns = `"model"."model_code" AS "model_code",
 	"model"."depth",
 	"model"."from_supplier_code",
 	"model"."is_product_type_name"`;
-	
-Model.belongsTo(ProductType, {
-	foreignKey: "is_product_type_name",
-	as: "product_type"
-});
-	
-Model.belongsTo(Supplier, {
-	foreignKey: "from_supplier_code",
-	as: "supplier"
-});
-Supplier.hasMany(Model, {
-	foreignKey: "from_supplier_code",
-	as: "models"
-});
 
 module.exports = Model;

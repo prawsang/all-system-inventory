@@ -35,13 +35,4 @@ Branch.getColumns = `
 	"branch"."address"
 `;
 
-Branch.belongsTo(Customer, {
-	foreignKey: "owner_customer_code",
-	as: "customer"
-});
-Customer.hasMany(Branch, {
-	foreignKey: "owner_customer_code",
-	as: "branches"
-});
-
 module.exports = Branch;

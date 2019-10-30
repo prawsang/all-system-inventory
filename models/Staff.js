@@ -35,13 +35,4 @@ Staff.getColumns = `
 	"staff"."works_for_dep_code" AS "staff_department"
 `;
 
-Staff.belongsTo(Department, {
-	foreignKey: "works_for_dep_code",
-	as: "department"
-});
-Department.hasMany(Staff, {
-	foreignKey: "works_for_dep_code",
-	as: "staffs"
-});
-
 module.exports = Staff;

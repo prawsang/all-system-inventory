@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const Item = require("../../models/Item");
-const ItemWithdrawal = require("../../models/junction/ItemWithdrawal");
-const Withdrawal = require("../../models/Withdrawal");
+const models = require("../../models/");
+const {
+	Item,
+	Return,
+	Withdrawal
+} = models
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../../config/database");

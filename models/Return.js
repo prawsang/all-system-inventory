@@ -3,7 +3,7 @@ const db = require("../config/database");
 const Item = require("./item");
 
 const Return = db.define(
-	"return",
+	"return_history",
 	{
 		serial_no: {
 			type: Sequelize.STRING,
@@ -13,8 +13,8 @@ const Return = db.define(
 				notEmpty: true
 			}
 		},
-		return_date: {
-			type: Sequelize.DATE,
+		return_datetime: {
+			type: Sequelize.NOW,
 			primaryKey: true,
 			allowNull: false
 		}
@@ -22,11 +22,8 @@ const Return = db.define(
 	{
 		freezeTableName: "return_history"
 	}
-);
+)
 
-Return.belongsTo(Item, {
-	foreignKey: "serial_no",
-	as: "item"
-});
+Return.getColumns = `"return_history"."return_datetime"`;
 
 module.exports = Return;

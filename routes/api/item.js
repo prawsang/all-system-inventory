@@ -1,16 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const Item = require("../../models/Item");
-const Branch = require("../../models/Branch");
-const Customer = require("../../models/Customer");
-const Department = require("../../models/Department");
-const Withdrawal = require("../../models/Withdrawal");
-const Bulk = require("../../models/Bulk");
-const Model = require("../../models/Model");
-const Staff = require("../../models/Staff");
-const ProductType = require("../../models/ProductType");
-const Supplier = require("../../models/Supplier");
-const Return = require("../../models/Return");
+const models = require("../../models/");
+const {
+	Item,
+	Branch,
+	Customer,
+	Department,
+	Withdrawal,
+	Bulk,
+	Model,
+	Staff,
+	ProductType,
+	Supplier,
+	Return
+} = models;
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");

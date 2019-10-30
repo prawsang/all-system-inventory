@@ -1,8 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const Model = require("../../models/Model");
-const ProductType = require("../../models/ProductType");
-const Supplier = require("../../models/Supplier");
+const models = require("../../models/");
+const {
+	Model,
+	ProductType,
+	Supplier,
+	Bulk
+} = models;
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { query } = require("../../utils/query");
