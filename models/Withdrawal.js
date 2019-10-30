@@ -164,7 +164,8 @@ Withdrawal.filter = data => {
 		return_from,
 		return_to,
 		type,
-		status
+		status,
+		staff_code
 	} = data;
 
 	let dateFilter = null;
@@ -172,6 +173,7 @@ Withdrawal.filter = data => {
 	let installDateFilter = null;
 	let statusFilter = null;
 	let typeFilter = null;
+	let staffCodeFilter = null;
 
 	if (from || to) {
 		const f = from ? `"withdrawal"."date" >= :from` : null;
@@ -194,8 +196,11 @@ Withdrawal.filter = data => {
 	if (status) {
 		statusFilter = `"withdrawal"."status" = :status`;
 	}
+	if (staff_code) {
+		staffCodeFilter = `"withdrawal"."created_by_staff_code" = :staff_code`;
+	}
 
-	return [dateFilter, returnDateFilter, installDateFilter, typeFilter, statusFilter]
+	return [dateFilter, returnDateFilter, installDateFilter, typeFilter, statusFilter, staffCodeFilter]
 		.filter(e => e)
 		.join(" AND ");
 };
