@@ -31,7 +31,8 @@ router.get("/get-all", async (req, res) => {
 		return_from,
 		return_to,
 		type,
-		status
+		status,
+		staff_code
 	} = req.query;
 	const q = await query({
 		limit,
@@ -53,7 +54,8 @@ router.get("/get-all", async (req, res) => {
 			return_from,
 			return_to,
 			type,
-			status
+			status,
+			staff_code
 		}),
 		replacements: {
 			from,
@@ -63,7 +65,8 @@ router.get("/get-all", async (req, res) => {
 			install_from,
 			install_to,
 			type,
-			status
+			status,
+			staff_code
 		},
 		availableCols: [
 			"customer_code",

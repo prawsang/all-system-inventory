@@ -55,12 +55,13 @@ router.route("/get-all").get(async (req, res) => {
 });
 
 router.get("/:serial_no/details", (req, res) => {
-	// TODO: Include return history along with withdrawal history. Sort by date newest to oldest.
 	const { serial_no } = req.params;
 	Item.findOne({
 		where: { serial_no: { [Op.eq]: serial_no } },
-		include: [
-			{
+		include: [{
+				model: Branch,
+				as: "reserve_branch"
+			},{
 				model: Withdrawal,
 				as: "withdrawals",
 				include: [
@@ -79,10 +80,9 @@ router.get("/:serial_no/details", (req, res) => {
 						as: "department"
 					}
 				],
-			},
-			{
-				model: Branch,
-				as: "reserve_branch"
+			},{
+				model: Return,
+				as: "returns"
 			},{
 				model: Bulk,
 				as: "bulk",
@@ -163,16 +163,23 @@ router.get("/reserved", async (req, res) => {
 
 	const typeFilter = Item.filter({ type });
 
-	// TODO: Join with bulk, model and supplier tables
 	const q = await query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Branch.getColumns}, ${Customer.getColumns}, ${Item.getColumns}`,
+		cols: `${Branch.getColumns}, 
+		${Customer.getColumns}, 
+		${Item.getColumns}, 
+		${Bulk.getColumns}, 
+		${Model.getColumns}, 
+		${Supplier.getColumns}`,
 		tables: `"item"
-		LEFT OUTER JOIN "branch" ON "item"."reserved_branch_code" = "branch"."branch_code"
-		LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
+		JOIN "branch" ON "item"."reserved_branch_code" = "branch"."branch_code"
+		JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
+		JOIN "bulk" ON "item"."from_bulk_code" = "bulk"."bulk_code"
+		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
+		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"
 		`,
 		where: `"item"."status" = 'RESERVED' ${typeFilter ? `AND ${typeFilter}` : ""}`,
 		replacements: {
@@ -184,7 +191,12 @@ router.get("/reserved", async (req, res) => {
 			"branch_code",
 			"branch_name",
 			"customer_code",
-			"customer_name"
+			"customer_name",
+			"bulk_code",
+			"model_code",
+			"model_name",
+			"supplier_code",
+			"supplier_name"
 		]
 	});
 	if (q.errors) {
@@ -195,35 +207,30 @@ router.get("/reserved", async (req, res) => {
 	}
 });
 
-// const stockValidation = [
-// 	check("model_id")
-// 		.not()
-// 		.isEmpty()
-// 		.withMessage("Model must be provided."),
-// 	check("stock_location")
-// 		.not()
-// 		.isEmpty()
-// 		.withMessage("Stock location must be provided."),
-// 	check("po_number")
-// 		.not()
-// 		.isEmpty()
-// 		.withMessage("PO number must be provided.")
-// ];
+const stockValidation = [
+	check("is_broken")
+		.not()
+		.isEmpty()
+		.withMessage("Must specify whether the item is broken or not."),
+	check("from_bulk_code")
+		.not()
+		.isEmpty()
+		.withMessage("Bulk code must be provided.")
+];
 
 // Edit Item
-router.put("/:serial_no/edit", (req, res) => {
+router.put("/:serial_no/edit", stockValidation, (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).json({ errors: errors.array() });
 	}
-
-	// TODO: able to change bulk (in case of human error when adding stock)
 	const { serial_no } = req.params;
-	const { remarks, is_broken } = req.body;
+	const { remarks, is_broken, from_bulk_code } = req.body;
 	Item.update(
 		{
 			remarks,
-			is_broken
+			is_broken,
+			from_bulk_code
 		},
 		{
 			where: {

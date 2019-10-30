@@ -95,9 +95,7 @@ confirmItems = async id => {
 						id: {
 							[Op.eq]: id
 						}
-					}
-				},
-				{
+					},
 					transaction: t
 				}
 			)
@@ -196,6 +194,32 @@ router.put("/return-wo-history", checkSerial, async (req,res) => {
 	else res.sendStatus(200);
 })
 
+returnWithHistory = (body) => {
+	const { serial_no, return_datetime } = body;
+	return db.transaction(async t => 
+		await serial_no.forEach(e => {
+			Return.create({
+				serial_no: e,
+				return_datetime
+			},{
+				transaction: t
+			})
+			Item.update({
+				status: "IN_STOCK"
+			},{
+				where: {
+					serial_no: {
+						[Op.eq]: e
+					}
+				},
+				transaction: t
+			})
+		})
+	).then(r => ({
+		errors: []
+	}))
+	.catch(err => console.log(err));
+}
 // Return with History 
 router.put("/return", checkSerial, async (req, res) => {
 	const errors = validationResult(req);
@@ -204,12 +228,11 @@ router.put("/return", checkSerial, async (req, res) => {
 	}
 
 	// serial_no is an array
-	const { serial_no } = req.body;
+	const { serial_no, return_datetime } = req.body;
+	const returnErrors = await returnWithHistory({ serial_no, return_datetime});
 
-	/* TODO: Transaction
-	1. Change status of all items in array to IN_STOCK (see returnItems function)
-	2. Add all items to return_history table (return_datetime, serial_no)
-	*/
+	if (returnErrors.length > 0) res.status(400).json({ errors: returnErrors });
+	else res.sendStatus(200);
 });
 
 // Mark Broken/Not Broken
@@ -244,7 +267,7 @@ router.put(
 				).catch(err => errors.push(err.errors));
 			})
 		);
-		if (errors.length > 0) res.status(400).json({ errors });
+		if (r.errors.length > 0) res.status(400).json({ errors: r.errors });
 		else res.sendStatus(200);
 	}
 );

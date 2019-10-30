@@ -12,12 +12,33 @@ const Op = Sequelize.Op;
 const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 
-router.route("/get-all").get(async (req, res) => {
-	const { limit, page, search_col, search_term, type } = req.query;
+router.get("/:model_code/details", (req, res) => {
+	const { model_code } = req.params;
+	Model.findOne({ 
+		where: { model_code: { [Op.eq]: model_code } },
+		include: [{
+			model: Supplier,
+			as: "supplier"
+		}]
+	})
+		.then(model => {
+			res.send({
+				model
+			});
+		})
+		.catch(err => res.status(500).json({ errors: err }));
+});
 
-	let filters = null;
-	if (type) {
-		filters = `"model"."is_product_type_name" = :type`;
+router.get("/:model_code/bulks", async (req, res) => {
+	const { model_code } = req.params;
+	const { limit, page, search_col, search_term,from, to } = req.query;
+
+	let dateFilter = null;
+
+	if (from || to) {
+		const f = from ? `"bulk"."date_in" >= :from` : null;
+		const t = to ? `"bulk"."date_in" <= :to` : null;
+		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 
 	const q = await query({
@@ -25,15 +46,14 @@ router.route("/get-all").get(async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${Model.getColumns}, ${Supplier.getColumns}, ${ProductType.getColumns}`,
-		tables: `"model"
-		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"
-		JOIN "product_type" ON "model"."is_product_type_name" = "product_type"."type_name"
-		`,
-		where: filters ? filters : null,
-		availableCols: ["model_code", "model_name", "supplier_code", "supplier_name", "product_type_name"],
+		cols: `${Bulk.getColumns}`,
+		tables: "bulk",
+		where: `"bulk"."of_model_code" = :model_code ${dateFilter ? `AND ${dateFilter}` : ""}`,
+		availableCols: ["bulk_code"],
 		replacements: {
-			type
+			model_code,
+			from,
+			to
 		}
 	});
 	if (q.errors) {
@@ -42,18 +62,6 @@ router.route("/get-all").get(async (req, res) => {
 	} else {
 		res.json(q);
 	}
-});
-
-router.route("/:id/details").get((req, res) => {
-	const { id } = req.params;
-	// TODO: Join with supplier and product type tables
-	Model.findOne({ where: { id: { [Op.eq]: id } } })
-		.then(model => {
-			res.send({
-				model
-			});
-		})
-		.catch(err => res.status(500).json({ errors: err }));
 });
 
 const modelValidation = [
@@ -136,7 +144,7 @@ router.put("/:model_code/edit", (req, res) => {
 });
 
 // Delete Model
-router.delete("/:model_code", (req, res) => {
+router.delete("/:model_code/delete", (req, res) => {
 	const { model_code } = req.params;
 	Model.destroy({
 		where: {

@@ -1,5 +1,3 @@
-// TODO: API for supplier entity-type
-
 const express = require("express");
 const router = express.Router();
 const Sequelize = require("sequelize");
@@ -12,14 +10,6 @@ const {
 } = models;
 const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
-
-// Required APIs
-// 1. /supplier/get-all - get all suppliers
-// 2. /supplier/:supplier_code/details - get details of a supplier
-// 3. /supplier/:supplier_code/models - get all models this supplier sells (include product_type) (use the predefined query function)
-// 4. /supplier/add - add a supplier
-// 5. /supplier/edit - edit a supplier
-// 6. /supplier/delete - delete a supplier (no cascade delete)
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;
@@ -40,7 +30,6 @@ router.get("/get-all", async (req, res) => {
 	}
 });
 
-// 2.
 router.get("/:supplier_code/details", (req, res) => {
 	const { supplier_code } = req.params;
 	Supplier.findOne({
@@ -54,7 +43,6 @@ router.get("/:supplier_code/details", (req, res) => {
 		.catch(err => res.status(500).json({ errors: err }));
 });
 
-// 3.
 router.get("/:supplier_code/models", async (req, res) => {
 	const { supplier_code } = req.params;
 	const { limit, page, search_col, search_term, type } = req.query;
@@ -98,7 +86,6 @@ const supplierValidation = [
 		.withMessage("Supplier name cannot be empty.")
 ];
 
-// 4.
 router.post("/add", supplierValidation, (req,res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
@@ -114,10 +101,9 @@ router.post("/add", supplierValidation, (req,res) => {
 	.catch(err => res.status(500).json({ errors: err }));
 });
 
-// 5.
 router.put("/:supplier_code/edit", supplierValidation, (req,res) => {
 	const validationErrors = validationResult(req);
-	if (!validatoinErrors.isEmpty()) {
+	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
 	const { name, phone, email } = req.body;
@@ -136,7 +122,6 @@ router.put("/:supplier_code/edit", supplierValidation, (req,res) => {
 	.catch(err => res.status(500).json({ errors: err }));
 })
 
-// 6.
 router.delete("/:supplier_code/delete", (req,res) => {
 	const { supplier_code } = req.params;
 	Supplier.destroy({

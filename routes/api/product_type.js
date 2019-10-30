@@ -1,18 +1,9 @@
-// TODO: API for product type entity-type
-
 const express = require("express");
 const router = express.Router();
 const models = require("../../models/");
 const ProductType = models.ProductType;
 const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
-
-// Required APIs
-// 1. /product-type/get-all - get all product types
-// 2. /product-type/add - add a product type
-// 3. /product-type/edit - edit a product type
-// 4. /product-type/delete - delete a product type (no cascade delete)
-// Add and delete must have validation (see examples from other files)
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;
@@ -32,5 +23,65 @@ router.get("/get-all", async (req, res) => {
 		res.json(q);
 	}
 });
+
+const productTypeValidation = [
+	check("type_name")
+		.not()
+		.isEmpty()
+		.withMessage("Type Name must be provided."),
+];
+
+// Add New ProductType
+router.post("/add", productTypeValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+
+	const {
+		type_name
+	} = req.body;
+	ProductType.create({
+		type_name
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).json({ errors: err }));
+});
+
+// Edit ProductType
+router.put("/:type_name/edit", productTypeValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+
+	const {
+		type_name,
+	} = req.body;
+	ProductType.update({
+		type_name,
+	},{
+		where: {
+			type_name: {
+				[Op.eq]: type_name
+			}
+		}
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).json({ errors: err }));
+});
+
+// Delete ProductType
+router.delete("/:type_name/delete", (req, res) => {
+	const { type_name } = req.params;
+	ProductType.destroy({
+		where: {
+			type_name: {
+				[Op.eq]: type_name
+			}
+		}
+	}).then(rows => res.sendStatus(200))
+	.catch(err => res.status(500).json({ errors: err }));
+})
 
 module.exports = router;
