@@ -39,4 +39,41 @@ router.get("/get-all", async (req, res) => {
 	}
 });
 
+// 2.
+router.get("/:department_code/details", (req, res) => {
+	const { department_code } = req.params;
+	Department.findOne({
+		where: {
+			department_code:{
+				[Op.eq]: department_code
+			}
+		}
+	})
+		.then(department => res.send({ department }))
+		.catch(err => res.status(500).json({ errors: err }));
+});
+
+// 3.
+router.get("/:department_code/staff", async (req, res) => {
+	const { department_code } = req.params;
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
+		limit,
+		page,
+		search_term,
+		search_col,
+        cols: `"staff"."staff_code","staff"."name"`,
+        tables: `"staff"
+		JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
+		where: `"department"."department_code" = '${department_code}'`,
+		//availableCols: ["staff_name", "staff_code"]
+	});
+	if (q.errors) {
+        console.log(q.errors);
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
 module.exports = router;
