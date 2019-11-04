@@ -1,11 +1,9 @@
-const Sequelize = require('sequelize');
-module.exports = new Sequelize('all-system', 'postgres', 'Pakim2541', {
-    host: 'localhost',
-    dialect: 'postgres',
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000,
-    }
+const { Pool } = require('pg');
+// your credentials
+DATABASE_URL = 'postgres://postgres:Pakim2541@127.0.0.1:5432/all-system';
+
+const pool = new Pool({
+  connectionString: DATABASE_URL
 });
+
+module.exports = pool

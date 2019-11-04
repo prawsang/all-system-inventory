@@ -1,33 +1,4 @@
-const Sequelize = require("sequelize");
-const db = require("../config/database");
-const Department = require("./Department");
-
-const Staff = db.define("staff", {
-	staff_code: {
-		type: Sequelize.STRING,
-		primaryKey: true,
-		validate: {
-			notEmpty: true,
-			notContains: "/"
-		}
-	},
-	name: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	},
-	works_for_dep_code: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	}
-},{
-	freezeTableName: "staff"
-});
+const Staff = {};
 
 Staff.getColumns = `
 	"staff"."staff_code",

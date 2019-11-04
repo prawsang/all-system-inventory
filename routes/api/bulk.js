@@ -1,13 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Item = require("../../models/Item");
-const Bulk = require("../../models/Bulk");
-const Model = require("../../models/Model");
-const Supplier = require("../../models/Supplier");
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
+const models = require("../../models/");
 const { check, validationResult } = require("express-validator/check");
-const { query } = require("../../utils/query");
+const utils = require("../../utils/query");
 
 // TODO: API for bulk entity-type
 
@@ -25,29 +20,24 @@ router.get("/get-all", async (req, res) => {
 	let dateFilter = null;
 
 	if (from || to) {
-		const f = from ? `"bulk"."date_in" >= :from` : null;
-		const t = to ? `"bulk"."date_in" <= :to` : null;
+		const f = from ? `"bulk"."date_in" >= ${from}` : null;
+		const t = to ? `"bulk"."date_in" <= ${to}` : null;
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_term,
 		search_col,
-		cols: `${Bulk.getColumns}, ${Model.getColumns}, ${Supplier.getColumns}`,
+		cols: `${models.Bulk.getColumns}, ${models.Model.getColumns}, ${models.Supplier.getColumns}`,
         tables: `"bulk"
 		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
 		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"`,
 		where: dateFilter,
-		replacements: {
-			from,
-			to
-		},
 		availableCols: ["bulk_code","model_name","model_code","supplier_name","supplier_code"]
 	});
 	if (q.errors) {
-        console.log(q.errors);
 		res.status(500).json(q);
 	} else {
 		res.json(q);
@@ -56,21 +46,19 @@ router.get("/get-all", async (req, res) => {
 
 // Validation
 const bulkValidation = [
-    check("bulk_id")
-		.not()
-		.isEmpty()
+	check("bulk_id")
+		.blacklist("/")
+		.not().isEmpty()
 		.withMessage("Bulk ID must be provided."),
 	check("of_model_code")
-		.not()
-		.isEmpty()
+		.blacklist("/")
+		.not().isEmpty()
 		.withMessage("Model must be provided."),
 	check("price_per_unit")
-		.not()
-		.isEmpty()
+		.not().isEmpty()
         .withMessage("Price per unit must be provided."),
     check("date_in")
-		.not()
-		.isEmpty()
+		.not().isEmpty()
 		.withMessage("Date in must be provided."),
 ];
 const itemValidation = [
@@ -101,13 +89,19 @@ router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => 
 	*/
 	await Promise.all(
 		serial_no.map(async no => {
-			await Item.create({
-				serial_no: no,
-				model_id,
-				remarks,
-				status: "IN_STOCK",
-				is_broken: false,
-			}).catch(err => errors.push(err));
+			await utils.insert({
+				table: "item",
+				info: {
+					serial_no: no,
+					model_id,
+					remarks,
+					status: "IN_STOCK",
+					is_broken: false,
+				}
+			})
+			if (q.errors) {
+				errors.push(q.errors)
+			}
 		})
     );
 	// End add items code

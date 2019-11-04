@@ -1,33 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const Branch = require("../../models/Branch");
-const Item = require("../../models/Item");
-const Withdrawal = require("../../models/Withdrawal");
-const Model = require("../../models/Model");
-const ProductType = require("../../models/ProductType");
-const Customer = require("../../models/Customer");
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
+const models = require("../../models");
 const { check, validationResult } = require("express-validator/check");
-const { query } = require("../../utils/query");
+const utils = require("../../utils/query");
 
-router.get("/:branch_code/details", (req, res) => {
+router.get("/:branch_code/details", async (req, res) => {
 	const { branch_code } = req.params;
-	Branch.findOne({
-		where: {
-			branch_code: {
-				[Op.eq]: branch_code
-			}
-		},
-		include: [
-			{
-				model: Customer,
-				as: "customer"
-			}
-		]
-	})
-		.then(branch => res.send({ branch }))
-		.catch(err => res.status(500).json({ errors: err }));
+	const q = await utils.findOne({
+		tables: `"branch"
+		JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"`,
+		cols: `${models.Customer.getColumns}, ${models.Branch.getColumns}`,
+		where: `"branch_code" = '${branch_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // List of items in a branch
@@ -45,23 +34,23 @@ router.get("/:branch_code/items/", async (req, res) => {
 		return_from,
 		return_to
 	} = req.query;
-	const filters = Item.filter({
+	const filters = models.Item.filter({
 		is_broken,
 		type
 	});
-	const withdrawalFilters = Withdrawal.filter({
+	const withdrawalFilters = models.Withdrawal.filter({
 		install_to,
 		install_from,
 		return_to,
 		return_from
 	});
 	
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Item.getColumns}, ${Withdrawal.getColumns}, ${Model.getColumns}, ${ProductType.getColumns}`,
+		cols: `${models.Item.getColumns}, ${models.Withdrawal.getColumns}, ${models.Model.getColumns}, ${models.ProductType.getColumns}`,
 		tables: `"withdrawal_has_item"
 			JOIN "item" ON "item"."serial_no" = "withdrawal_has_item"."serial_no"
 			JOIN "withdrawal" ON "withdrawal"."id" = "withdrawal_has_item"."withdrawal_id"
@@ -73,19 +62,10 @@ router.get("/:branch_code/items/", async (req, res) => {
 		where: `
 			NOT "item"."status" = 'IN_STOCK' 
 			AND NOT "item"."status" = 'RESERVED'
-			AND "branch"."branch_code" = :branch_code
+			AND "branch"."branch_code" = '${branch_code}'
 			${filters ? `AND ${filters}` : ""}
 			${withdrawalFilters ? `AND ${withdrawalFilters}` : ""}
 			`,
-		replacements: {
-			branch_code,
-			type,
-			is_broken,
-			install_to,
-			install_from,
-			return_to,
-			return_from
-		},
 		availableCols: ["serial_no"]
 	});
 	if (q.errors) {
@@ -96,28 +76,24 @@ router.get("/:branch_code/items/", async (req, res) => {
 	}
 });
 
-// List of reserved items in a branch
+// // List of reserved items in a branch
 router.get("/:branch_code/reserved-items", async (req, res) => {
 	const { branch_code } = req.params;
 	const { limit, page, search_col, search_term, type } = req.query;
 
-	const filters = Item.filter({
+	const filters = models.Item.filter({
 		type
 	});
 
 	// TODO: Join with bulk, model and supplier tables
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Item.getColumns}`,
+		cols: `${models.Item.getColumns}`,
 		tables: `"item"`,
-		where: `"item"."reserved_branch_code" = :branch_code ${filters ? `AND ${filters}` : ""}`,
-		replacements: {
-			branch_code,
-			type
-		},
+		where: `"item"."reserved_branch_code" = '${branch_code}' ${filters ? `AND ${filters}` : ""}`,
 		availableCols: [
 			"serial_no",
 			"status",
@@ -132,12 +108,12 @@ router.get("/:branch_code/reserved-items", async (req, res) => {
 
 const branchValidation = [
 	check("owner_customer_code")
-		.not()
-		.isEmpty()
-		.withMessage("Customer must be provided."),
+		.blacklist("/")
+		.not().isEmpty()
+		.withMessage("Customer must be provided and cannot contain a /."),
 	check("branch_code")
-		.not()
-		.isEmpty()
+		.blacklist("/")
+		.not().isEmpty()
 		.withMessage("Branch code must be provided."),
 	check("name")
 		.not()
@@ -150,7 +126,7 @@ const branchValidation = [
 ];
 
 // Add New Branch
-router.post("/add", branchValidation, (req, res) => {
+router.post("/add", branchValidation, async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -162,18 +138,25 @@ router.post("/add", branchValidation, (req, res) => {
 		name,
 		address,
 	} = req.body;
-	Branch.create({
-		branch_code,
-		owner_customer_code: owner_customer_code,
-		name,
-		address,
+	const q = await insert({
+		table: "customer",
+		info: {
+			branch_code,
+			owner_customer_code,
+			name,
+			address,
+		},
+		returning: "branch_code"
 	})
-		.then(rows => res.send(rows))
-		.catch(err => res.status(500).json({ errors: err }));
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Edit Branch
-router.put("/:branch_code/edit", branchValidation, (req, res) => {
+router.put("/:branch_code/edit", branchValidation, async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -181,44 +164,38 @@ router.put("/:branch_code/edit", branchValidation, (req, res) => {
 
 	const { branch_code } = req.params;
 	const { name, address } = req.body;
-	Branch.update(
-		{
+	const q = await update({
+		table: "branch",
+		info: {
+			branch_code,
 			name,
-			address,
+			address
 		},
-		{
-			where: {
-				branch_code: {
-					[Op.eq]: branch_code
-				}
-			}
-		}
-	)
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+		where: `"branch_code" = '${branch_code}'`,
+		returning: "branch_code"
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Delete branch
-router.delete("/:branch_code", (req, res) => {
+router.delete("/:branch_code", async (req, res) => {
 	const { branch_code } = req.params;
-	Branch.destroy(
-		{
-			where: {
-				branch_code: {
-					[Op.eq]: branch_code
-				}
-			}
-		},
-		{
-			transaction: t
-		}
-	)
-		.then(r => res.sendStatus(200))
-		.catch(err =>
-			res
-				.status(500)
-				.json({ errors: [{ msg: "This branch cannot be deleted.", errors: err }] })
-		);
+
+	const q = await del({
+		table: "branch",
+		where: `"branch_code" = '${branch_code}'`,
+	});
+	if (q.errors) {
+		res
+			.status(500)
+			.json({ errors: [{ msg: "This branch cannot be deleted.", errors: err }] })
+	} else {
+		res.json(q);
+	}
 });
 
 module.exports = router;

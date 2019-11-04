@@ -1,14 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
 const models = require("../../models/");
 const {
 	Customer,
 	Branch
 } = models;
 const { check, validationResult } = require("express-validator/check");
-const { query } = require("../../utils/query");
+const { query, update, insert, del, findOne } = require("../../utils/query");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;
@@ -27,17 +25,18 @@ router.get("/get-all", async (req, res) => {
 		res.json(q);
 	}
 });
-router.get("/:customer_code/details", (req, res) => {
+router.get("/:customer_code/details", async (req, res) => {
 	const { customer_code } = req.params;
-	Customer.findOne({
-		where: {
-			customer_code: {
-				[Op.eq]: customer_code
-			}
-		}
-	})
-		.then(customer => res.send({ customer }))
-		.catch(err => res.status(500).json({ errors: err }));
+	const q = await findOne({
+		cols: Customer.getColumns,
+		tables: "customer",
+		where: `"customer_code" = '${customer_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Get Branches for Customer
@@ -51,10 +50,7 @@ router.get("/:customer_code/branches", async (req, res) => {
 		search_term,
 		cols: `${Branch.getColumns}`,
 		tables: `"branch"`,
-		where: `"branch"."owner_customer_code" = :customer_code`,
-		replacements: {
-			customer_code
-		},
+		where: `"branch"."owner_customer_code" = '${customer_code}'`,
 		availableCols: [
 			"branch_code",
 			"branch_name",
@@ -69,8 +65,8 @@ router.get("/:customer_code/branches", async (req, res) => {
 
 const customerValidation = [
 	check("customer_code")
-		.not()
-		.isEmpty()
+		.blacklist("/")
+		.not().isEmpty()
 		.withMessage("Customer code cannot be empty."),
 	check("name")
 		.not()
@@ -79,22 +75,29 @@ const customerValidation = [
 ];
 
 // Add New Customer
-router.post("/add", customerValidation, (req, res) => {
+router.post("/add", customerValidation, async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
 	const { customer_code, name } = req.body;
-	Customer.create({
-		customer_code,
-		name
+	const q = await insert({
+		table: "customer",
+		info: {
+			customer_code,
+			name
+		},
+		returning: "customer_code"
 	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Edit Customer
-router.put("/:customer_code/edit", customerValidation, (req, res) => {
+router.put("/:customer_code/edit", customerValidation, async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -102,38 +105,36 @@ router.put("/:customer_code/edit", customerValidation, (req, res) => {
 
 	const { customer_code } = req.params;
 	const { name } = req.body;
-	Customer.update(
-		{
+
+	const q = await update({
+		table: "customer",
+		info: {
+			customer_code,
 			name
 		},
-		{
-			where: {
-				customer_code: {
-					[Op.eq]: customer_code
-				}
-			}
-		}
-	)
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+		where: `"customer_code" = '${customer_code}'`,
+		returning: "customer_code"
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Delete customer
-router.delete("/:customer_code/delete", (req, res) => {
+router.delete("/:customer_code/delete", async (req, res) => {
 	const { customer_code } = req.params;
-	Customer.destroy({
-		where: {
-			customer_code: {
-				[Op.eq]: customer_code
-			}
-		}
-	})
-		.then(rows => res.sendStatus(200))
-		.catch(err =>
-			res
-				.status(500)
-				.send({ errors: [{ msg: "This customer cannot be deleted.", errors: err }] })
-		);
+
+	const q = await del({
+		table: "customer",
+		where: `"customer_code" = '${customer_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 module.exports = router;

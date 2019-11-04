@@ -1,11 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const db = require("./config/database");
-
-// Test DB
-db.authenticate()
-	.then(() => console.log("Database connected..."))
-	.catch(err => console.log(err));
 
 const app = express();
 

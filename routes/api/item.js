@@ -14,10 +14,8 @@ const {
 	Supplier,
 	Return
 } = models;
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");
-const { query } = require("../../utils/query");
+const utils = require("../../utils/query");
 
 router.use("/", require("./stock_status").router);
 
@@ -26,12 +24,12 @@ router.route("/get-all").get(async (req, res) => {
 
 	const filters = Item.filter({
 		is_broken,
-		status,
+		status: status ? status.toUpperCase() : null,
 		type
 	});
 
 	// TODO: Join with bulk, model and supplier tables
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_col,
@@ -39,10 +37,6 @@ router.route("/get-all").get(async (req, res) => {
 		cols: `${Item.getColumns}`,
 		tables: `"item"`,
 		where: filters,
-		replacements: {
-			status: status ? status.toUpperCase() : null,
-			type
-		},
 		availableCols: [
 			"serial_no"
 		]
@@ -54,58 +48,26 @@ router.route("/get-all").get(async (req, res) => {
 	}
 });
 
-router.get("/:serial_no/details", (req, res) => {
+router.get("/:serial_no/details", async (req, res) => {
 	// TODO: Include return history along with withdrawal history. Sort by date newest to oldest.
 	const { serial_no } = req.params;
-	Item.findOne({
-		where: { serial_no: { [Op.eq]: serial_no } },
-		include: [
-			{
-				model: Withdrawal,
-				as: "withdrawals",
-				include: [
-					{
-						model: Branch,
-						as: "branch",
-						include: {
-							model: Customer,
-							as: "customer"
-						}
-					},{
-						model: Staff,
-						as: "staff"
-					},{
-						model: Department,
-						as: "department"
-					}
-				],
-			},
-			{
-				model: Branch,
-				as: "reserve_branch"
-			},{
-				model: Bulk,
-				as: "bulk",
-				include: [{
-					model: Model,
-					as: "model",
-					include: [{
-						model: Supplier,
-						as: "supplier"
-					},{
-						model: ProductType,
-						as: "product_type"
-					}]
-				}]
-			}
-		]
-	})
-		.then(item => {
-			res.send({
-				item
-			});
-		})
-		.catch(err => console.log(err));
+
+	const q = await utils.findOne({
+		cols: `${Item.getColumns}, 
+		${Bulk.getColumns},
+		${Model.getColumns},
+		${Supplier.getColumns}`,
+		tables: `"item"
+		JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
+		JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
+		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"`,
+		where: `"item"."serial_no" = '${serial_no}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Get lent items
@@ -113,12 +75,12 @@ router.get("/lent", async (req, res) => {
 	const { limit, page, search_col, search_term, return_to, return_from } = req.query;
 	let filters = null;
 	if (return_from || return_to) {
-		const f = return_from ? `"withdrawal"."return_by" >= :return_from` : null;
-		const t = return_to ? `"withdrawal"."return_by" <= :return_to` : null;
+		const f = return_from ? `"withdrawal"."return_by" >= '${return_from}'` : null;
+		const t = return_to ? `"withdrawal"."return_by" <= '${return_to}'` : null;
 		filters = [f, t].filter(e => e).join(" AND ");
 	}
 
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_col,
@@ -143,10 +105,6 @@ router.get("/lent", async (req, res) => {
 		where: `"item"."status" = 'LENT' 
 			AND "withdrawal"."type" = 'LENDING' 
 			${filters ? `AND ${filters}` : ""}`,
-		replacements: {
-			return_from,
-			return_to,
-		},
 		availableCols: ["serial_no","branch_name","branch_code"]
 	});
 	if (q.errors) {
@@ -164,7 +122,7 @@ router.get("/reserved", async (req, res) => {
 	const typeFilter = Item.filter({ type });
 
 	// TODO: Join with bulk, model and supplier tables
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_col,
@@ -175,9 +133,6 @@ router.get("/reserved", async (req, res) => {
 		LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
 		`,
 		where: `"item"."status" = 'RESERVED' ${typeFilter ? `AND ${typeFilter}` : ""}`,
-		replacements: {
-			type
-		},
 		availableCols: [
 			"serial_no",
 			"status",
@@ -195,60 +150,86 @@ router.get("/reserved", async (req, res) => {
 	}
 });
 
-// const stockValidation = [
-// 	check("model_id")
-// 		.not()
-// 		.isEmpty()
-// 		.withMessage("Model must be provided."),
-// 	check("stock_location")
-// 		.not()
-// 		.isEmpty()
-// 		.withMessage("Stock location must be provided."),
-// 	check("po_number")
-// 		.not()
-// 		.isEmpty()
-// 		.withMessage("PO number must be provided.")
-// ];
+const stockValidation = [
+	check("serial_no")
+		.blacklist("/")
+		.not().isEmpty()
+		.withMessage("Serial No. be provided."),
+	check("from_bulk_code")
+		.blacklist("/")
+		.not().isEmpty()
+		.withMessage("Bulk Code must be provided."),
+	check("is_broken")
+		.isBoolean()
+		.withMessage("Bulk Code must be provided."),
+];
 
-// Edit Item
-router.put("/:serial_no/edit", (req, res) => {
+// Add Item To A Bulk
+router.post("/add", stockValidation, async (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).json({ errors: errors.array() });
 	}
 
-	// TODO: able to change bulk (in case of human error when adding stock)
+	const { serial_no, remarks, is_broken, from_bulk_code } = req.body;
+	const q = await utils.insert({
+		table: "item",
+		info: {
+			serial_no,
+			from_bulk_code,
+			remarks,
+			is_broken,
+			reserved_branch_code: null,
+			status: "IN_STOCK"
+		},
+		returning: "serial_no"
+	})
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
+// Edit Item
+router.put("/:serial_no/edit", stockValidation, async (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
+	}
+
 	const { serial_no } = req.params;
-	const { remarks, is_broken } = req.body;
-	Item.update(
-		{
+	const { remarks, is_broken, from_bulk_code } = req.body;
+	const q = await utils.update({
+		table: "item",
+		info: {
+			serial_no,
+			from_bulk_code,
 			remarks,
 			is_broken
 		},
-		{
-			where: {
-				serial_no: {
-					[Op.eq]: serial_no
-				}
-			}
-		}
-	)
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+		returning: "serial_no"
+	})
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Delete Item from Stock (superadmins only)
-router.delete("/:serial_no", (req, res) => {
+router.delete("/:serial_no", async (req, res) => {
 	const { serial_no } = req.params;
-	Item.destroy({
-		where: {
-			serial_no: {
-				[Op.eq]: serial_no
-			}
-		}
-	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+
+	const q = await del({
+		table: "item",
+		where: `"serial_no" = '${serial_no}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 module.exports = router;

@@ -1,58 +1,9 @@
-const Sequelize = require("sequelize");
-const db = require("../config/database");
-const Supplier = require("./Supplier");
-const ProductType = require("./ProductType");
-
-const Model = db.define("model", {
-	model_code: {
-		type: Sequelize.INTEGER,
-		primaryKey: true,
-		validate: {
-			notEmpty: true,
-			notContains: "/"
-		}
-	},
-	name: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	},
-	weight: {
-		type: Sequelize.NUMERIC,
-	},
-	width: {
-		type: Sequelize.NUMERIC,
-	},
-	depth: {
-		type: Sequelize.NUMERIC,
-	},
-	height: {
-		type: Sequelize.NUMERIC,
-	},
-	is_product_type_name: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	},
-	from_supplier_code: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	}
-},{
-	freezeTableName: "model"
-});
+const Model = {};
 
 // Filtering
 Model.filter = data => {
 	const { type } = data;
-	let typeFilter = type ? `"model"."is_product_type_name" = :type` : null;
+	let typeFilter = type ? `"model"."is_product_type_name" = ${type}` : null;
 	return typeFilter
 };
 
