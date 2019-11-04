@@ -164,7 +164,9 @@ module.exports = {
 				errors
 			};
 		}
-		return response[0];
+		return response[0] ? { data: response[0]} : {
+			data: null
+		};
 	},
 	insert: async function(data) {
 		const { table, info } = data;
@@ -202,7 +204,7 @@ module.exports = {
 		};
 	},
 	update: async function(data) {
-		const { table, info, from, where, replacements } = data;
+		const { table, info, from, where } = data;
 
 		let setArray = []
 		Object.keys(info).forEach(key => {
@@ -238,7 +240,7 @@ module.exports = {
 		};
 	},
 	del: async function(data) {
-		const { table, using, from, where, replacements } = data;
+		const { table, using, from, where } = data;
 		let string = `
 		DELETE FROM ${table}
 		${using ? `USING ${using}` : ""}
