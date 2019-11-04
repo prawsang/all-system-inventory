@@ -1,4 +1,4 @@
-const db = require("../config/database");
+const pool = require("../config/database");
 
 const checkColName = (name, cols) => {
 	if (cols.indexOf(name) >= 0) {
@@ -38,73 +38,97 @@ const getFromAlias = col => {
 	}
 };
 
+const buildString = (data) => {
+	const { limit, page, cols, tables, availableCols, where, groupBy, replacements } = data;
+	let { search_col, search_term } = data;
+	if (search_term) {
+		search_term = search_term.toLowerCase();
+	}
+
+	if (search_col && !checkColName(search_col, availableCols) && search_term) {
+		search_col = null;
+		search_term = null;
+	}
+	if (search_col) {
+		search_col = getFromAlias(search_col);
+	}
+	let count = 0;
+	let response = [];
+	let errors = [];
+
+	let whereString = "";
+	if (where || (search_col && search_term)) {
+		const search =
+			search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(:search_term)` : null;
+		whereString = `WHERE ${[where, search].filter(e => e).join(" AND ")}`;
+	}
+
+	let countString = `SELECT COUNT(*) 
+	FROM ${tables} 
+	${whereString}
+	${groupBy ? groupBy : ""}
+	`
+	let queryString = `SELECT ${cols}
+	FROM ${tables}
+	${whereString}
+	${groupBy ? groupBy : ""}
+	${limit ? `LIMIT :limit` : ""}
+	${limit && page ? `OFFSET :offset` : ""}`
+
+	Object.keys(replacements).forEach(key => {
+		countString = countString.replace(`:${key}`, replacements[key]);
+	})
+	Object.keys(replacements).forEach(key => {
+		queryString = queryString.replace(`:${key}`, replacements[key]);
+	})
+	return {
+		countString,
+		queryString
+	}
+}
+
 module.exports = {
 	query: async function(data) {
-		const { limit, page, cols, tables, availableCols, where, groupBy, replacements } = data;
-		let { search_col, search_term } = data;
-		if (search_term) {
-			search_term = search_term.toLowerCase();
-		}
-
-		if (search_col && !checkColName(search_col, availableCols) && search_term) {
-			search_col = null;
-			search_term = null;
-		}
-		if (search_col) {
-			search_col = getFromAlias(search_col);
-		}
+		const { limit, page, cols, tables, availableCols, where, groupBy, replacements, search_col, search_term } = data;
+		
 		let count = 0;
 		let response = [];
 		let errors = [];
 
-		let whereString = "";
-		if (where || (search_col && search_term)) {
-			const search =
-				search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(:search_term)` : null;
-			whereString = `WHERE ${[where, search].filter(e => e).join(" AND ")}`;
-		}
-		await db
-			.query(
-				`SELECT COUNT(*) 
-            FROM ${tables} 
-			${whereString}
-			${groupBy ? groupBy : ""}
-            `,
-				{
-					replacements: {
-						search_term: search_term ? `%${search_term}%` : "",
-						...replacements
-					},
-					type: db.QueryTypes.SELECT
-				}
-			)
+		const {
+			countString,
+			queryString
+		} = buildString({
+			limit, 
+			page, 
+			cols, 
+			tables, 
+			availableCols, 
+			where, 
+			groupBy, 
+			replacements: {
+				search_term: search_term ? `'%${search_term}%'` : "",
+				limit,
+				offset: limit * (page - 1),
+				...replacements
+			},
+			search_col, 
+			search_term
+		})
+
+		await pool
+			.query(countString)
 			.then(c => {
-				count = c[0].count;
+				count = c.rows[0].count;
 			})
 			.catch(err => {
 				errors.push(err);
 			});
 
-		await db
-			.query(
-				`SELECT ${cols}
-            FROM ${tables}
-			${whereString}
-			${groupBy ? groupBy : ""}
-            ${limit ? `LIMIT :limit` : ""}
-            ${limit && page ? `OFFSET :offset` : ""}`,
-				{
-					replacements: {
-						search_term: search_term ? `%${search_term}%` : "",
-						limit,
-						offset: limit * (page - 1),
-						...replacements
-					},
-					type: db.QueryTypes.SELECT
-				}
-			)
+		await pool
+			.query(queryString)
 			.then(r => {
-				response = r;
+				response = r.rows;
 			})
 			.catch(err => {
 				errors.push(err);
