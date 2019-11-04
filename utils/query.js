@@ -47,7 +47,7 @@ const correctValueString = (value, rep) => {
 		case "boolean":
 			return value ? "true" : "false";
 		default:
-			return value;
+			return null;
 	}
 }
 
@@ -113,6 +113,8 @@ module.exports = {
 			search_col, 
 			search_term
 		})
+		console.log(countString);
+		console.log(queryString);
 		await pool
 			.query(countString)
 			.then(c => {
@@ -150,6 +152,8 @@ module.exports = {
 		`;
 		let errors = [];
 		let response = [];
+		
+		console.log(string);
 
 		await pool
 			.query(string)
@@ -169,12 +173,13 @@ module.exports = {
 		};
 	},
 	insert: async function(data) {
-		const { table, info } = data;
+		const { table, info, returning } = data;
 		let cols = [];
 		let values = []
 		Object.keys(info).forEach(key => {
 			cols.push(`"${key}"`);
-			values.push(correctValueString(info[key]));
+			const valueS = correctValueString(info[key]);
+			values.push(valueS ? valueS : "null");
 		});
 		const colString = `(${cols.join(", ")})`
 		const valueString = `(${values.join(", ")})`
@@ -182,7 +187,11 @@ module.exports = {
 		let string = `
 		INSERT INTO ${table} ${colString}
 		VALUES ${valueString}
+		${returning ? `RETURNING ${returning}` : ""}
 		`
+
+		console.log(string);
+
 		let errors = [];
 		let response = [];
 
@@ -204,12 +213,13 @@ module.exports = {
 		};
 	},
 	update: async function(data) {
-		const { table, info, from, where } = data;
+		const { table, info, from, where, returning } = data;
 
 		let setArray = []
 		Object.keys(info).forEach(key => {
 			let value = info[key];
-			setArray.push(`"${key}" = ${correctValueString(value)}`);
+			const valueS = correctValueString(value);
+			setArray.push(`"${key}" = ${valueS ? valueS : "null"}`);
 		})
 		const setString = setArray.join(", ")
 
@@ -218,7 +228,11 @@ module.exports = {
 		SET ${setString}
 		${from ? `FROM ${from}` : ""}
 		WHERE ${where}
+		${returning ? `RETURNING ${returning}` : ""}
 		` 
+
+		console.log(string);
+
 		let errors = [];
 		let response = [];
 
@@ -246,6 +260,8 @@ module.exports = {
 		${using ? `USING ${using}` : ""}
 		WHERE ${where}
 		`
+
+		console.log(string);
 
 		let errors = [];
 		let response = [];

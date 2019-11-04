@@ -65,8 +65,8 @@ router.get("/:customer_code/branches", async (req, res) => {
 
 const customerValidation = [
 	check("customer_code")
-		.not()
-		.isEmpty()
+		.blacklist("/")
+		.not().isEmpty()
 		.withMessage("Customer code cannot be empty."),
 	check("name")
 		.not()
@@ -86,10 +86,14 @@ router.post("/add", customerValidation, async (req, res) => {
 		info: {
 			customer_code,
 			name
-		}
+		},
+		returning: "customer_code"
 	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Edit Customer
@@ -105,9 +109,11 @@ router.put("/:customer_code/edit", customerValidation, async (req, res) => {
 	const q = await update({
 		table: "customer",
 		info: {
+			customer_code,
 			name
 		},
 		where: `"customer_code" = '${customer_code}'`,
+		returning: "customer_code"
 	});
 	if (q.errors) {
 		res.status(500).json(q);
