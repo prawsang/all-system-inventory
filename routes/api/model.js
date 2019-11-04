@@ -53,6 +53,20 @@ router.route("/:model_code/details").get( async (req, res) => {
 	}
 });
 
+router.route("/:model_code/bulks").get( async (req, res) => {
+	const { model_code } = req.params;
+	const q = await utils.query({
+		cols: Bulk.getColumns,
+		tables: "bulk",
+		where: `"of_model_code" = '${model_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
 const modelValidation = [
 	check("model_code")
 		.blacklist("/")
