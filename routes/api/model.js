@@ -7,9 +7,7 @@ const {
 	Supplier,
 	Bulk
 } = models;
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
-const { query } = require("../../utils/query");
+const utils = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {
@@ -17,10 +15,10 @@ router.route("/get-all").get(async (req, res) => {
 
 	let filters = null;
 	if (type) {
-		filters = `"model"."is_product_type_name" = :type`;
+		filters = `"model"."is_product_type_name" = ${type}`;
 	}
 
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_col,
@@ -32,43 +30,48 @@ router.route("/get-all").get(async (req, res) => {
 		`,
 		where: filters ? filters : null,
 		availableCols: ["model_code", "model_name", "supplier_code", "supplier_name", "product_type_name"],
-		replacements: {
-			type
-		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-		console.log(q.errors);
 	} else {
 		res.json(q);
 	}
 });
 
-router.route("/:id/details").get((req, res) => {
-	const { id } = req.params;
+router.route("/:model_code/details").get( async (req, res) => {
+	const { model_code } = req.params;
 	// TODO: Join with supplier and product type tables
-	Model.findOne({ where: { id: { [Op.eq]: id } } })
-		.then(model => {
-			res.send({
-				model
-			});
-		})
-		.catch(err => res.status(500).json({ errors: err }));
+	const q = await utils.findOne({
+		cols: Model.getColumns,
+		tables: "model",
+		where: `"model_code" = '${model_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 const modelValidation = [
 	check("model_code")
+		.blacklist("/")
 		.not()
 		.isEmpty()
-		.withMessage("Model name cannot be empty."),
+		.withMessage("Model code cannot be empty."),
 	check("name")
 		.not()
 		.isEmpty()
 		.withMessage("Model name cannot be empty."),
+	check("from_supplier_code")
+		.blacklist("/")
+		.not()
+		.isEmpty()
+		.withMessage("Supplier code cannot be empty."),
 ];
 
 // Add New Model
-router.post("/add", modelValidation, (req, res) => {
+router.post("/add", modelValidation, async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -83,22 +86,30 @@ router.post("/add", modelValidation, (req, res) => {
 		depth, 
 		weight 
 	} = req.body;
-	Model.create({
-		model_code,
-		name,
-		from_supplier_code,
-		is_product_type_name,
-		width,
-		height,
-		depth,
-		weight,
+	
+	const q = await utils.insert({
+		table: "model",
+		info: {
+			model_code, 
+			name, 
+			from_supplier_code, 
+			is_product_type_name, 
+			width, 
+			height, 
+			depth, 
+			weight
+		},
+		returning: "model_code"
 	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Edit Model
-router.put("/:model_code/edit", (req, res) => {
+router.put("/:model_code/edit", async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -113,8 +124,10 @@ router.put("/:model_code/edit", (req, res) => {
 		depth, 
 		weight 
 	} = req.body;
-	Model.update(
-		{
+	const q = await update({
+		table: "customer",
+		info: {
+			model_code,
 			name,
 			from_supplier_code, 
 			is_product_type_name, 
@@ -123,30 +136,28 @@ router.put("/:model_code/edit", (req, res) => {
 			depth, 
 			weight 
 		},
-		{
-			where: {
-				model_code: {
-					[Op.eq]: model_code
-				}
-			}
-		}
-	)
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+		where: `"model_code" = '${model_code}'`,
+		returning: "model_code"
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // Delete Model
-router.delete("/:model_code", (req, res) => {
+router.delete("/:model_code", async (req, res) => {
 	const { model_code } = req.params;
-	Model.destroy({
-		where: {
-			model_code: {
-				[Op.eq]: model_code
-			}
-		}
-	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).json({ errors: err }));
+	const q = await del({
+		table: "model",
+		where: `"model_code" = '${model_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 module.exports = router;

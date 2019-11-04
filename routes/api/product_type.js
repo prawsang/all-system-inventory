@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 const models = require("../../models/");
 const ProductType = models.ProductType;
-const { query } = require("../../utils/query");
+const utils = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 
 // Required APIs
@@ -16,7 +16,7 @@ const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_term,
@@ -26,7 +26,6 @@ router.get("/get-all", async (req, res) => {
 		availableCols: ["product_type_name"]
 	});
 	if (q.errors) {
-        console.log(q.errors);
 		res.status(500).json(q);
 	} else {
 		res.json(q);

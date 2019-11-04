@@ -3,12 +3,9 @@ const router = express.Router();
 const models = require("../../models/");
 const {
 	Item,
-	Return,
-	Withdrawal
 } = models
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
-const db = require("../../config/database");
+
+const pool = require("../../config/database");
 const { check, validationResult } = require("express-validator/check");
 
 const checkSerial = [
@@ -33,32 +30,28 @@ installItems = async (serial_no, branch_code) => {
 			if (!valid) {
 				errors.push({ msg: `The item ${no} is not IN_STOCK` });
 			} else {
-				await Item.findOne({
-					where: {
-						serial_no: {
-							[Op.eq]: no
-						}
-					}
-				}).then(async res => {
-					if (res.reserved_branch_code && res.reserved_branch_code != branch_code) {
-						errors.push({ msg: `The item ${no} is reserved by another branch.` });
-					} else {
-						await Item.update(
-							{
-								status: "PENDING",
-							},
-							{
-								where: {
-									serial_no: {
-										[Op.eq]: no
-									}
-								}
-							}
-						)
-							.then(res => updatedSerials.push(no))
-							.catch(err => errors.push(err));
-					}
+
+				const q = await findOne({
+					cols: Item.getColumns,
+					tables: "item",
+					where: `"serial_no" = '${no}'`,
 				});
+				if (q.data.reserved_branch_code && q.data.reserved_branch_code != branch_code) {
+					errors.push({ msg: `The item ${no} is reserved by another branch.` });
+				} else {
+					const r = await update({
+						table: "item",
+						info: {
+							status: "PENDING",
+						},
+						where: `"serial_no" = '${no}'`
+					});
+					if (r.errors) {
+						errors = r.errors
+					} else {
+						updatedSerials.push(no)
+					}
+				}
 			}
 		})
 	);
@@ -70,39 +63,26 @@ installItems = async (serial_no, branch_code) => {
 // Confirm Install
 // PENDING -> INSTALLED
 confirmItems = async id => {
-	return db.transaction(t => {
-		return db.query(
-			`UPDATE "item"
+	return pool.query(`
+		BEGIN TRANSACTION [Trans2]
+		BEGIN TRY
+			UPDATE "item"
 			SET "status" = 'INSTALLED'
 			FROM "withdrawal_has_item"
 			WHERE "item"."serial_no" = "withdrawal_has_item"."serial_no"
-			AND "withdrawal_has_item"."withdrawal_id" = :id
-			`,
-			{
-				replacements: {
-					id
-				},
-				type: db.QueryTypes.UPDATE,
-				transaction: t
-			}
-		).then(rr =>
-			Withdrawal.update(
-				{
-					status: "CONFIRMED"
-				},
-				{
-					where: {
-						id: {
-							[Op.eq]: id
-						}
-					}
-				},
-				{
-					transaction: t
-				}
-			)
-		)
-	}).then(r => ({
+			AND "withdrawal_has_item"."withdrawal_id" = ${id}
+		
+			UPDATE "withdrawal"
+			SET "status" = 'CONFIRMED'
+			WHERE "withdrawal"."id" = ${id}
+
+			COMMIT TRANSACTION [Trans2]
+		END TRY
+
+		BEGIN CATCH
+      		ROLLBACK TRANSACTION [Trans2]
+  		END CATCH  
+	`).then(r => ({
 			errors: []
 		}))
 		.catch(err => ({ errors: [{msg: "This withdrawal cannot be confirmed."}]}));
@@ -230,18 +210,16 @@ router.put(
 		const { serial_no, is_broken } = req.body;
 		await Promise.all(
 			serial_no.map(async no => {
-				Item.update(
-					{
-						is_broken
+				const q = await update({
+					table: "item",
+					info: {
+						is_broken,
 					},
-					{
-						where: {
-							serial_no: {
-								[Op.eq]: no
-							}
-						}
-					}
-				).catch(err => errors.push(err.errors));
+					where: `"serial_no" = '${no}'`,
+				});
+				if (q.errors) {
+					errors.push(q.errors);
+				}
 			})
 		);
 		if (errors.length > 0) res.status(400).json({ errors });

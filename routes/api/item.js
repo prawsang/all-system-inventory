@@ -14,8 +14,6 @@ const {
 	Supplier,
 	Return
 } = models;
-const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");
 const utils = require("../../utils/query");
 
