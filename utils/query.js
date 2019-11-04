@@ -50,16 +50,9 @@ const correctValueString = (value, rep) => {
 			return value;
 	}
 }
-const replaceReplacements = (string, replacements) => {
-	let aString = string
-	Object.keys(replacements).forEach(key => {
-		aString = aString.replace(`:${key}`, correctValueString(replacements[key]));
-	})
-	return aString;
-}
 
 const buildString = (data) => {
-	const { limit, page, cols, tables, availableCols, where, groupBy, replacements } = data;
+	const { limit, page, cols, tables, availableCols, where, groupBy } = data;
 	let { search_col, search_term } = data;
 	if (search_term) {
 		search_term = search_term.toLowerCase();
@@ -76,7 +69,7 @@ const buildString = (data) => {
 	let whereString = "";
 	if (where || (search_col && search_term)) {
 		const search =
-			search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(:search_term)` : null;
+			search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(${search_term ? `'%${search_term}%'` : ""})` : null;
 		whereString = `WHERE ${[where, search].filter(e => e).join(" AND ")}`;
 	}
 
@@ -89,11 +82,9 @@ const buildString = (data) => {
 	FROM ${tables}
 	${whereString}
 	${groupBy ? groupBy : ""}
-	${limit ? `LIMIT :limit` : ""}
-	${limit && page ? `OFFSET :offset` : ""}`
+	${limit ? `LIMIT ${limit}` : ""}
+	${limit && page ? `OFFSET ${limit * (page - 1)}` : ""}`
 
-	countString = replaceReplacements(countString, replacements);
-	queryString = replaceReplacements(queryString, replacements);
 	return {
 		countString,
 		queryString
@@ -102,7 +93,7 @@ const buildString = (data) => {
 
 module.exports = {
 	query: async function(data) {
-		const { limit, page, cols, tables, availableCols, where, groupBy, replacements, search_col, search_term } = data;
+		const { limit, page, cols, tables, availableCols, where, groupBy, search_col, search_term } = data;
 		
 		let count = 0;
 		let response = [];
@@ -119,12 +110,6 @@ module.exports = {
 			availableCols, 
 			where, 
 			groupBy, 
-			replacements: {
-				search_term: search_term ? `'%${search_term}%'` : "",
-				limit,
-				offset: limit * (page - 1),
-				...replacements
-			},
 			search_col, 
 			search_term
 		})
@@ -157,14 +142,12 @@ module.exports = {
 		};
 	},
 	findOne: async function(data) {
-		const { tables, cols, where, replacements } = data;
+		const { tables, cols, where } = data;
 		let string = `
 		SELECT ${cols}
 		FROM ${tables}
 		WHERE ${where}
 		`;
-		string = replaceReplacements(string, replacements);
-
 		let errors = [];
 		let response = [];
 
@@ -233,9 +216,7 @@ module.exports = {
 		SET ${setString}
 		${from ? `FROM ${from}` : ""}
 		WHERE ${where}
-		`
-		string = replaceReplacements(string, replacements);
-
+		` 
 		let errors = [];
 		let response = [];
 
@@ -263,7 +244,6 @@ module.exports = {
 		${using ? `USING ${using}` : ""}
 		WHERE ${where}
 		`
-		string = replaceReplacements(string, replacements);
 
 		let errors = [];
 		let response = [];
