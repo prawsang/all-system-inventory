@@ -38,6 +38,26 @@ const getFromAlias = col => {
 	}
 };
 
+const correctValueString = (value, rep) => {
+	switch (typeof value) {
+		case "number":
+			return value
+		case "string":
+			return `'${value}'`;
+		case "boolean":
+			return value ? "true" : "false";
+		default:
+			return value;
+	}
+}
+const replaceReplacements = (string, replacements) => {
+	let aString = string
+	Object.keys(replacements).forEach(key => {
+		aString = aString.replace(`:${key}`, correctValueString(replacements[key]));
+	})
+	return aString;
+}
+
 const buildString = (data) => {
 	const { limit, page, cols, tables, availableCols, where, groupBy, replacements } = data;
 	let { search_col, search_term } = data;
@@ -52,9 +72,6 @@ const buildString = (data) => {
 	if (search_col) {
 		search_col = getFromAlias(search_col);
 	}
-	let count = 0;
-	let response = [];
-	let errors = [];
 
 	let whereString = "";
 	if (where || (search_col && search_term)) {
@@ -75,12 +92,8 @@ const buildString = (data) => {
 	${limit ? `LIMIT :limit` : ""}
 	${limit && page ? `OFFSET :offset` : ""}`
 
-	Object.keys(replacements).forEach(key => {
-		countString = countString.replace(`:${key}`, replacements[key]);
-	})
-	Object.keys(replacements).forEach(key => {
-		queryString = queryString.replace(`:${key}`, replacements[key]);
-	})
+	countString = replaceReplacements(countString, replacements);
+	queryString = replaceReplacements(queryString, replacements);
 	return {
 		countString,
 		queryString
@@ -115,7 +128,6 @@ module.exports = {
 			search_col, 
 			search_term
 		})
-
 		await pool
 			.query(countString)
 			.then(c => {
@@ -142,6 +154,135 @@ module.exports = {
 			rows: response,
 			count,
 			pagesCount: limit ? Math.ceil(count / limit) : 1
+		};
+	},
+	findOne: async function(data) {
+		const { tables, cols, where, replacements } = data;
+		let string = `
+		SELECT ${cols}
+		FROM ${tables}
+		WHERE ${where}
+		`;
+		string = replaceReplacements(string, replacements);
+
+		let errors = [];
+		let response = [];
+
+		await pool
+			.query(string)
+			.then(r => {
+				response = r.rows;
+			})
+			.catch(err => {
+				errors.push(err);
+			});
+		if (errors.length > 0) {
+			return {
+				errors
+			};
+		}
+		return response[0];
+	},
+	insert: async function(data) {
+		const { table, info } = data;
+		let cols = [];
+		let values = []
+		Object.keys(info).forEach(key => {
+			cols.push(`"${key}"`);
+			values.push(correctValueString(info[key]));
+		});
+		const colString = `(${cols.join(", ")})`
+		const valueString = `(${values.join(", ")})`
+
+		let string = `
+		INSERT INTO ${table} ${colString}
+		VALUES ${valueString}
+		`
+		let errors = [];
+		let response = [];
+
+		await pool
+			.query(string)
+			.then(r => {
+				response = r.rows;
+			})
+			.catch(err => {
+				errors.push(err);
+			});
+		if (errors.length > 0) {
+			return {
+				errors
+			};
+		}
+		return {
+			rows: response,
+		};
+	},
+	update: async function(data) {
+		const { table, info, from, where, replacements } = data;
+
+		let setArray = []
+		Object.keys(info).forEach(key => {
+			let value = info[key];
+			setArray.push(`"${key}" = ${correctValueString(value)}`);
+		})
+		const setString = setArray.join(", ")
+
+		let string = `
+		UPDATE ${table}
+		SET ${setString}
+		${from ? `FROM ${from}` : ""}
+		WHERE ${where}
+		`
+		string = replaceReplacements(string, replacements);
+
+		let errors = [];
+		let response = [];
+
+		await pool
+			.query(string)
+			.then(r => {
+				response = r.rows;
+			})
+			.catch(err => {
+				errors.push(err);
+			});
+		if (errors.length > 0) {
+			return {
+				errors
+			};
+		}
+		return {
+			rows: response,
+		};
+	},
+	del: async function(data) {
+		const { table, using, from, where, replacements } = data;
+		let string = `
+		DELETE FROM ${table}
+		${using ? `USING ${using}` : ""}
+		WHERE ${where}
+		`
+		string = replaceReplacements(string, replacements);
+
+		let errors = [];
+		let response = [];
+
+		await pool
+			.query(string)
+			.then(r => {
+				response = r.rows;
+			})
+			.catch(err => {
+				errors.push(err);
+			});
+		if (errors.length > 0) {
+			return {
+				errors
+			};
+		}
+		return {
+			rows: response,
 		};
 	}
 };
