@@ -1,68 +1,7 @@
-const Sequelize = require("sequelize");
-const db = require("../config/database");
-const Staff = require("./Staff");
-const Branch = require("./Branch");
-const Department = require("./Department");
+const Withdrawal = {};
+const utils = require("../utils/query");
 const Item = require("./Item");
-const Op = Sequelize.Op;
 
-const Withdrawal = db.define("withdrawal", {
-	id: {
-		type: Sequelize.INTEGER,
-		primaryKey: true,
-		autoIncrement: true
-	},
-	for_branch_code: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	},
-	created_by_staff_code: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	},
-	type: {
-		type: Sequelize.ENUM,
-		values: ["INSTALLATION", "LENDING", "TRANSFER"],
-		allowNull: false,
-		validate: {
-			notEmpty: true,
-			isIn: [["INSTALLATION", "LENDING", "TRANSFER"]]
-		}
-	},
-	date: {
-		type: Sequelize.DATE,
-		allowNull: false,
-		validate: {
-			notEmpty: true
-		}
-	},
-	install_date: {
-		type: Sequelize.DATE
-	},
-	status: {
-		type: Sequelize.ENUM,
-		values: ["PENDING", "CONFIRMED", "CANCELLED"],
-		allowNull: false,
-		validate: {
-			notEmpty: true,
-			isIn: [["PENDING", "CONFIRMED", "CANCELLED"]]
-		}
-	},
-	remarks: {
-		type: Sequelize.STRING
-	},
-	return_by: {
-		type: Sequelize.DATE
-	},
-},{
-	freezeTableName: "withdrawal"
-});
 Withdrawal.getColumns = `"withdrawal"."id" AS "withdrawal_id",
 	"withdrawal"."for_branch_code",
 	"withdrawal"."for_department_code",
@@ -92,67 +31,68 @@ Withdrawal.validate = data => {
 	}
 	return { errors };
 };
-Withdrawal.getType = withdrawal_id => {
-	return Withdrawal.findOne({
-		where: {
-			id: {
-				[Op.eq]: withdrawal_id
-			}
-		}
+Withdrawal.getType = async withdrawal_id => {
+	const q = await utils.findOne({
+		tables: "withdrawal",
+		cols: Withdrawal.getColumns,
+		where: `"id" = ${withdrawal_id}`
 	})
-		.then(withdrawal => withdrawal.type)
-		.catch(err => ({ errors: err }));
-};
-Withdrawal.checkStatus = (id, status) => {
-	return Withdrawal.findOne({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
+	if (q.errors) {
+		return { errors: err }
+	} else {
+		if (q.data) {
+			return q.data.type
+		} else {
+			return { errors: [{ msg: "Withdrawal not found. "}]}
 		}
-	})
-		.then(withdrawal => {
-			if (withdrawal.status !== status) {
-				return false;
-			} else return true;
-		})
-		.catch(err => false);
+	}
 };
-Withdrawal.checkItem = (id, serial_no) => {
-	return Withdrawal.count({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
-		},
-		include: {
-			model: Item,
-			as: "items",
-			where: {
-				serial_no: {
-					[Op.eq]: serial_no
-				}
-			}
+Withdrawal.checkStatus = async (id, status) => {
+	const q = await utils.findOne({
+		tables: "withdrawal",
+		cols: Withdrawal.getColumns,
+		where: `"id" = ${id}`
+	})
+	if (q.errors) {
+		return false
+	} else {
+		if (q.data) {
+			if (q.data.status !== status) return false;
+			return true
+		} else {
+			return false
 		}
-	})
-		.then(count => (count > 0 ? true : false))
-		.catch(err => false);
+	}
 };
-Withdrawal.changeStatus = (id, status) => {
-	return Withdrawal.update(
-		{
+Withdrawal.checkItem = async (id, serial_no) => {
+	const q = await utils.findOne({
+		tables: "withdrawal_has_item",
+		cols: Item.getColumns,
+		where: `"withdrawal_id" = ${id} AND "serial_no" = ${serial_no}`
+	})
+	if (q.errors) {
+		return false
+	} else {
+		if (q.data) {
+			return true
+		} else {
+			return false
+		}
+	}
+};
+Withdrawal.changeStatus = async (id, status) => {
+	const q = await utils.update({
+		tables: "withdrawal",
+		info: {
 			status
 		},
-		{
-			where: {
-				id: {
-					[Op.eq]: id
-				}
-			}
-		}
-	)
-		.then(rows => ({ errors: [] }))
-		.catch(err => ({ errors: [err] }));
+		where: `"id" = ${id}`
+	})
+	if (q.errors) {
+		return { errors: [err] }
+	} else {
+		return { errors: [] }
+	}
 };
 
 Withdrawal.filter = data => {
@@ -176,28 +116,28 @@ Withdrawal.filter = data => {
 	let staffCodeFilter = null;
 
 	if (from || to) {
-		const f = from ? `"withdrawal"."date" >= :from` : null;
-		const t = to ? `"withdrawal"."date" <= :to` : null;
+		const f = from ? `"withdrawal"."date" >= '${from}'` : null;
+		const t = to ? `"withdrawal"."date" <= '${to}'` : null;
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (install_from || install_to) {
-		const f = install_from ? `"withdrawal"."install_date" >= :install_from` : null;
-		const t = install_to ? `"withdrawal"."install_date" <= :install_to` : null;
+		const f = install_from ? `"withdrawal"."install_date" >= '${install_from}'` : null;
+		const t = install_to ? `"withdrawal"."install_date" <= '${install_to}'` : null;
 		installDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (return_from || return_to) {
-		const f = return_from ? `"withdrawal"."return_by" >= :return_from` : null;
-		const t = return_to ? `"withdrawal"."return_by" <= :return_to` : null;
+		const f = return_from ? `"withdrawal"."return_by" >= '${return_from}'` : null;
+		const t = return_to ? `"withdrawal"."return_by" <= '${return_to}'` : null;
 		returnDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (type) {
-		typeFilter = `"withdrawal"."type" = :type`;
+		typeFilter = `"withdrawal"."type" = '${type}'`;
 	}
 	if (status) {
-		statusFilter = `"withdrawal"."status" = :status`;
+		statusFilter = `"withdrawal"."status" = '${status}'`;
 	}
 	if (staff_code) {
-		staffCodeFilter = `"withdrawal"."created_by_staff_code" = :staff_code`;
+		staffCodeFilter = `"withdrawal"."created_by_staff_code" = '${staff_code}'`;
 	}
 
 	return [dateFilter, returnDateFilter, installDateFilter, typeFilter, statusFilter, staffCodeFilter]
