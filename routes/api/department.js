@@ -60,9 +60,9 @@ router.get("/:department_code/staff", async (req, res) => {
         cols: Staff.getColumns,
         tables: "staff",
 		where: `"works_for_dep_code" = '${department_code}'`,
+		availableCols: ["staff_name", "staff_code"]
 	});
 	if (q.errors) {
-        console.log(q.errors);
 		res.status(500).json(q);
 	} else {
 		res.json(q);
