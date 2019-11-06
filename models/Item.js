@@ -72,17 +72,16 @@ Item.checkStatus = (serial_no, status) => {
 
 // Filtering
 Item.filter = data => {
-	const { is_broken, status } = data;
+	const { is_broken, status, type } = data;
 	let brokenFilter = is_broken
 		? is_broken === "true"
 			? `"item"."is_broken"`
 			: `NOT "item"."is_broken"`
 		: null;
 	let statusFilter = status ? `"item"."status" = ${status}` : null;
+	let typeFilter = type ? `"model"."is_product_type_name" = '${type}'`: null
 
-	// TODO: Add filtering for an item's type
-
-	return [brokenFilter, statusFilter].filter(e => e).join(" AND ");
+	return [brokenFilter, statusFilter, typeFilter].filter(e => e).join(" AND ");
 };
 
 

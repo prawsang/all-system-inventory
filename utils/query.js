@@ -122,6 +122,7 @@ module.exports = {
 			})
 			.catch(err => {
 				errors.push(err);
+				console.log(err)
 			});
 
 		await pool
@@ -162,6 +163,7 @@ module.exports = {
 			})
 			.catch(err => {
 				errors.push(err);
+				console.log(err)
 			});
 		if (errors.length > 0) {
 			return {
@@ -202,6 +204,7 @@ module.exports = {
 			})
 			.catch(err => {
 				errors.push(err);
+				console.log(err)
 			});
 		if (errors.length > 0) {
 			return {
@@ -243,6 +246,7 @@ module.exports = {
 			})
 			.catch(err => {
 				errors.push(err);
+				console.log(err)
 			});
 		if (errors.length > 0) {
 			return {
@@ -273,6 +277,7 @@ module.exports = {
 			})
 			.catch(err => {
 				errors.push(err);
+				console.log(err)
 			});
 		if (errors.length > 0) {
 			return {

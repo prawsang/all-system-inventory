@@ -16,6 +16,7 @@ const {
 } = models;
 const { check, validationResult } = require("express-validator/check");
 const utils = require("../../utils/query");
+const pool = require("../../config/database");
 
 router.use("/", require("./stock_status").router);
 
@@ -28,17 +29,25 @@ router.route("/get-all").get(async (req, res) => {
 		type
 	});
 
-	// TODO: Join with bulk, model and supplier tables
 	const q = await utils.query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Item.getColumns}`,
-		tables: `"item"`,
+		cols: `${Item.getColumns}, ${Model.getColumns}, ${Supplier.getColumns}, ${Bulk.getColumns}`,
+		tables: `"item"
+		JOIN "bulk" ON "item"."from_bulk_code" = "bulk"."bulk_code"
+		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
+		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"`,
 		where: filters,
 		availableCols: [
-			"serial_no"
+			"serial_no",
+			"supplier_code",
+			"supplier_name",
+			"bulk_code",
+			"model_code",
+			"model_name",
+			"product_type_name"
 		]
 	});
 	if (q.errors) {
@@ -49,10 +58,9 @@ router.route("/get-all").get(async (req, res) => {
 });
 
 router.get("/:serial_no/details", async (req, res) => {
-	// TODO: Include return history along with withdrawal history. Sort by date newest to oldest.
 	const { serial_no } = req.params;
 
-	const q = await utils.findOne({
+	let q = await utils.findOne({
 		cols: `${Item.getColumns}, 
 		${Bulk.getColumns},
 		${Model.getColumns},
@@ -65,9 +73,41 @@ router.get("/:serial_no/details", async (req, res) => {
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-	} else {
-		res.json(q);
+		return;
 	}
+
+	const w = await pool.query(`
+	SELECT ${Withdrawal.getColumns}, 
+	${Department.getColumns}
+	${Branch.getColumns}, 
+	${Customer.getColumns}, 
+	${Staff.getColumns},
+	FROM "withdrawal"
+	LEFT OUTER JOIN "department" ON "withdrawal"."for_department_code" = "department"."department_code"
+	LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
+	JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
+	JOIN "staff" ON "created_by_staff_code" = "staff_code"
+	JOIN "withdrawal_has_item" ON "withdrawal_has_item"."serial_no" = "item"."serial_no"
+	WHERE "withdrawal_has_item"."serial_no" = '${serial_no}'
+	`);
+	if (w.errors) {
+		res.status(500).json(w);
+		return;
+	}
+
+	const r = await pool.query(`
+	SELECT ${Return.getColumns},
+	FROM "return_history"
+	WHERE "return_history"."serial_no" = '${serial_no}'`)
+	if (r.errors) {
+		res.status(500).json(r);
+		return;
+	}
+
+	q.withdrawals = w;
+	q.returns = r;
+
+	res.status(200).json(q);
 });
 
 // Get lent items
@@ -121,16 +161,17 @@ router.get("/reserved", async (req, res) => {
 
 	const typeFilter = Item.filter({ type });
 
-	// TODO: Join with bulk, model and supplier tables
 	const q = await utils.query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Branch.getColumns}, ${Customer.getColumns}, ${Item.getColumns}`,
+		cols: `${Branch.getColumns}, ${Customer.getColumns}, ${Item.getColumns}, ${Model.getColumns}`,
 		tables: `"item"
 		LEFT OUTER JOIN "branch" ON "item"."reserved_branch_code" = "branch"."branch_code"
 		LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
+		JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
+		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
 		`,
 		where: `"item"."status" = 'RESERVED' ${typeFilter ? `AND ${typeFilter}` : ""}`,
 		availableCols: [
@@ -139,12 +180,13 @@ router.get("/reserved", async (req, res) => {
 			"branch_code",
 			"branch_name",
 			"customer_code",
-			"customer_name"
+			"customer_name",
+			"model_code",
+			"model_name"
 		]
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-		console.log(q.errors)
 	} else {
 		res.json(q);
 	}
@@ -161,35 +203,8 @@ const stockValidation = [
 		.withMessage("Bulk Code must be provided."),
 	check("is_broken")
 		.isBoolean()
-		.withMessage("Bulk Code must be provided."),
+		.withMessage("Must specify whether the item is broken or not"),
 ];
-
-// Add Item To A Bulk
-router.post("/add", stockValidation, async (req, res) => {
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res.status(422).json({ errors: errors.array() });
-	}
-
-	const { serial_no, remarks, is_broken, from_bulk_code } = req.body;
-	const q = await utils.insert({
-		table: "item",
-		info: {
-			serial_no,
-			from_bulk_code,
-			remarks,
-			is_broken,
-			reserved_branch_code: null,
-			status: "IN_STOCK"
-		},
-		returning: "serial_no"
-	})
-	if (q.errors) {
-		res.status(500).json(q);
-	} else {
-		res.json(q);
-	}
-});
 
 // Edit Item
 router.put("/:serial_no/edit", stockValidation, async (req, res) => {

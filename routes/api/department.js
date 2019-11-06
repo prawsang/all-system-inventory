@@ -1,18 +1,8 @@
-// TODO: API for department entity-type
-
 const express = require("express");
 const router = express.Router();
 const utils = require("../../utils/query");
 const models = require("../../models/");
 const { check, validationResult } = require("express-validator/check");
-
-// Required APIs
-// 1. /department/get-all - get all departments
-// 2. /department/:department_code/details - get a department's details
-// 3. /department/:department_code/staff - get staff in the department (use predefined query functions)
-// 4. /department/add - add a department
-// 5. /department/edit - edit a department
-// 6. /department/delete - delete a department (no cascade delete)
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;
@@ -31,5 +21,108 @@ router.get("/get-all", async (req, res) => {
 		res.json(q);
 	}
 });
+
+router.get("/:department_code/details", async (req, res) => {
+	const q = await utils.findOne({
+		cols: Department.getColumns,
+		tables: "department",
+		where: `"department_code" = '${department_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
+router.get("/:department_code/staff", async (req, res) => {
+	const { department_code } = req.params;
+	const { limit, page, search_col, search_term } = req.query;
+
+	const q = await utils.query({
+		limit,
+		page,
+		search_term,
+		tables: `"staff"
+		JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
+		where: `"department"."department_code" = '${department_code}'`,
+		availableCols: ["staff_name", "staff_code"]
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
+// Validation
+const depValidation = [
+	check("department_code")
+		.blacklist("/")
+		.not().isEmpty()
+		.withMessage("Department code cannot be empty."),
+	check("name")
+		.not().isEmpty()
+		.withMessage("Supplier name cannot be empty."),
+];
+
+router.post("/add", depValidation, async (req,res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+	const { department_code, name } = req.body;
+	const q = await utils.insert({
+		table: "staff",
+		info: {
+			department_code, 
+			name
+		},
+		returning: "department_code"
+	})
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
+router.put("/:staff_code/edit", staffValidation, async (req,res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+	const { name } = req.body;
+	const { department_code } = req.params;
+	
+	const q = await utils.update({
+		table: "staff",
+		info: {
+			department_code, 
+			name, 
+		},
+		where: `"department_code" = '${department_code}'`,
+		returning: "department_code"
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+})
+
+router.delete("/:department/delete", async (req,res) => {
+	const { department } = req.params;
+	
+	const q = await utils.del({
+		table: "department",
+		where: `"department" = '${department}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+})
 
 module.exports = router;
