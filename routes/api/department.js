@@ -89,7 +89,7 @@ router.post("/add", depValidation, async (req,res) => {
 	}
 });
 
-router.put("/:staff_code/edit", depValidation, async (req,res) => {
+router.put("/:department_code/edit", depValidation, async (req,res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -113,12 +113,12 @@ router.put("/:staff_code/edit", depValidation, async (req,res) => {
 	}
 })
 
-router.delete("/:department/delete", async (req,res) => {
+router.delete("/:department_code/delete", async (req,res) => {
 	const { department } = req.params;
 	
 	const q = await utils.del({
 		table: "department",
-		where: `"department" = '${department}'`,
+		where: `"department_code" = '${department_code}'`,
 	});
 	if (q.errors) {
 		res.status(500).json(q);
