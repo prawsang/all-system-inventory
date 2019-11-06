@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 const utils = require("../../utils/query");
 const models = require("../../models/");
-const { Department, Supplier } = models;
+const { Department, Staff } = models;
 const { check, validationResult } = require("express-validator/check");
 
 // Required APIs
@@ -57,11 +57,9 @@ router.get("/:department_code/staff", async (req, res) => {
 		page,
 		search_term,
 		search_col,
-        cols: `"staff"."staff_code","staff"."name"`,
-        tables: `"staff"
-		JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
-		where: `"department"."department_code" = '${department_code}'`,
-		//availableCols: ["staff_name", "staff_code"] ??
+        cols: Staff.getColumns,
+        tables: "staff",
+		where: `"works_for_dep_code" = '${department_code}'`,
 	});
 	if (q.errors) {
         console.log(q.errors);
