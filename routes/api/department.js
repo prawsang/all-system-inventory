@@ -23,6 +23,7 @@ router.get("/get-all", async (req, res) => {
 });
 
 router.get("/:department_code/details", async (req, res) => {
+	const { department_code } = req.params;
 	const q = await utils.findOne({
 		cols: Department.getColumns,
 		tables: "department",
@@ -87,7 +88,7 @@ router.post("/add", depValidation, async (req,res) => {
 	}
 });
 
-router.put("/:staff_code/edit", staffValidation, async (req,res) => {
+router.put("/:staff_code/edit", depValidation, async (req,res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });

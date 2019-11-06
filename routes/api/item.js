@@ -10,7 +10,6 @@ const {
 	Bulk,
 	Model,
 	Staff,
-	ProductType,
 	Supplier,
 	Return
 } = models;
@@ -78,16 +77,16 @@ router.get("/:serial_no/details", async (req, res) => {
 
 	const w = await pool.query(`
 	SELECT ${Withdrawal.getColumns}, 
-	${Department.getColumns}
+	${Department.getColumns},
 	${Branch.getColumns}, 
 	${Customer.getColumns}, 
-	${Staff.getColumns},
+	${Staff.getColumns}
 	FROM "withdrawal"
 	LEFT OUTER JOIN "department" ON "withdrawal"."for_department_code" = "department"."department_code"
 	LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
 	JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
 	JOIN "staff" ON "created_by_staff_code" = "staff_code"
-	JOIN "withdrawal_has_item" ON "withdrawal_has_item"."serial_no" = "item"."serial_no"
+	JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
 	WHERE "withdrawal_has_item"."serial_no" = '${serial_no}'
 	`);
 	if (w.errors) {
@@ -96,16 +95,17 @@ router.get("/:serial_no/details", async (req, res) => {
 	}
 
 	const r = await pool.query(`
-	SELECT ${Return.getColumns},
+	SELECT ${Return.getColumns}
 	FROM "return_history"
 	WHERE "return_history"."serial_no" = '${serial_no}'`)
+
 	if (r.errors) {
 		res.status(500).json(r);
 		return;
 	}
 
-	q.withdrawals = w;
-	q.returns = r;
+	q.withdrawals = w.rows;
+	q.returns = r.rows;
 
 	res.status(200).json(q);
 });
@@ -129,18 +129,18 @@ router.get("/lent", async (req, res) => {
 			${Withdrawal.getColumns},
 			${Branch.getColumns},
 			${Customer.getColumns},
-			"tm"."return_by"`,
+			"tm"."id"`,
 		tables: `"item"
 		JOIN "withdrawal_has_item" ON "withdrawal_has_item"."serial_no" = "item"."serial_no"
 		JOIN "withdrawal" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
 		JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
 		JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
 		JOIN (
-			SELECT "serial_no", max(withdrawal.return_by) AS "return_by"
+			SELECT "serial_no", max(withdrawal.id) AS "id"
 			FROM "withdrawal"
 			JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
 			GROUP BY "serial_no"
-		) "tm" ON "withdrawal"."return_by" = "tm"."return_by" AND "item"."serial_no" = "tm"."serial_no"
+		) "tm" ON "withdrawal"."id" = "tm"."id" AND "item"."serial_no" = "tm"."serial_no"
 		`,
 		where: `"item"."status" = 'LENT' 
 			AND "withdrawal"."type" = 'LENDING' 

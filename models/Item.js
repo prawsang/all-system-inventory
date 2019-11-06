@@ -41,7 +41,7 @@ Item.changeStatus = async params => {
 					updatedSerials.push(no)
 				}
 			} else {
-				errors.push({ msg: `The ${no} item is not ${validStatus[0]}` });
+				errors.push({ msg: `The item serial no. ${no} is not ${validStatus[0]}` });
 			}
 		})
 	);
@@ -52,10 +52,10 @@ Item.changeStatus = async params => {
 };
 
 // Check if the item's (single item) is of a status
-Item.checkStatus = (serial_no, status) => {
+Item.checkStatus = async (serial_no, status) => {
 	if (typeof status == "string") status = [status];
 
-	const q = utils.findOne({
+	const q = await utils.findOne({
 		tables: "item",
 		cols: Item.getColumns,
 		where: `"serial_no" = '${serial_no}'`

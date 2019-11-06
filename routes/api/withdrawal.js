@@ -16,7 +16,7 @@ const {
 const { check, validationResult } = require("express-validator/check");
 const utils = require("../../utils/query");
 const stockStatus = require("./stock_status");
-const { installItems, transferItems, lendItems, returnItems } = stockStatus;
+const { installItems, returnItems } = stockStatus;
 
 router.get("/get-all", async (req, res) => {
 	const {
@@ -77,7 +77,7 @@ router.get("/get-all", async (req, res) => {
 router.get("/:id/details", async (req, res) => {
 	const { id } = req.params;
 	const q = await utils.findOne({
-		cols: Customer.getColumns,
+		cols: `${Withdrawal.getColumns},${Customer.getColumns},${Staff.getColumns},${Branch.getColumns}`,
 		tables: `"withdrawal"
 		LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
 		JOIN "customer" ON "customer"."customer_code" = "branch"."owner_customer_code"
@@ -283,14 +283,18 @@ router.put("/:id/change-status", async (req, res) => {
 	const { id } = req.params;
 	const { status } = req.body;
 
-	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (status == "CONFIRMED") {
+		const q = await utils.findOne({
+			cols: Withdrawal.getColumns,
+			tables: "withdrawal",
+			where: `"id" = ${id}`,
+		});
+		const isPending = q.data.withdrawal_status === "PENDING"
 		if (!isPending) {
 			res.sendStatus(421);
 			return;
 		} else {
-			const changeStatus = await confirmItems(id);
-
+			const changeStatus = await confirmItems(id, q.data.withdrawal_type);
 			if (changeStatus.length > 0) {
 				res.status(500).send(changeStatus.errors);
 			} else {
@@ -298,33 +302,22 @@ router.put("/:id/change-status", async (req, res) => {
 			}
 		}
 	} else if (status == "CANCELLED") {
-		const changeStatus = await Withdrawal.changeStatus(id, status);
-		if (changeStatus.errors.length > 0) {
-			res.status(500).json({ errors: changeStatus.errors });
-			return;
-		} else {
-			await pool.query(`
-				BEGIN TRANSACTION [Trans1]
-				BEGIN TRY
-					UPDATE "item"
-					SET "status" = 'IN_STOCK', "reserved_branch_code" = null
-					FROM "withdrawal_has_item"
-					WHERE "item"."serial_no" = "withdrawal_has_item"."serial_no" AND "withdrawal_id" = ${id}
+		await pool.query(`
+			BEGIN;
+				UPDATE "withdrawal"
+				SET "status" = 'CANCELLED'
+				WHERE "withdrawal"."id" = ${id};
 
-					DELETE FROM "withdrawal_has_item"
-					WHERE "withdrawal_id" = ${id}
-
-					COMMIT TRANSACTION [Trans1]
-				END TRY
-
-				BEGIN CATCH
-					ROLLBACK TRANSACTION [Tran1]
-				END CATCH
-			`).then(r => res.sendStatus(200))
-			.catch(err => {
-				res.status(400).json({ errors: err })
-			})
-		}
+				UPDATE "item"
+				SET "status" = 'IN_STOCK', "reserved_branch_code" = null
+				FROM "withdrawal_has_item"
+				WHERE "item"."serial_no" = "withdrawal_has_item"."serial_no" AND "withdrawal_id" = ${id};
+			COMMIT;
+		`).then(r => res.sendStatus(200))
+		.catch(err => {
+			console.log(err);
+			res.status(400).json({ errors: err })
+		})
 	} else if (status == "PENDING") {
 		res.status(400).json({ errors: [{ msg: "Cannot change status to PENDING." }] });
 	}
@@ -346,7 +339,7 @@ router.put("/:id/add-items", async (req, res) => {
 	branch_code = q.data.for_branch_code
 
 	// Check if Pending
-	const isPending = await Withdrawal.checkStatus(id, "PENDING");
+	const isPending = q.data.withdrawal_status === 'PENDING'
 	if (!isPending) {
 		res.status(400).json([{ msg: "This withdrawal must be PENDING." }]);
 		return;
@@ -355,22 +348,7 @@ router.put("/:id/add-items", async (req, res) => {
 	let r = null;
 	let errors = [];
 
-	const type = await Withdrawal.getType(id);
-	if (type.errors) {
-		res.status(500).send(type.errors);
-		return;
-	}
-
-	if (type === "INSTALLATION") {
-		r = await installItems(serial_no, branch_code);
-	} else if (type === "TRANSFER") {
-		r = await transferItems(serial_no);
-	} else if (type === "LENDING") {
-		r = await lendItems(serial_no);
-	} else {
-		res.status(400).json({ errors: [{ msg: "Withdrawal type is invalid" }] });
-		return;
-	}
+	r = await installItems(serial_no, branch_code);
 	errors = r.errors;
 
 	await Promise.all(
@@ -416,9 +394,9 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 
 	await Promise.all(
 		r.updatedSerials.map(async no => {
-			const q = await del({
+			const q = await utils.del({
 				table: "withdrawal_has_item",
-				where: `"withdrawal_id" = ${id} AND "serial_no" = '${serial_no}'`,
+				where: `"withdrawal_id" = ${id} AND "serial_no" = '${no}'`,
 			});
 			if (q.errors) {
 				errors = q.errors
@@ -432,30 +410,23 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 // Deleting withdrawals (can be done when it is cancelled).
 removeAllItemsAndDelete = id => {
 	return pool.query(`
-		BEGIN TRANSACTION [Trans1]
-			BEGIN TRY
-				DELETE FROM "withdrawal_has_item"
-				WHERE "withdrawal_id" = ${id}
+		BEGIN;
+			DELETE FROM "withdrawal_has_item"
+			WHERE "withdrawal_id" = ${id};
 
-				DELETE FROM "withdrawal
-				WHERE "id" = ${id}
-
-				COMMIT TRANSACTION [Trans1]
-			END TRY
-
-			BEGIN CATCH
-      			ROLLBACK TRANSACTION [Trans1]
-  			END CATCH  
+			DELETE FROM "withdrawal"
+			WHERE "id" = ${id};
+		COMMIT;
 	`).then(r => ({
 			errors: []
 		}))
-		.catch(err => ({
-			errors: [{ msg: "This withdrawal cannot be deleted." }]
-		}));
+		.catch(err => {
+			return {errors: [{ msg: "This withdrawal cannot be deleted." }]}
+		});
 };
 
-// Delete Withdrawal (only if it is pending)
-router.delete("/:id", async (req, res) => {
+// Delete Withdrawal (only if it is cancelled)
+router.delete("/:id/delete", async (req, res) => {
 	const { id } = req.params;
 	// Check if Cancelled
 	const isCancelled = await Withdrawal.checkStatus(id, "CANCELLED");

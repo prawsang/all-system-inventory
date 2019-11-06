@@ -35,6 +35,20 @@ router.get("/get-all", async (req, res) => {
 	}
 });
 
+router.get("/:bulk_code/details", async (req, res) => {
+	const { bulk_code } = req.params;
+	const q = await utils.findOne({
+		cols: models.Bulk.getColumns,
+		tables: "bulk",
+		where: `"bulk_code" = '${bulk_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
 router.get("/:bulk_code/items", async (req, res) => {
 	const { bulk_code } = req.params;
 	const { limit, page, search_col, search_term } = req.query;
@@ -44,7 +58,7 @@ router.get("/:bulk_code/items", async (req, res) => {
 		page,
 		search_term,
 		search_col,
-		cols: `${Item.getColumns}`,
+		cols: `${models.Item.getColumns}`,
 		tables: `"item"`,
 		where: `"item"."from_bulk_code" = '${bulk_code}'`,
 		availableCols: ["serial_no"],
@@ -125,7 +139,6 @@ addBulkAndItems = async (body) => {
 					status: "IN_STOCK",
 					is_broken: false
 				},
-				returning: "serial_no"
 			})
 			if (item.errors) {
 				errors.push({
@@ -178,15 +191,14 @@ router.post("/:bulk_code/add-items", itemValidation, async (req,res) => {
 	await Promise.all(
 		serial_no.map(async no => {
 			const q = await utils.insert({
-				table: "supplier",
+				table: "item",
 				info: {
 					serial_no: no,
 					from_bulk_code: bulk_code,
 					remarks,
 					status: "IN_STOCK",
 					is_broken: false
-				},
-				returning: "bulk_code"
+				}
 			})
 			if (q.errors) {
 				errors.push(err)
@@ -210,7 +222,7 @@ router.put("/:bulk_code/edit", bulkValidation, async (req,res) => {
 	const { bulk_code } = req.params;
 	
 	const q = await utils.update({
-		table: "supplier",
+		table: "bulk",
 		info: {
 			bulk_code, 
 			of_model_code,

@@ -27,31 +27,28 @@ installItems = async (serial_no, branch_code) => {
 
 	await Promise.all(
 		serial_no.map(async no => {
-			const valid = await Item.checkStatus(no, ["IN_STOCK", "RESERVED"]);
-			if (!valid) {
+			const q = await utils.findOne({
+				cols: Item.getColumns,
+				tables: "item",
+				where: `"serial_no" = '${no}'`,
+			});
+			if (q.data.status !== "IN_STOCK" && q.data.status !== "RESERVED") {
 				errors.push({ msg: `The item ${no} is not IN_STOCK` });
+			}
+			if (q.data.reserved_branch_code && q.data.reserved_branch_code != branch_code) {
+				errors.push({ msg: `The item ${no} is reserved by another branch.` });
 			} else {
-
-				const q = await utils.findOne({
-					cols: Item.getColumns,
-					tables: "item",
-					where: `"serial_no" = '${no}'`,
+				const r = await utils.update({
+					table: "item",
+					info: {
+						status: "PENDING",
+					},
+					where: `"serial_no" = '${no}'`
 				});
-				if (q.data.reserved_branch_code && q.data.reserved_branch_code != branch_code) {
-					errors.push({ msg: `The item ${no} is reserved by another branch.` });
+				if (r.errors) {
+					errors = r.errors
 				} else {
-					const r = await utils.update({
-						table: "item",
-						info: {
-							status: "PENDING",
-						},
-						where: `"serial_no" = '${no}'`
-					});
-					if (r.errors) {
-						errors = r.errors
-					} else {
-						updatedSerials.push(no)
-					}
+					updatedSerials.push(no)
 				}
 			}
 		})
@@ -62,61 +59,39 @@ installItems = async (serial_no, branch_code) => {
 	};
 };
 // Confirm Install
-// PENDING -> INSTALLED
-confirmItems = async id => {
+// PENDING -> INSTALLED/LENT/TRANSFERRED
+confirmItems = async (id, type ) => {
+	let status = ""
+	switch(type) {
+		case "INSTALLATION":
+			status = "INSTALLED";
+			break;
+		case "LENDING":
+			status = "LENT"
+			break;
+		case "TRANSFER":
+			status = "TRANSFERRED"
+			break;
+		default: status = "INSTALLED"
+	}
 	return pool.query(`
-		BEGIN TRANSACTION [Trans2]
-		BEGIN TRY
+		BEGIN;
 			UPDATE "item"
-			SET "status" = 'INSTALLED'
+			SET "status" = '${status}'
 			FROM "withdrawal_has_item"
 			WHERE "item"."serial_no" = "withdrawal_has_item"."serial_no"
-			AND "withdrawal_has_item"."withdrawal_id" = ${id}
+			AND "withdrawal_has_item"."withdrawal_id" = ${id};
 		
 			UPDATE "withdrawal"
 			SET "status" = 'CONFIRMED'
-			WHERE "withdrawal"."id" = ${id}
-
-			COMMIT TRANSACTION [Trans2]
-		END TRY
-
-		BEGIN CATCH
-      		ROLLBACK TRANSACTION [Trans2]
-  		END CATCH  
+			WHERE "withdrawal"."id" = ${id};
+		COMMIT;
 	`).then(r => ({
 			errors: []
 		}))
-		.catch(err => ({ errors: [{msg: "This withdrawal cannot be confirmed."}]}));
-};
-
-// Transfer
-// IN_STOCK -> TRANSFERRED
-transferItems = async serial_no => {
-	const res = await Item.changeStatus({
-		serial_no,
-		validStatus: "IN_STOCK",
-		toStatus: "TRANSFERRED"
-	});
-	const { updatedSerials, errors } = res;
-	return {
-		updatedSerials,
-		errors
-	};
-};
-
-// Lend
-// IN_STOCK -> LENT
-lendItems = async serial_no => {
-	const res = await Item.changeStatus({
-		serial_no,
-		validStatus: "IN_STOCK",
-		toStatus: "LENT"
-	});
-	const { updatedSerials, errors } = res;
-	return {
-		updatedSerials,
-		errors
-	};
+		.catch(err => {
+			return { errors: [{msg: "This withdrawal cannot be confirmed."}]}
+		})
 };
 
 // Reserve
@@ -179,9 +154,9 @@ router.put("/return-wo-history", checkSerial, async (req,res) => {
 
 // Return with History 
 router.put("/return", checkSerial, async (req, res) => {
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res.status(422).json({ errors: errors.array() });
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
 	}
 
 	// serial_no is an array
@@ -195,49 +170,41 @@ router.put("/return", checkSerial, async (req, res) => {
 		const s = `
 		UPDATE "item" 
 		SET "status" = 'IN_STOCK' 
-		WHERE "item"."serial_no" = '${no}'
+		WHERE "item"."serial_no" = '${no}';
 		
 		INSERT INTO "return_history" ("return_datetime", "serial_no")
-		VALUES (current_timestap, '${no}')`;
+		VALUES (current_timestamp, '${no}');`;
 		serial_string_a.push(t)
 		trans_string_a.push(s);
 	})
 	const serial_string = serial_string_a.join(" OR ");
-	const trans_string = trans_string_a.join(" ");
+	const trans_string = trans_string_a.join("; ");
 
 	// Get status of the items, make sure they are either INSTALLED, TRANSFERRED, or LENT.
-	await pool.query(`
+	const r = await pool.query(`
 		SELECT "item"."status", "item"."serial_no"
 		FROM "item"
 		WHERE ${serial_string}
-	`).then(r => {
-		let errors = [];
-		r.forEach(re => {
-			if (re.status !== "INSTALLED" && re.status !== "TRANSFERRED" && re.status !== "LENT") {
-				errors.push({ msg: `Item serial no. ${re.serial_no} is either reserved or already returned.`});
-			}
-		})
-		if (errors.length > 0) {
-			res.status(400).json(errors);
-			return;
+	`)
+	let errors = [];
+	r.rows.forEach(re => {
+		if (re.status !== "INSTALLED" && re.status !== "TRANSFERRED" && re.status !== "LENT") {
+			errors.push({ msg: `Item serial no. ${re.serial_no} is either reserved or already returned.`});
 		}
 	})
+	if (errors.length > 0) {
+		res.status(400).json(errors);
+		return;
+	}
 
 	await pool.query(`
-		BEGIN TRANSACTION [Trans3]
-		BEGIN TRY
+		BEGIN;
 			${trans_string}
-
-			COMMIT TRANSACTION [Trans3]
-		END TRY
-
-		BEGIN CATCH
-      		ROLLBACK TRANSACTION [Trans3]
-  		END CATCH  
-	`).then(r => ({
-			errors: []
-		}))
-		.catch(err => ({ errors: [{msg: "Items cannot be returned."}]}));
+		COMMIT;
+	`).then(r => res.sendStatus(200))
+		.catch(err => 
+			res.status(500).json({ errors: [{msg: "Items cannot be returned."}]})
+		);
 });
 
 // Mark Broken/Not Broken
@@ -279,7 +246,5 @@ module.exports = {
 	router,
 	installItems,
 	confirmItems,
-	transferItems,
-	lendItems,
 	returnItems
 };
