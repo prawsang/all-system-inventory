@@ -8,7 +8,10 @@ const {
 	Customer,
 	Department,
 	Withdrawal,
-	Staff
+	Staff,
+	Bulk,
+	Model,
+	Supplier
 } = models;
 const { check, validationResult } = require("express-validator/check");
 const utils = require("../../utils/query");
@@ -28,7 +31,8 @@ router.get("/get-all", async (req, res) => {
 		return_from,
 		return_to,
 		type,
-		status
+		status,
+		staff_code
 	} = req.query;
 	const q = await utils.query({
 		limit,
@@ -50,7 +54,8 @@ router.get("/get-all", async (req, res) => {
 			return_from,
 			return_to,
 			type,
-			status
+			status,
+			staff_code
 		}),
 		availableCols: [
 			"customer_code",
@@ -96,20 +101,27 @@ router.get("/:id/items", async (req, res) => {
 		type
 	});
 
-	// TODO: Join with bulk, model, and vendor tables
 	const q = await utils.query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Item.getColumns}`,
+		cols: `${Item.getColumns}, ${Bulk.getColumns}, ${Supplier.getColumns}, ${Model.getColumns}`,
 		tables: `"withdrawal_has_item"
 		JOIN "item" ON "withdrawal_has_item"."serial_no" = "item"."serial_no"
+		JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
+		JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
+		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"
 		`,
 		where: `"withdrawal_has_item"."withdrawal_id" = ${id} ${filters ? `AND ${filters}` : ""}`,
 		availableCols: [
 			"serial_no",
 			"status",
+			"model_code",
+			"model_name",
+			"supplier_code",
+			"supplier_name",
+			"bulk_code"
 		]
 	});
 	if (q.errors) {

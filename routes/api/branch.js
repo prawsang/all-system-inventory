@@ -50,14 +50,13 @@ router.get("/:branch_code/items/", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${models.Item.getColumns}, ${models.Withdrawal.getColumns}, ${models.Model.getColumns}, ${models.ProductType.getColumns}`,
+		cols: `${models.Item.getColumns}, ${models.Withdrawal.getColumns}, ${models.Model.getColumns}`,
 		tables: `"withdrawal_has_item"
 			JOIN "item" ON "item"."serial_no" = "withdrawal_has_item"."serial_no"
 			JOIN "withdrawal" ON "withdrawal"."id" = "withdrawal_has_item"."withdrawal_id"
 			JOIN "branch" ON "branch"."branch_code" = "withdrawal"."for_branch_code"
 			JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
 			JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
-			JOIN "product_type" ON "product_type"."type_name" = "model"."is_product_type_name"
 		`,
 		where: `
 			NOT "item"."status" = 'IN_STOCK' 
@@ -70,7 +69,6 @@ router.get("/:branch_code/items/", async (req, res) => {
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-		console.log(q.errors);
 	} else {
 		res.json(q);
 	}
@@ -85,28 +83,22 @@ router.get("/:branch_code/reserved-items", async (req, res) => {
 		type
 	});
 
-	// FINISHED: Join with bulk, model and supplier tables
 	const q = await utils.query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${models.Item.getColumns}, ${models.Bulk.getColumns}, ${models.Model.getColumns}, ${models.Supplier.getColumns}`,
+		cols: `${models.Item.getColumns}, ${models.Bulk.getColumns}, ${models.Model.getColumns}`,
 		tables: `"item"
-			JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
-			JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
-			JOIN "supplier" ON "supplier_code" = "model"."from_supplier_code"
-		`,
-		where: `"item"."reserved_branch_code" = '${branch_code}'
-			${filters ? `AND ${filters}` : ""}`,
+		JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
+		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"`,
+		where: `"item"."reserved_branch_code" = '${branch_code}' ${filters ? `AND ${filters}` : ""}`,
 		availableCols: [
 			"serial_no",
 			"status",
 			"bulk_code",
 			"model_code",
-			"model_name",
-			"supplier_code",
-			"supplier_name",
+			"model_name"
 		]
 	});
 	if (q.errors) {
@@ -148,7 +140,7 @@ router.post("/add", branchValidation, async (req, res) => {
 		name,
 		address,
 	} = req.body;
-	const q = await insert({
+	const q = await utils.insert({
 		table: "customer",
 		info: {
 			branch_code,
@@ -174,7 +166,7 @@ router.put("/:branch_code/edit", branchValidation, async (req, res) => {
 
 	const { branch_code } = req.params;
 	const { name, address } = req.body;
-	const q = await update({
+	const q = await utils.update({
 		table: "branch",
 		info: {
 			branch_code,
@@ -195,7 +187,7 @@ router.put("/:branch_code/edit", branchValidation, async (req, res) => {
 router.delete("/:branch_code", async (req, res) => {
 	const { branch_code } = req.params;
 
-	const q = await del({
+	const q = await utils.del({
 		table: "branch",
 		where: `"branch_code" = '${branch_code}'`,
 	});

@@ -6,6 +6,7 @@ const {
 } = models
 
 const pool = require("../../config/database");
+const utils = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 
 const checkSerial = [
@@ -31,7 +32,7 @@ installItems = async (serial_no, branch_code) => {
 				errors.push({ msg: `The item ${no} is not IN_STOCK` });
 			} else {
 
-				const q = await findOne({
+				const q = await utils.findOne({
 					cols: Item.getColumns,
 					tables: "item",
 					where: `"serial_no" = '${no}'`,
@@ -39,7 +40,7 @@ installItems = async (serial_no, branch_code) => {
 				if (q.data.reserved_branch_code && q.data.reserved_branch_code != branch_code) {
 					errors.push({ msg: `The item ${no} is reserved by another branch.` });
 				} else {
-					const r = await update({
+					const r = await utils.update({
 						table: "item",
 						info: {
 							status: "PENDING",
@@ -185,11 +186,58 @@ router.put("/return", checkSerial, async (req, res) => {
 
 	// serial_no is an array
 	const { serial_no } = req.body;
+	let serial_string_a = [];
+	let trans_string_a = [];
+	serial_no.forEach(no => {
+		const t = `
+			"item"."serial_no" = '${no}'
+		`
+		const s = `
+		UPDATE "item" 
+		SET "status" = 'IN_STOCK' 
+		WHERE "item"."serial_no" = '${no}'
+		
+		INSERT INTO "return_history" ("return_datetime", "serial_no")
+		VALUES (current_timestap, '${no}')`;
+		serial_string_a.push(t)
+		trans_string_a.push(s);
+	})
+	const serial_string = serial_string_a.join(" OR ");
+	const trans_string = trans_string_a.join(" ");
 
-	/* TODO: Transaction
-	1. Change status of all items in array to IN_STOCK (see returnItems function)
-	2. Add all items to return_history table (return_datetime, serial_no)
-	*/
+	// Get status of the items, make sure they are either INSTALLED, TRANSFERRED, or LENT.
+	await pool.query(`
+		SELECT "item"."status", "item"."serial_no"
+		FROM "item"
+		WHERE ${serial_string}
+	`).then(r => {
+		let errors = [];
+		r.forEach(re => {
+			if (re.status !== "INSTALLED" && re.status !== "TRANSFERRED" && re.status !== "LENT") {
+				errors.push({ msg: `Item serial no. ${re.serial_no} is either reserved or already returned.`});
+			}
+		})
+		if (errors.length > 0) {
+			res.status(400).json(errors);
+			return;
+		}
+	})
+
+	await pool.query(`
+		BEGIN TRANSACTION [Trans3]
+		BEGIN TRY
+			${trans_string}
+
+			COMMIT TRANSACTION [Trans3]
+		END TRY
+
+		BEGIN CATCH
+      		ROLLBACK TRANSACTION [Trans3]
+  		END CATCH  
+	`).then(r => ({
+			errors: []
+		}))
+		.catch(err => ({ errors: [{msg: "Items cannot be returned."}]}));
 });
 
 // Mark Broken/Not Broken
@@ -210,7 +258,7 @@ router.put(
 		const { serial_no, is_broken } = req.body;
 		await Promise.all(
 			serial_no.map(async no => {
-				const q = await update({
+				const q = await utils.update({
 					table: "item",
 					info: {
 						is_broken,

@@ -40,10 +40,10 @@ router.route("/get-all").get(async (req, res) => {
 
 router.route("/:model_code/details").get( async (req, res) => {
 	const { model_code } = req.params;
-	// TODO: Join with supplier and product type tables
 	const q = await utils.findOne({
-		cols: Model.getColumns,
-		tables: "model",
+		cols: `${Model.getColumns}, ${Supplier.getColumns}`,
+		tables: `"model"
+		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"`,
 		where: `"model_code" = '${model_code}'`,
 	});
 	if (q.errors) {
