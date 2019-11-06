@@ -41,7 +41,7 @@ Withdrawal.getType = async withdrawal_id => {
 		return { errors: err }
 	} else {
 		if (q.data) {
-			return q.data.type
+			return q.data.withdrawal_type
 		} else {
 			return { errors: [{ msg: "Withdrawal not found. "}]}
 		}
@@ -57,7 +57,7 @@ Withdrawal.checkStatus = async (id, status) => {
 		return false
 	} else {
 		if (q.data) {
-			if (q.data.status !== status) return false;
+			if (q.data.withdrawal_status !== status) return false;
 			return true
 		} else {
 			return false
@@ -73,7 +73,7 @@ Withdrawal.checkItem = async (id, serial_no) => {
 	if (q.errors) {
 		return false
 	} else {
-		if (q.data) {
+		if (q.rows.data) {
 			return true
 		} else {
 			return false
@@ -82,14 +82,14 @@ Withdrawal.checkItem = async (id, serial_no) => {
 };
 Withdrawal.changeStatus = async (id, status) => {
 	const q = await utils.update({
-		tables: "withdrawal",
+		table: "withdrawal",
 		info: {
 			status
 		},
 		where: `"id" = ${id}`
 	})
 	if (q.errors) {
-		return { errors: [err] }
+		return q.errors
 	} else {
 		return { errors: [] }
 	}
