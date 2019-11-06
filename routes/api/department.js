@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const utils = require("../../utils/query");
 const models = require("../../models/");
+const { Department, Supplier } = models;
 const { check, validationResult } = require("express-validator/check");
 
 // Required APIs
@@ -21,7 +22,7 @@ router.get("/get-all", async (req, res) => {
 		page,
 		search_term,
 		search_col,
-		cols: models.Department.getColumns,
+		cols: Department.getColumns,
         tables: "department",
 		availableCols: ["department_name", "department_code"]
 	});
@@ -33,24 +34,25 @@ router.get("/get-all", async (req, res) => {
 });
 
 // 2.
-router.get("/:department_code/details", (req, res) => {
+router.get("/:department_code/details", async (req, res) => {
 	const { department_code } = req.params;
-	Department.findOne({
-		where: {
-			department_code:{
-				[Op.eq]: department_code
-			}
-		}
-	})
-		.then(department => res.send({ department }))
-		.catch(err => res.status(500).json({ errors: err }));
+	const q = await utils.findOne({
+		cols: Department.getColumns,
+		tables: "department",
+		where: `"department_code" = '${department_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // 3.
 router.get("/:department_code/staff", async (req, res) => {
 	const { department_code } = req.params;
 	const { limit, page, search_col, search_term } = req.query;
-	const q = await query({
+	const q = await utils.query({
 		limit,
 		page,
 		search_term,
@@ -59,7 +61,7 @@ router.get("/:department_code/staff", async (req, res) => {
         tables: `"staff"
 		JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
 		where: `"department"."department_code" = '${department_code}'`,
-		//availableCols: ["staff_name", "staff_code"]
+		//availableCols: ["staff_name", "staff_code"] ??
 	});
 	if (q.errors) {
         console.log(q.errors);
