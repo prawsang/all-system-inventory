@@ -69,4 +69,80 @@ router.get("/:department_code/staff", async (req, res) => {
 	}
 });
 
+// Validation
+const departmentValidation = [
+	check("department_code")
+		.not()
+		.isEmpty()
+		.withMessage("Department code cannot be empty."),
+	check("name")
+		.not()
+		.isEmpty()
+		.withMessage("Department name cannot be empty.")
+];
+
+// 4.
+router.post("/add", departmentValidation, async (req,res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+	const { department_code, name, phone } = req.body;
+	const q = await utils.insert({
+		table: "department",
+		info: {
+			department_code, 
+			name, 
+			phone
+		},
+		returning: "department_code"
+	})
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
+// 5.
+router.put("/:department_code/edit", departmentValidation, async (req,res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+	const { name, phone } = req.body;
+	const { department_code } = req.params;
+	
+	const q = await utils.update({
+		table: "department",
+		info: {
+			department_code, 
+			name, 
+			phone
+		},
+		where: `"department_code" = '${department_code}'`,
+		returning: "department_code"
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+})
+
+// 6.
+router.delete("/:department_code/delete", async (req,res) => {
+	const { department_code } = req.params;
+	
+	const q = await utils.del({
+		table: "department",
+		where: `"department_code" = '${department_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+})
+
 module.exports = router;
