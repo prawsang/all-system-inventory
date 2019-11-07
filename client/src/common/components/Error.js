@@ -18,7 +18,7 @@ const Error = ({ error, setError }) => {
 							{error.data.errors.map((e, i) => {
 								if (e.msg) return <li key={i}>{e.msg}</li>;
 								if (e.message) return <li key={i}>{e.message}</li>;
-								return <li key={i}>An unknown error as occured.</li>;
+								return <li key={i}>An unknown error as occured. {e.routine ? `(${e.routine})` : ""}</li>;
 							})}
 						</ul>
 					) : (

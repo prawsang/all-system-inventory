@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import { setFilters } from "@/actions/report";
+import { setStaticData } from "@/actions/record";
 import { connect } from "react-redux";
 
 class SearchField extends React.Component {
@@ -13,22 +14,48 @@ class SearchField extends React.Component {
 		value: ""
 	};
 	handleSearch() {
-		const { searchUrl, filterName, frontEnd } = this.props;
+		const { searchUrl, filterName, frontEnd, staticData, staticDataType } = this.props;
 		const { value } = this.state;
 		if (value.length < 3 && !frontEnd) {
 			this.setState({ data: null });
 		} else {
-			Axios.get(`${searchUrl}?${filterName}=${value}`).then(
-				res => {
-					this.setState({ data: res.data });
-					if (frontEnd) {
-						this.setState({ searchedDataFrontEnd: res.data.rows })
-					}
-					console.log(res);
+			if (frontEnd) {
+				if (staticData && staticData[staticDataType] && staticData[staticDataType].length > 0) {
+					this.setState({ searchedDataFrontEnd: staticData[staticDataType] })
+				} else {
+					this.makeServerRequest({ searchUrl, filterName, value, staticDataType, frontEnd });
 				}
-			);
+			} else {
+				this.makeServerRequest({ searchUrl, filterName, value, staticDataType, frontEnd });
+			}
 		}
 	}
+
+	makeServerRequest({ searchUrl, filterName, value, staticDataType, frontEnd }) {
+		Axios.get(`${searchUrl}?${filterName}=${value}`).then(
+			res => {
+				this.setState({ data: res.data });
+				this.setState({ searchedDataFrontEnd: res.data.rows });
+				if (frontEnd) {
+					if (staticDataType === "departments") {
+						this.props.setStaticData({
+							departments: res.data.rows
+						})
+					} else if (staticDataType === "productTypes") {
+						this.props.setStaticData({
+							productTypes: res.data.rows
+						})
+					} else if (staticDataType === "staff") {
+						this.props.setStaticData({
+							staff: res.data.rows
+						})
+					}
+				}
+				console.log(res);
+			}
+		);
+	}
+
 	handleSearchFrontEnd() {
 		const { searchName } = this.props;
 		const { value, data } = this.state;
@@ -63,12 +90,6 @@ class SearchField extends React.Component {
 		return obj;
 	}
 
-	componentDidMount() {
-		const { frontEnd } = this.props;
-		if (frontEnd) {
-			this.handleSearch();
-		}
-	}
 	render() {
 		const {
 			label,
@@ -76,8 +97,9 @@ class SearchField extends React.Component {
 			listItem,
 			disabled,
 			responsibleFor,
+			frontEnd
         } = this.props;
-        console.log(this.props.type);
+
 		const { showResults, value } = this.state;
 		return (
 			<div className={`field ${disabled && "is-disabled"}`} onFocus={() => this.setState({ showResults: true })}>
@@ -92,6 +114,9 @@ class SearchField extends React.Component {
                             setFilters(this.makeObject(responsibleFor, null))
 						}}
 						onKeyPress={e => this.handleKeyPress(e)}
+						onFocus={() => {
+							if (frontEnd) this.handleSearch();
+						}}
 						disabled={disabled}
 					/>
 					<button
@@ -113,7 +138,7 @@ class SearchField extends React.Component {
 									<span className="list-item">ไม่พบรายการ</span>
 								)
 							) : (
-								<span className="list-item">กรุณาพิมพ์อย่างน้อย 3 ตัวอักษรแล้วกดค้นหา</span>
+								<span className="list-item">{frontEnd ? "กรุณารอสักครู่" : "กรุณาพิมพ์อย่างน้อย 3 ตัวอักษรแล้วกดค้นหา"}</span>
 							)}
 						</div>
 					)}
@@ -124,10 +149,12 @@ class SearchField extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	type: state.report.filters.type
+	type: state.report.filters.type,
+	staticData: state.record.staticData
 })
 const mapDispatchToProps = {
-	setFilters
+	setFilters,
+	setStaticData
 }
 
 export default connect(

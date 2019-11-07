@@ -5,15 +5,15 @@ import { connect } from "react-redux";
 
 class BranchSearch extends React.Component {
 	render() {
-		const { disabled, setSelectedObject } = this.props;
+		const { disabled, setSelectedObject, selectedCustomer } = this.props;
 		return (
 			<SearchField
 				responsibleFor="selectedBranch"
 				placeholder="Branch Name"
-				searchUrl="/branch/get-all"
+				searchUrl={selectedCustomer ? `/customer/${selectedCustomer.customer_code}/branches` : ""}
 				searchName="branch_name"
 				label="Branch"
-				disabled={disabled}
+				disabled={disabled || !selectedCustomer}
 				listItem={(e,i) => (
 					<span
 						key={e.branch_name + i}
@@ -33,11 +33,15 @@ class BranchSearch extends React.Component {
 	}
 }
 
+const mapStateToProps = state => ({
+	selectedCustomer: state.record.selectedCustomer
+})
+
 const mapDispatchToProps = {
 	setSelectedObject
 };
 
 export default connect(
-	null,
+	mapStateToProps,
 	mapDispatchToProps
 )(BranchSearch);

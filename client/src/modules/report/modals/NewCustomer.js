@@ -16,7 +16,7 @@ class NewCustomer extends React.Component {
 				customer_code: customerCode,
 				name: customerName
 			}
-		}).then(res => history.push(`/single/customer/${customerCode}`));
+		}).then(res => history.push(`/single/customer/${res.data.rows[0].customer_code}`));
 	}
 	render() {
 		const { customerCode, customerName } = this.state;

@@ -5,15 +5,15 @@ import { connect } from "react-redux";
 
 class ModelSearch extends React.Component {
 	render() {
-		const { disabled, setSelectedObject } = this.props;
+		const { disabled, setSelectedObject,selectedSupplier } = this.props;
 		return (
 			<SearchField
 				responsibleFor="selectedModel"
 				placeholder="Model Name"
-				searchUrl="/model/get-all"
+				searchUrl={selectedSupplier ? `/supplier/${selectedSupplier.supplier_code}/models` : ""}
 				searchName="model_name"
 				label="Model"
-				disabled={disabled}
+				disabled={disabled || !selectedSupplier}
 				listItem={(e,i) => (
 					<span
 						key={e.model_name + i}
@@ -33,11 +33,15 @@ class ModelSearch extends React.Component {
 	}
 }
 
+const mapStateToProps = state => ({
+	selectedSupplier: state.record.selectedSupplier
+})
+
 const mapDispatchToProps = {
 	setSelectedObject
 };
 
 export default connect(
-	null,
+	mapStateToProps,
 	mapDispatchToProps
 )(ModelSearch);

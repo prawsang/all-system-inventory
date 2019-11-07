@@ -2,7 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
-import { setSelectedObject } from "@/actions/record";
+import { setSelectedObject, setStaticData } from "@/actions/record";
 import { connect } from "react-redux";
 
 class SearchField extends React.Component {
@@ -13,22 +13,48 @@ class SearchField extends React.Component {
 		value: ""
 	};
 	handleSearch() {
-		const { searchUrl, searchName, frontEnd } = this.props;
+		const { searchUrl, searchName, frontEnd, staticData, staticDataType } = this.props;
 		const { value } = this.state;
 		if (value.length < 3 && !frontEnd) {
 			this.setState({ data: null });
 		} else {
-			Axios.get(`${searchUrl}?search_col=${searchName}&search_term=${value}`).then(
-				res => {
-					this.setState({ data: res.data });
-					if (frontEnd) {
-						this.setState({ searchedDataFrontEnd: res.data.rows })
-					}
-					console.log(res);
+			if (frontEnd) {
+				if (staticData && staticData[staticDataType] && staticData[staticDataType].length > 0) {
+					this.setState({ searchedDataFrontEnd: staticData[staticDataType] })
+				} else {
+					this.makeServerRequest({ searchUrl, searchName, value, staticDataType, frontEnd });
 				}
-			);
+			} else {
+				this.makeServerRequest({ searchUrl, searchName, value, staticDataType, frontEnd });
+			}
 		}
 	}
+
+	makeServerRequest({ searchUrl, searchName, value, staticDataType, frontEnd }) {
+		Axios.get(`${searchUrl}?search_col=${searchName}&search_term=${value}`).then(
+			res => {
+				this.setState({ data: res.data });
+				this.setState({ searchedDataFrontEnd: res.data.rows });
+				if (frontEnd) {
+					if (staticDataType === "departments") {
+						this.props.setStaticData({
+							departments: res.data.rows
+						})
+					} else if (staticDataType === "productTypes") {
+						this.props.setStaticData({
+							productTypes: res.data.rows
+						})
+					} else if (staticDataType === "staff") {
+						this.props.setStaticData({
+							staff: res.data.rows
+						})
+					}
+				}
+				console.log(res);
+			}
+		);
+	}
+
 	handleSearchFrontEnd() {
 		const { searchName } = this.props;
 		const { value, data } = this.state;
@@ -62,13 +88,6 @@ class SearchField extends React.Component {
 		obj[key] = value;
 		return obj;
 	}
-
-	componentDidMount() {
-		const { frontEnd } = this.props;
-		if (frontEnd) {
-			this.handleSearch();
-		}
-	}
 	render() {
 		const {
 			label,
@@ -76,7 +95,8 @@ class SearchField extends React.Component {
 			listItem,
 			disabled,
 			responsibleFor,
-			setSelectedObject
+			setSelectedObject,
+			frontEnd
 		} = this.props;
 		const { showResults, value } = this.state;
 		return (
@@ -102,6 +122,9 @@ class SearchField extends React.Component {
 							setSelectedObject(this.makeObject(responsibleFor, null));
 						}}
 						onKeyPress={e => this.handleKeyPress(e)}
+						onFocus={() => {
+							if (frontEnd) this.handleSearch();
+						}}
 						disabled={disabled}
 					/>
 					<button
@@ -123,7 +146,7 @@ class SearchField extends React.Component {
 									<span className="list-item">ไม่พบรายการ</span>
 								)
 							) : (
-								<span className="list-item">กรุณาพิมพ์อย่างน้อย 3 ตัวอักษรแล้วกดค้นหา</span>
+								<span className="list-item">{frontEnd ? "กรุณารอสักครู่" : "กรุณาพิมพ์อย่างน้อย 3 ตัวอักษรแล้วกดค้นหา"}</span>
 							)}
 						</div>
 					)}
@@ -141,10 +164,12 @@ const mapStateToProps = state => ({
 	selectedStaff: state.record.selectedStaff,
 	selectedDepartment: state.record.selectedDepartment,
 	selectedProductType: state.record.selectedProductType,
-	selectedBulk: state.record.selectedBulk
+	selectedBulk: state.record.selectedBulk,
+	staticData: state.record.staticData
 })
 const mapDispatchToProps = {
-	setSelectedObject
+	setSelectedObject,
+	setStaticData
 }
 
 export default connect(

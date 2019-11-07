@@ -20,7 +20,7 @@ class AddBranch extends React.Component {
 			method: "POST",
 			url: "/branch/add",
 			data: {
-				customer_code: customer.customer_code,
+				owner_customer_code: customer.customer_code,
 				branch_code: branchCode,
 				name,
 				address,

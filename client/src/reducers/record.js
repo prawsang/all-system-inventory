@@ -1,5 +1,6 @@
 import {
 	SET_SELECTED_OBJECT,
+	SET_STATIC_DATA,
 	RESET_RECORD_DATA,
 } from "@/common/action-types";
 
@@ -11,7 +12,12 @@ const initialState = {
 	selectedStaff: null,
 	selectedDepartment: null,
 	selectedProductType: null,
-	selectedBulk: null
+	selectedBulk: null,
+	staticData: {
+		departments: [],
+		productTypes: [],
+		staff: []
+	}
 };
 
 const record = (state = initialState, action) => {
@@ -21,6 +27,14 @@ const record = (state = initialState, action) => {
 				...state,
 				...action.payload
 			};
+		case SET_STATIC_DATA:
+			return {
+				...state,
+				staticData: {
+					...state.staticData,
+					...action.payload
+				}
+			}
 		case RESET_RECORD_DATA:
 			return {
 				selectedCustomer: null,

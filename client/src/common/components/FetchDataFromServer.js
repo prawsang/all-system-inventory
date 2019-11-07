@@ -87,7 +87,7 @@ class FetchDataFromServer extends React.Component {
 			return_from: return_from_prev,
 			return_to: return_to_prev
 		} = prev;
-		console.log(prev, curr);
+
 		if (
 			from == from_prev &&
 			to == to_prev &&

@@ -25,16 +25,8 @@ class AddItems extends React.Component {
 	}
 
 	handleSubmit() {
-		const { remarks, serialNos, bulkCode, pricePerUnit, date_in } = this.state;
+		const { remarks, serialNos, bulkCode, pricePerUnit, dateIn } = this.state;
 		const { selectedModel } = this.props;
-		console.log({
-			bulk_code: bulkCode,
-				price_per_unit: pricePerUnit,
-				of_model_code: selectedModel.model_code,
-				serial_no: serialNos,
-				remarks,
-				dateIn: date_in
-		})
 		Axios.request({
 			method: "POST",
 			url: "/bulk/add",
@@ -44,7 +36,8 @@ class AddItems extends React.Component {
 				of_model_code: selectedModel.model_code,
 				serial_no: serialNos,
 				remarks,
-				dateIn: date_in
+				date_in: dateIn,
+				is_broken: false
 			}
 		}).then(res => this.resetPage());
 	}
