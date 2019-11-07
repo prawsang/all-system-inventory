@@ -9,11 +9,10 @@ class EditModel extends React.Component {
 	state = {
         model_code: "",
         name: "",
-        width: "",
-        height: "",
-        depth: "",
-		weight: "",
-		supplier: null
+        width: 0,
+        height: 0,
+        depth: 0,
+		weight: 0,
 	};
 
 	handleSubmit() {
@@ -23,12 +22,11 @@ class EditModel extends React.Component {
             height,
             depth,
 			weight,
-			supplier,
-			model_code
+			model_code,
 		} = this.state;
-		const { model, selectedProductType, modalType } = this.props;
+		const { model, selectedProductType, modalType, supplier } = this.props;
 		Axios.request({
-			method: "PUT",
+			method: modalType === "EDIT" ? "PUT" : "POST",
 			url: modalType === "EDIT" ? `/model/${model.model_code}/edit` : `/model/add`,
 			data: {
 				model_code: model ? model.model_code : model_code,
@@ -60,8 +58,6 @@ class EditModel extends React.Component {
 				}
 			})
 		}
-		const { supplier } = this.props;
-		this.setState({ supplier })
 	}
 	componentDidUpdate(prevProps, prevState) {
 		if (prevProps !== this.props) {

@@ -17,7 +17,7 @@ class RemarksModal extends React.Component {
 		const { remarks } = this.state;
 		Axios.request({
 			method: "PUT",
-			url: `/withdrawal/${data.id}/edit-remarks`,
+			url: `/withdrawal/${data.withdrawal_id}/edit-remarks`,
 			data: {
 				remarks
 			}

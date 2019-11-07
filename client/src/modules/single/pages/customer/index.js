@@ -17,11 +17,11 @@ class Customer extends React.Component {
 		const { data } = this.props;
 		const { edit, showAddBranchModal } = this.state;
 		if (data) {
-			if (!data.customer) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>ไม่พบรายการ</p>;
 		}
 		return (
 			<React.Fragment>
-				<h3>Customer: {data && data.customer.name}</h3>
+				<h3>Customer: {data && data.row.customer_name}</h3>
 				<div className="panel">
 					{data && (
 						<React.Fragment>
@@ -42,11 +42,11 @@ class Customer extends React.Component {
 									<h5 className="no-mt has-mb-10">Customer</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Customer Code:</label>
-										<span>{data.customer.customer_code}</span>
+										<span>{data.row.customer_code}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Customer Name:</label>
-										<span>{data.customer.name}</span>
+										<span>{data.row.customer_name}</span>
 									</div>
 								</div>
 								<hr />
@@ -62,7 +62,7 @@ class Customer extends React.Component {
 							<div>
 								<FetchDataFromServer
 									url={
-										data && `/customer/${data.customer.customer_code}/branches`
+										data && `/customer/${data.row.customer_code}/branches`
 									}
 									render={d => (
 										<Table
@@ -85,12 +85,12 @@ class Customer extends React.Component {
 								/>
 							</div>
 							<AddBranch
-								customer={data.customer}
+								customer={data.row}
 								close={() => this.setState({ showAddBranchModal: false })}
 								active={showAddBranchModal}
 							/>
 							<Edit
-								customer={data.customer}
+								customer={data.row}
 								close={() => this.setState({ edit: false })}
 								active={edit}
 							/>

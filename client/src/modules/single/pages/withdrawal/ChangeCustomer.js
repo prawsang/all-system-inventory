@@ -7,15 +7,32 @@ import {
 } from "@/actions/record";
 import CustomerSearch from "@/modules/record/components/search/CustomerSearch";
 import BranchSearch from "@/modules/record/components/search/BranchSearch";
+import DepartmentSearch from "@/modules/record/components/search/DepartmentSearch";
 import Axios from "axios";
 
 class ChangeCustomer extends React.Component {
 	componentDidMount() {
-		const { branch } = this.props.data;
+		const { branch_code, 
+			branch_name, 
+			customer_code, 
+			customer_name, 
+			department_code, 
+			department_name 
+		} = this.props.data;
 		const { setSelectedObject } = this.props;
 		setSelectedObject({
-			selectedCustomer: branch.customer,
-			selectedBranch: branch
+			selectedCustomer: {
+				customer_code,
+				name: customer_name
+			},
+			selectedBranch: {
+				branch_code,
+				name: branch_name
+			},
+			selectedDepartment: {
+				department_code,
+				name: department_name
+			}
 		});
 	}
 
@@ -27,7 +44,7 @@ class ChangeCustomer extends React.Component {
 			date,
 			install_date,
 			created_by_staff_code,
-			for_department_code
+			selectedDepartment
 		} = data;
 		Axios.request({
 			method: "PUT",
@@ -39,7 +56,7 @@ class ChangeCustomer extends React.Component {
 				date: date,
 				install_date: install_date,
 				for_branch_code: selectedBranch.branch_code,
-				for_department_code,
+				for_department_code: selectedDepartment.department_code,
 			}
 		}).then(res => window.location.reload());
 	}
@@ -50,19 +67,19 @@ class ChangeCustomer extends React.Component {
 
 	render() {
 		const { close, active, selectedCustomer, data } = this.props;
+		console.log(data);
 		if (!data) return <p />;
 
 		return (
 			<Modal close={close} active={active}>
-				<div className="is-disabled">
-					<div className="field">
-						<label className="label has-mb-05">Customer Name:</label>
-						<CustomerSearch />
-					</div>
+				<div className="field">
+					<CustomerSearch disabled={data.withdrawal_type === "TRANSFER"}/>
 				</div>
 				<div className="field">
-					<label className="label has-mb-05">Branch Name:</label>
-					<BranchSearch disabled={!selectedCustomer} />
+					<BranchSearch disabled={!selectedCustomer || data.withdrawal_type === "TRANSFER"} />
+				</div>
+				<div className="field">
+					<DepartmentSearch disabled={data.withdrawal_type !== "TRANSFER"} />
 				</div>
 				<div className="buttons no-mb">
 					<button className="button" onClick={() => this.handleEdit()}>

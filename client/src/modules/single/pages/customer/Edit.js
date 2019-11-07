@@ -21,7 +21,7 @@ class EditCustomer extends React.Component {
 
 	componentDidMount() {
 		const { customer } = this.props;
-		this.setState({ name: customer.name });
+		this.setState({ name: customer.customer_name });
 	}
 
 	render() {

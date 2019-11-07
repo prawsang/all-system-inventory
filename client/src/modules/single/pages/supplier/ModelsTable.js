@@ -39,7 +39,7 @@ class ModelsTable extends React.Component {
 									<tr key={i + e.model_name} className="is-short">
 										<td className="has-no-line-break">{e.model_code}</td>
 										<td className="has-no-line-break">{e.model_name}</td>
-										<td className="is-fullwidth has-no-line-break">{e.product_type_name}</td>
+										<td className="is-fullwidth has-no-line-break">{e.is_product_type_name}</td>
 										<td className="no-pr">
 											<button
 												className="button"

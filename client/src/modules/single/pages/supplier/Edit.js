@@ -25,7 +25,7 @@ class EditSupplier extends React.Component {
 
 	componentDidMount() {
 		const { supplier } = this.props;
-		this.setState({ name: supplier.name, phone: supplier.phone, email: supplier.email });
+		this.setState({ name: supplier.supplier_name, phone: supplier.supplier_phone, email: supplier.supplier_email });
 	}
 
 	render() {
