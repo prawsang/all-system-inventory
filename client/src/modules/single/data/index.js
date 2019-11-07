@@ -3,7 +3,7 @@ import history from "@/common/history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
-export const BranchData = ({ data, withCustomer }) => {
+export const BranchData = ({ data }) => {
 	if (!data) return <p className="no-mt has-mb-10 is-gray-4">No Branch</p>;
 	return (
 		<div>
@@ -22,20 +22,8 @@ export const BranchData = ({ data, withCustomer }) => {
 			</div>
 			<div className="has-mb-10">
 				<label className="is-bold has-mr-05">Branch Name:</label>
-				<span>{data.name}</span>
+				<span>{data.branch_name}</span>
 			</div>
-			{withCustomer && (
-				<div>
-					<div className="has-mb-10">
-						<label className="is-bold has-mr-05">Customer Name:</label>
-						<span>{data.customer.name}</span>
-					</div>
-					<div className="has-mb-10">
-						<label className="is-bold has-mr-05">Customer Code:</label>
-						<span>{data.customer.customer_code}</span>
-					</div>
-				</div>
-			)}
 		</div>
 	);
 };
@@ -59,7 +47,7 @@ export const CustomerData = ({ data }) => {
 			</div>
 			<div className="has-mb-10">
 				<label className="is-bold has-mr-05">Customer Name:</label>
-				<span>{data.name}</span>
+				<span>{data.customer_name}</span>
 			</div>
 		</div>
 	);

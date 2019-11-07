@@ -28,19 +28,19 @@ class Withdrawal extends React.PureComponent {
 		const { data } = this.props;
 		Axios.request({
 			method: "PUT",
-			url: `/withdrawal/${data.withdrawal.id}/change-status`,
+			url: `/withdrawal/${data.row.withdrawal_id}/change-status`,
 			data: {
 				status: "CONFIRMED"
 			}
 		})
-		// .then(res => window.location.reload());
+		.then(res => window.location.reload());
 	}
 
 	cancelWithdrawal() {
 		const { data } = this.props;
 		Axios.request({
 			method: "PUT",
-			url: `/withdrawal/${data.withdrawal.id}/change-status`,
+			url: `/withdrawal/${data.row.withdrawal_id}/change-status`,
 			data: {
 				status: "CANCELLED"
 			}
@@ -51,20 +51,20 @@ class Withdrawal extends React.PureComponent {
 		const { data } = this.props;
 		Axios.request({
 			method: "DELETE",
-			url: `/withdrawal/${data.withdrawal.id}`
+			url: `/withdrawal/${data.row.withdrawal_id}`
 		}).then(res => history.push("/"));
 	}
 
-	async handlePrint() {
-		const { data } = this.props;
-		this.props.setCurrentWithdrawal(data.withdrawal);
-		await Axios.request({
-			method: "GET",
-			url: `/withdrawal/${data.withdrawal.id}/items`
-		}).then(res => {
-			this.props.setItems(res.data.rows);
-		});
-	}
+	// async handlePrint() {
+	// 	const { data } = this.props;
+	// 	this.props.setCurrentWithdrawal(data.row);
+	// 	await Axios.request({
+	// 		method: "GET",
+	// 		url: `/withdrawal/${data.row.withdrawal_id}/items`
+	// 	}).then(res => {
+	// 		this.props.setItems(res.data.rows);
+	// 	});
+	// }
 
 	render() {
 		const { data } = this.props;
@@ -76,11 +76,11 @@ class Withdrawal extends React.PureComponent {
 			showDeleteConfirm,
 		} = this.state;
 		if (data) {
-			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>ไม่พบรายการ</p>;
 		}
 		return (
 			<React.Fragment>
-				<h3>ใบเบิกหมายเลข {data && data.withdrawal.id}</h3>
+				<h3>ใบเบิกหมายเลข {data && data.row.withdrawal_id}</h3>
 				<div className="panel">
 					{data && (
 						<React.Fragment>
@@ -89,7 +89,7 @@ class Withdrawal extends React.PureComponent {
 									<button
 										className="button"
 										onClick={() => this.confirmWithdrawal()}
-										disabled={data.withdrawal.status !== "PENDING"}
+										disabled={data.row.withdrawal_status !== "PENDING"}
 									>
 										Confirm
 									</button>
@@ -100,7 +100,7 @@ class Withdrawal extends React.PureComponent {
 												showCancelConfirm: true
 											})
 										}
-										disabled={data.withdrawal.status === "CANCELLED"}
+										disabled={data.row.withdrawal_status === "CANCELLED"}
 									>
 										Cancel
 									</button>
@@ -110,7 +110,7 @@ class Withdrawal extends React.PureComponent {
 										ใบเบิก
 										<span
 											className={`is-clickable accent has-ml-10 is-6 ${data
-												.withdrawal.status === "PENDING" || "is-disabled"}`}
+												.row.withdrawal_status === "PENDING" || "is-disabled"}`}
 											onClick={() => this.setState({ edit: true })}
 										>
 											Edit
@@ -118,32 +118,32 @@ class Withdrawal extends React.PureComponent {
 									</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Type:</label>
-										<span>{data.withdrawal.type}</span>
+										<span>{data.row.withdrawal_type}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Status:</label>
-										<span>{data.withdrawal.status}</span>
+										<span>{data.row.withdrawal_status}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Date:</label>
-										<span>{formatDate(data.withdrawal.date)}</span>
+										<span>{formatDate(data.row.withdrawal_date)}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">ผู้เบิก:</label>
-										<span>{data.withdrawal.staff.name}</span>
+										<span>{data.row.staff_name}</span>
 									</div>
-									{data.withdrawal.type === "LENDING" && (
+									{data.row.type === "LENDING" && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Return By:</label>
-											<span>{formatDate(data.withdrawal.return_by)}</span>
+											<span>{formatDate(data.row.return_by)}</span>
 										</div>
 									)}
-									{data.withdrawal.type === "INSTALLATION" && (
+									{data.row.type === "INSTALLATION" && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">
 												Install Date:
 											</label>
-											<span>{formatDate(data.withdrawal.install_date)}</span>
+											<span>{formatDate(data.row.install_date)}</span>
 										</div>
 									)}
 								</div>
@@ -160,57 +160,64 @@ class Withdrawal extends React.PureComponent {
 									</h5>
 									<div className="has-mb-10">
 										<span>
-											{data.withdrawal.remarks
-												? data.withdrawal.remarks
+											{data.row.withdrawal_remarks
+												? data.row.withdrawal_remarks
 												: "No Remarks"}
 										</span>
 									</div>
 								</div>
 								<hr />
-								{ data.withdrawal.type !== "TRANSFER" ? (
+								<button
+									className="button has-mb-10"
+									onClick={() => this.setState({ changeCustomer: true })}
+									disabled={data.row.withdrawal_status !== "PENDING"}
+								>
+									Change
+								</button>
+								{ data.row.withdrawal_type !== "TRANSFER" ? (
 									<React.Fragment>
-										<button
-											className="button has-mb-10"
-											onClick={() => this.setState({ changeCustomer: true })}
-											disabled={data.withdrawal.status !== "PENDING"}
-										>
-											Change
-										</button>
 										<div style={{ marginBottom: "2em" }}>
-											<CustomerData data={data.withdrawal.branch.customer} />
+											<CustomerData data={{
+												customer_code: data.row.customer_code,
+												customer_name: data.row.customer_name
+											}} />
 										</div>
 										<div style={{ marginBottom: "2em" }}>
-											<BranchData data={data.withdrawal.branch} />
+											<BranchData data={{
+												branch_code: data.row.branch_code,
+												branch_name: data.row.branch_name,
+												address: data.row.address,
+											}} />
 										</div>
 									</React.Fragment>
 								) : (
 									<React.Fragment>
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Department:</label>
-											<span>{data.withdrawal.department.name} ({data.withdrawal.for_department_code})</span>
+											<span>{data.row.department_name} ({data.row.for_department_code})</span>
 										</div>
 									</React.Fragment>
 								)}
 								<hr />
-								<Link to={`/single/withdrawal/${data.withdrawal.id}/add-items`}>
+								<Link to={`/single/withdrawal/${data.row.withdrawal_id}/add-items`}>
 									<button
 										className="button has-mb-10"
-										disabled={data.withdrawal.status !== "PENDING"}
+										disabled={data.row.withdrawal_status !== "PENDING"}
 									>
 										Add Items
 									</button>
 								</Link>
 							</div>
 							<FetchDataFromServer
-								url={data && `/withdrawal/${data.withdrawal.id}/items`}
+								url={data && `/withdrawal/${data.row.withdrawal_id}/items`}
 								render={d => (
 									<Table
 										data={d}
 										table={d => (
 											<ItemsTable
 												data={d}
-												showDelete={data.withdrawal.status === "PENDING"}
-												withdrawalId={data.withdrawal.id}
+												showDelete={data.row.withdrawal_status === "PENDING"}
+												withdrawalId={data.row.withdrawal_id}
 											/>
 										)}
 										className="no-pt"
@@ -232,18 +239,18 @@ class Withdrawal extends React.PureComponent {
 								)}
 							/>
 							<EditModal
-								data={data.withdrawal}
+								data={data.row}
 								active={edit}
 								close={() => this.setState({ edit: false })}
 							/>
 							<RemarksModal
-								data={data.withdrawal}
+								data={data.row}
 								active={editRemarks}
 								close={() => this.setState({ editRemarks: false })}
 							/>
-							{ data.withdrawal.type !== "TRANSFER" && (
+							{ data.row.type !== "TRANSFER" && (
 								<ChangeCustomer
-									data={data.withdrawal}
+									data={data.row}
 									active={changeCustomer}
 									close={() => this.setState({ changeCustomer: false })}
 								/>

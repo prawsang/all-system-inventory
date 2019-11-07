@@ -17,27 +17,24 @@ class EditModal extends React.Component {
 	componentDidMount() {
 		const {
 			date,
-			po_number,
-			do_number,
 			remarks,
 			install_date,
 			return_by,
-			staff
+			staff_name,
+			staff_code
 		} = this.props.data;
 		const { setSelectedObject } = this.props;
-		console.log(staff);
+
 		this.setState({
 			date: date ? date : "",
-			poNumber: po_number ? po_number : "",
-			doNumber: do_number ? do_number : "",
 			remarks: remarks ? remarks : "",
 			installDate: install_date ? install_date : "",
 			returnDate: return_by ? return_by : "",
 		});
 		setSelectedObject({
 			selectedStaff: {
-				staff_code: staff.staff_code,
-				name: staff.name
+				staff_code,
+				name: staff_name
 			}
 		})
 	}

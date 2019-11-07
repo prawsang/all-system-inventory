@@ -17,7 +17,7 @@ class Supplier extends React.Component {
 
 	handleDelete() {
 		const { data } = this.props;
-		const { supplier_code } = data.supplier;
+		const { supplier_code } = data.row;
 		Axios.request({
 			method: "DELETE",
 			url: `/supplier/${supplier_code}/delete`
@@ -28,11 +28,11 @@ class Supplier extends React.Component {
 		const { data } = this.props;
 		const { edit, showAddModelModal, showDeleteConfirm } = this.state;
 		if (data) {
-			if (!data.supplier) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>ไม่พบรายการ</p>;
 		}
 		return (
 			<React.Fragment>
-				<h3>Supplier: {data && data.supplier.name}</h3>
+				<h3>Supplier: {data && data.row.supplier_name}</h3>
 				<div className="panel">
 					{data && (
 						<React.Fragment>
@@ -63,19 +63,19 @@ class Supplier extends React.Component {
 									<h5 className="no-mt has-mb-10">Supplier</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Supplier Code:</label>
-										<span>{data.supplier.supplier_code}</span>
+										<span>{data.row.supplier_code}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Supplier Name:</label>
-										<span>{data.supplier.name}</span>
+										<span>{data.row.supplier_name}</span>
 									</div>
                                     <div className="has-mb-10">
 										<label className="is-bold has-mr-05">Phone:</label>
-										<span>{data.supplier.phone}</span>
+										<span>{data.row.supplier_phone}</span>
 									</div>
                                     <div className="has-mb-10">
 										<label className="is-bold has-mr-05">Email:</label>
-										<span>{data.supplier.email}</span>
+										<span>{data.row.supplier_email}</span>
 									</div>
 								</div>
 								<hr />
@@ -91,7 +91,7 @@ class Supplier extends React.Component {
 							<div>
 								<FetchDataFromServer
 									url={
-										data && `/supplier/${data.supplier.supplier_code}/models`
+										data && `/supplier/${data.row.supplier_code}/models`
 									}
 									render={d => (
 										<Table
@@ -115,13 +115,13 @@ class Supplier extends React.Component {
 								/>
 							</div>
 							<ModelModal
-								supplier={data.supplier}
+								supplier={data.row}
 								modalType="ADD"
 								close={() => this.setState({ showAddModelModal: false })}
 								active={showAddModelModal}
 							/>
 							<Edit
-								supplier={data.supplier}
+								supplier={data.row}
 								close={() => this.setState({ edit: false })}
 								active={edit}
 							/>

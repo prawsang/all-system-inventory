@@ -17,11 +17,11 @@ class Branch extends React.Component {
 		const { data } = this.props;
 		const { edit, activeTable } = this.state;
 		if (data) {
-			if (!data.branch) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>ไม่พบรายการ</p>;
 		}
 		return (
 			<React.Fragment>
-				<h3>Branch: {data && data.branch.name}</h3>
+				<h3>Branch: {data && data.row.branch_name}</h3>
 				<div className="panel">
 					{data && (
 						<React.Fragment>
@@ -42,15 +42,18 @@ class Branch extends React.Component {
 									<h5 className="no-mt has-mb-10">Branch</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Branch Code:</label>
-										<span>{data.branch.branch_code}</span>
+										<span>{data.row.branch_code}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Address:</label>
-										<span>{data.branch.address}</span>
+										<span>{data.row.address}</span>
 									</div>
 								</div>
 								<hr />
-								<CustomerData data={data.branch.customer} />
+								<CustomerData data={{
+									customer_code: data.row.customer_code,
+									customer_name: data.row.customer_name
+								}} />
 							</div>
 							<div className="tabs" style={{ paddingLeft: 30 }}>
 								<div
@@ -76,7 +79,7 @@ class Branch extends React.Component {
 								<FetchDataFromServer
 									className={activeTable === 0 ? "" : "is-hidden"}
 									disabled={activeTable !== 0}
-									url={data && `/branch/${data.branch.branch_code}/items`}
+									url={data && `/branch/${data.row.branch_code}/items`}
 									render={d => (
 										<Table
 											data={d}
@@ -110,7 +113,7 @@ class Branch extends React.Component {
 								<FetchDataFromServer
 									className={activeTable === 2 ? "" : "is-hidden"}
 									disabled={activeTable !== 2}
-									url={data && `/branch/${data.branch.branch_code}/reserved-items`}
+									url={data && `/branch/${data.row.branch_code}/reserved-items`}
 									render={d => (
 										<Table
 											data={d}
@@ -135,7 +138,7 @@ class Branch extends React.Component {
 								/>
 							</div>
 							<Edit
-								branch={data.branch}
+								branch={data.row}
 								close={() => this.setState({ edit: false })}
 								active={edit}
 							/>
