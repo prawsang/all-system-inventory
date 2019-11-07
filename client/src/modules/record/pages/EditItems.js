@@ -10,6 +10,7 @@ import { resetRecordData } from "@/actions/record";
 const RETURN = "RETURN";
 const BROKEN = "BROKEN";
 const RESERVE = "RESERVE";
+const CANCEL = "CANCEL";
 
 class EditItems extends React.Component {
 	state = {
@@ -35,7 +36,7 @@ class EditItems extends React.Component {
 				url: "/item/broken",
 				data: {
 					serial_no: serialNos,
-					broken: true
+					is_broken: true
 				}
 			}).then(res => this.resetPage());
 		} else if (action === RETURN) {
@@ -53,6 +54,15 @@ class EditItems extends React.Component {
 				data: {
 					serial_no: serialNos,
 					reserved_branch_code: selectedBranch.branch_code
+				}
+			}).then(res => this.resetPage());
+		} else if (action === CANCEL) {
+			Axios.request({
+				method: "PUT",
+				url: "/item/return-wo-history",
+				data: {
+					serial_no: serialNos,
+					reserved_branch_code: null
 				}
 			}).then(res => this.resetPage());
 		}
@@ -76,7 +86,6 @@ class EditItems extends React.Component {
 
 	render() {
 		const { action, serialNos, serialNo } = this.state;
-		const { selectedCustomer } = this.props;
 		return (
 			<div className="content">
 				<h3>ปรับปรุงรายการ</h3>
@@ -93,6 +102,7 @@ class EditItems extends React.Component {
 								>
 									<option value={RETURN}>คืนของ</option>
 									<option value={RESERVE}>จองของ</option>
+									<option value={CANCEL}>ยกเลิกการจอง</option>
 									<option value={BROKEN}>เสีย</option>
 								</select>
 							</div>
