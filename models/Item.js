@@ -97,7 +97,7 @@ Item.filter = data => {
 			? `"item"."is_broken"`
 			: `NOT "item"."is_broken"`
 		: null;
-	let statusFilter = status ? `"item"."status" = ${status}` : null;
+	let statusFilter = status ? `"item"."status" = '${status}'` : null;
 	let typeFilter = type ? `"model"."is_product_type_name" = '${type}'`: null
 
 	return [brokenFilter, statusFilter, typeFilter].filter(e => e).join(" AND ");
