@@ -13,6 +13,7 @@ class ProductTypeFilter extends React.Component {
 				searchUrl="/product-type/get-all"
 				filterName="type"
 				frontEnd={true}
+				staticDataType="productTypes"
                 label="Product Type"
 				disabled={disabled}
 				listItem={(e,i) => (

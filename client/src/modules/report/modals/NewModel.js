@@ -1,5 +1,8 @@
 import React from "react";
 import Axios from "axios";
+import ProductTypeSearch from "@common/modules/record/components/search/ProductTypeSearch"
+import { setSelectedObject } from "@common/actions/record";
+import { connect } from "react-redux";
 
 class ModelModal extends React.Component {
 	state = {
@@ -10,20 +13,16 @@ class ModelModal extends React.Component {
 		width: 0,
 		depth: 0,
 		productTypes: [],
-		selectedProductType: null
 	};
-	componentDidMount() {
-		this.getAllProductTypes();
-	}
 	handleSubmit() {
-		const { modelName, modelCode, width, height, depth, weight, selectedProductType } = this.state;
-		const { modalType, data } = this.props;
+		const { modelName, modelCode, width, height, depth, weight } = this.state;
+		const { modalType, data, selectedProductType } = this.props;
 		Axios.request({
 			method: modalType === "EDIT" ? "PUT" : "POST",
 			url: modalType === "EDIT" ? `/model/${data.model_code}/edit` : "/model/add",
 			data: {
 				name: modelName,
-				is_product_type_name: selectedProductType,
+				is_product_type_name: selectedProductType.type_name,
 				model_code: modelCode,
 				width,
 				height,
@@ -32,13 +31,6 @@ class ModelModal extends React.Component {
 			}
 		}).then(res => window.location.reload());
 	}
-
-	getAllProductTypes = () => {
-		Axios.get(`/product-type/get-all`).then(res => {
-			this.setState({ productTypes: res.data.rows });
-			console.log(res);
-		});
-	};
 
 	render() {
 		const { modelName, modelCode, width, height, depth, weight, selectedProductType, productTypes } = this.state
@@ -104,17 +96,7 @@ class ModelModal extends React.Component {
 					/>
 				</div>
 				<div className="field">
-					<label className="label">Type</label>
-					<div className="select">
-						<select
-							onChange={e => this.setState({ selectedProductType: e.target.value })}
-							value={selectedProductType}
-						>
-							{ productTypes.map ((e, i) => 
-								<option value={e.product_type_name} key={i + e.product_type_name}>{e.product_type_name}</option>
-								)}
-						</select>
-					</div>
+					<ProductTypeSearch />
 				</div>
 				<button className="button" onClick={() => this.handleSubmit()}>
 					{modalType === "EDIT" ? "Edit" : "Add"}
@@ -124,4 +106,14 @@ class ModelModal extends React.Component {
 	}
 }
 
-export default ModelModal;
+const mapStateToProps = state => ({
+	selectedProductType: state.record.selectedProductType
+})
+const mapDispatchToProps = {
+	setSelectedObject
+}
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(ModelModal);

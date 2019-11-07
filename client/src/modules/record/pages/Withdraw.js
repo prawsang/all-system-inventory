@@ -29,7 +29,7 @@ class Withdraw extends React.Component {
 			installDate,
 			remarks,
 		} = this.state;
-		const { selectedBranches, selectedStaff, selectedDepartment } = this.props;
+		const { selectedBranch, selectedStaff, selectedDepartment } = this.props;
 		
 		await Axios.request({
 			method: "POST",
@@ -39,12 +39,14 @@ class Withdraw extends React.Component {
 				date,
 				return_by: type === LENDING ? returnDate : null,
 				install_date: type === INSTALLATION ? installDate : null,
-				for_branch_code: selectedBranches[0].branch_code,
+				for_branch_code: type !== TRANSFER && selectedBranch.branch_code,
 				remarks,
 				created_by_staff_code: selectedStaff.staff_code,
-				for_department_code: selectedDepartment.department_code
+				for_department_code: type === TRANSFER && selectedDepartment.department_code
 			}
-		}).then(res => history.push(`/single/withdrawal/${res.data.id}`));
+		}).then(res => {
+			history.push(`/single/withdrawal/${res.data.rows[0].id}`)
+		});
 	}
 
 	componentDidMount() {
@@ -159,8 +161,9 @@ const Field = ({ value, onChange, placeholder, className, label, type, inputClas
 
 const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer,
-	selectedBranches: state.record.selectedBranches,
-	selectedStaff: state.record.selectedStaff
+	selectedBranch: state.record.selectedBranch,
+	selectedStaff: state.record.selectedStaff,
+	selectedDepartment: state.record.selectedDepartment
 });
 
 const mapDispatchToProps = {

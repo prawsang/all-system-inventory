@@ -27,8 +27,8 @@ class EditItems extends React.Component {
 	}
 
 	handleSubmit() {
-		const { action, serialNos, hasBranch } = this.state;
-		const { selectedBranches } = this.props;
+		const { action, serialNos } = this.state;
+		const { selectedBranch } = this.props;
 		if (action === BROKEN) {
 			Axios.request({
 				method: "PUT",
@@ -52,11 +52,7 @@ class EditItems extends React.Component {
 				url: "/item/reserve",
 				data: {
 					serial_no: serialNos,
-					reserved_by_branch_code: hasBranch
-						? selectedBranches.length !== 0
-							? selectedBranches[0].branch_code
-							: null
-						: null
+					reserved_branch_code: selectedBranch.branch_code
 				}
 			}).then(res => this.resetPage());
 		}
@@ -107,12 +103,7 @@ class EditItems extends React.Component {
 									ข้อมูลลูกค้าที่จอง
 								</label>
 								<CustomerSearch />
-								<BranchSearch
-									disabled={
-										!selectedCustomer
-									}
-									single={true}
-								/>
+								<BranchSearch />
 							</div>
 						)}
 						<label className="label" style={{ display: "block" }}>
@@ -173,7 +164,7 @@ class EditItems extends React.Component {
 
 const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer,
-	selectedBranches: state.record.selectedBranches,
+	selectedBranch: state.record.selectedBranch,
 });
 
 const mapDispatchToProps = {

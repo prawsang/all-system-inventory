@@ -7,6 +7,7 @@ export const SET_FILTERS = "SET_FILTERS";
 
 // Record
 export const SET_SELECTED_OBJECT = "SET_SELECTED_OBJECT";
+export const SET_STATIC_DATA = "SET_STATIC_DATA";
 export const RESET_RECORD_DATA = "RESET_RECORD_DATA";
 
 // Withdrawal

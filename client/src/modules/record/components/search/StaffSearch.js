@@ -14,6 +14,7 @@ class StaffSearch extends React.Component {
 				searchName="staff_name"
 				label="Staff"
 				frontEnd={true}
+				staticDataType="staff"
 				disabled={disabled}
 				listItem={(e,i) => (
 					<span

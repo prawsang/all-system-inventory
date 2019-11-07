@@ -13,6 +13,7 @@ class DepartmentSearch extends React.Component {
 				searchUrl="/department/get-all"
 				searchName="department_name"
 				frontEnd={true}
+				staticDataType="departments"
 				label="Department"
 				disabled={disabled}
 				listItem={(e,i) => (

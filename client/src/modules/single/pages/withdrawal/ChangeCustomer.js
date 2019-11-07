@@ -37,26 +37,25 @@ class ChangeCustomer extends React.Component {
 	}
 
 	handleEdit() {
-		const { data, selectedBranch } = this.props;
+		const { data, selectedBranch, selectedDepartment } = this.props;
 		const {
-			type,
+			withdrawal_type,
 			return_by,
-			date,
+			withdrawal_date,
 			install_date,
 			created_by_staff_code,
-			selectedDepartment
 		} = data;
 		Axios.request({
 			method: "PUT",
-			url: `/withdrawal/${data.id}/edit`,
+			url: `/withdrawal/${data.withdrawal_id}/edit`,
 			data: {
 				created_by_staff_code,
-				type: type,
+				type: withdrawal_type,
 				return_by: return_by,
-				date: date,
+				date: withdrawal_date,
 				install_date: install_date,
-				for_branch_code: selectedBranch.branch_code,
-				for_department_code: selectedDepartment.department_code,
+				for_branch_code: withdrawal_type !== "TRANSFER" && selectedBranch.branch_code,
+				for_department_code: withdrawal_type === "TRANSFER" && selectedDepartment.department_code,
 			}
 		}).then(res => window.location.reload());
 	}
@@ -97,6 +96,7 @@ class ChangeCustomer extends React.Component {
 const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer,
 	selectedBranch: state.record.selectedBranch,
+	selectedDepartment: state.record.selectedDepartment
 });
 
 const mapDispatchToProps = {

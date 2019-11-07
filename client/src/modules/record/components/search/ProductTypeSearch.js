@@ -13,6 +13,7 @@ class ProductTypeSearch extends React.Component {
 				searchUrl="/product-type/get-all"
 				searchName="product_type_name"
 				frontEnd={true}
+				staticDataType="productTypes"
 				label="Product Type"
 				disabled={disabled}
 				listItem={(e,i) => (

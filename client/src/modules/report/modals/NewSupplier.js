@@ -16,7 +16,7 @@ class NewSupplier extends React.Component {
 				supplier_code: supplierCode,
 				name: supplierName
 			}
-		}).then(res => history.push(`/single/supplier/${supplierCode}`));
+		}).then(res => history.push(`/single/supplier/${res.data.rows[0].supplier_code}`));
 	}
 	render() {
 		const { supplierCode, supplierName } = this.state;
