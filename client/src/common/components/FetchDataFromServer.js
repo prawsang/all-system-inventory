@@ -42,7 +42,7 @@ class FetchDataFromServer extends React.Component {
 
 		// Boolean Filters
 		if (filters.broken !== null) {
-			string.push(filters.broken ? "broken=true" : "broken=false");
+			string.push(filters.broken ? "is_broken=true" : "is_broken=false");
 		}
 		if (filters.installed !== null) {
 			string.push(filters.installed ? "installed=true" : "installed=false");
