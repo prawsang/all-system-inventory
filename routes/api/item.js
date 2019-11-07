@@ -14,7 +14,7 @@ const {
 	Return
 } = models;
 const { check, validationResult } = require("express-validator/check");
-const utils = require("../../utils/query");
+const utils = require("../../utils/");
 const pool = require("../../config/database");
 
 router.use("/", require("./stock_status").router);

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const models = require("../../models");
 const { check, validationResult } = require("express-validator/check");
-const utils = require("../../utils/query");
+const utils = require("../../utils/");
 
 router.get("/:branch_code/details", async (req, res) => {
 	const { branch_code } = req.params;

@@ -14,7 +14,7 @@ const {
 	Supplier
 } = models;
 const { check, validationResult } = require("express-validator/check");
-const utils = require("../../utils/query");
+const utils = require("../../utils/");
 const stockStatus = require("./stock_status");
 const { installItems, returnItems } = stockStatus;
 

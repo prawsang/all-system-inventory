@@ -5,7 +5,7 @@ const {
 	Staff,
 	Department
 } = models;
-const utils = require("../../utils/query");
+const utils = require("../../utils/");
 const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {
