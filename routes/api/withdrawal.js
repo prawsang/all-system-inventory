@@ -159,7 +159,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 
 	const {
 		for_branch_code,
-		for_department,
+		for_department_code,
 		created_by_staff_code,
 		type,
 		return_by,
@@ -172,7 +172,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		return_by,
 		install_date,
 		for_branch_code,
-		for_department,
+		for_department_code,
 	});
 	if (moreValidation.errors.length > 0) {
 		res.status(400).send(moreValidation.errors);
