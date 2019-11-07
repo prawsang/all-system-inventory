@@ -315,7 +315,6 @@ router.put("/:id/change-status", async (req, res) => {
 			COMMIT;
 		`).then(r => res.sendStatus(200))
 		.catch(err => {
-			console.log(err);
 			res.status(400).json({ errors: err })
 		})
 	} else if (status == "PENDING") {

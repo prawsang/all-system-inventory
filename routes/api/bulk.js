@@ -11,8 +11,8 @@ router.get("/get-all", async (req, res) => {
 	let dateFilter = null;
 
 	if (from || to) {
-		const f = from ? `"bulk"."date_in" >= ${from}` : null;
-		const t = to ? `"bulk"."date_in" <= ${to}` : null;
+		const f = from ? `"bulk"."date_in" >= '${from}'` : null;
+		const t = to ? `"bulk"."date_in" <= '${to}'` : null;
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 
