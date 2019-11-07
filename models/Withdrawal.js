@@ -42,8 +42,8 @@ Withdrawal.getType = async withdrawal_id => {
 	if (q.errors) {
 		return { errors: err }
 	} else {
-		if (q.data) {
-			return q.data.withdrawal_type
+		if (q.row) {
+			return q.row.withdrawal_type
 		} else {
 			return { errors: [{ msg: "Withdrawal not found. "}]}
 		}
@@ -58,8 +58,8 @@ Withdrawal.checkStatus = async (id, status) => {
 	if (q.errors) {
 		return false
 	} else {
-		if (q.data) {
-			if (q.data.withdrawal_status !== status) return false;
+		if (q.row) {
+			if (q.row.withdrawal_status !== status) return false;
 			return true
 		} else {
 			return false

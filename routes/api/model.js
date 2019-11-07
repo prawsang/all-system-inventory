@@ -138,8 +138,8 @@ router.put("/:model_code/edit", async (req, res) => {
 		depth, 
 		weight 
 	} = req.body;
-	const q = await update({
-		table: "customer",
+	const q = await utils.update({
+		table: "model",
 		info: {
 			model_code,
 			name,
@@ -163,7 +163,7 @@ router.put("/:model_code/edit", async (req, res) => {
 // Delete Model
 router.delete("/:model_code", async (req, res) => {
 	const { model_code } = req.params;
-	const q = await del({
+	const q = await utils.del({
 		table: "model",
 		where: `"model_code" = '${model_code}'`,
 	});

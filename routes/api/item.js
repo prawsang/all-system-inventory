@@ -63,11 +63,13 @@ router.get("/:serial_no/details", async (req, res) => {
 		cols: `${Item.getColumns}, 
 		${Bulk.getColumns},
 		${Model.getColumns},
-		${Supplier.getColumns}`,
+		${Supplier.getColumns},
+		${Branch.getColumns}`,
 		tables: `"item"
 		JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
 		JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
-		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"`,
+		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"
+		LEFT OUTER JOIN "branch" ON "branch"."branch_code" = "item"."reserved_branch_code"`,
 		where: `"item"."serial_no" = '${serial_no}'`,
 	});
 	if (q.errors) {
@@ -223,6 +225,7 @@ router.put("/:serial_no/edit", stockValidation, async (req, res) => {
 			remarks,
 			is_broken
 		},
+		where: `"serial_no" = '${serial_no}'`,
 		returning: "serial_no"
 	})
 	if (q.errors) {

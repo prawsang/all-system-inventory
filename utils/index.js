@@ -170,8 +170,8 @@ module.exports = {
 				errors
 			};
 		}
-		return response[0] ? { data: response[0]} : {
-			data: null
+		return response[0] ? { row: response[0]} : {
+			row: null
 		};
 	},
 	insert: async function(data) {

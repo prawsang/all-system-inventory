@@ -77,10 +77,10 @@ router.get("/get-all", async (req, res) => {
 router.get("/:id/details", async (req, res) => {
 	const { id } = req.params;
 	const q = await utils.findOne({
-		cols: `${Withdrawal.getColumns},${Customer.getColumns},${Staff.getColumns},${Branch.getColumns}`,
+		cols: `${Withdrawal.getColumns},${Customer.getColumns},${Staff.getColumns},${Branch.getColumns}, ${Department.getColumns}`,
 		tables: `"withdrawal"
 		LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
-		JOIN "customer" ON "customer"."customer_code" = "branch"."owner_customer_code"
+		LEFT OUTER JOIN "customer" ON "customer"."customer_code" = "branch"."owner_customer_code"
 		JOIN "staff" ON "staff"."staff_code" = "withdrawal"."created_by_staff_code"
 		LEFT OUTER JOIN "department" ON "department"."department_code" = "withdrawal"."for_department_code"`,
 		where: `"id" = ${id}`,
@@ -263,12 +263,12 @@ router.put("/:id/edit-remarks", async (req, res) => {
 	const { id } = req.params;
 	const { remarks } = req.body;
 
-	const q = await update({
+	const q = await utils.update({
 		table: "withdrawal",
 		info: {
 			remarks
 		},
-		where: `"id" = '${id}'`,
+		where: `"id" = ${id}`,
 		returning: "id"
 	});
 	if (q.errors) {
@@ -289,12 +289,12 @@ router.put("/:id/change-status", async (req, res) => {
 			tables: "withdrawal",
 			where: `"id" = ${id}`,
 		});
-		const isPending = q.data.withdrawal_status === "PENDING"
+		const isPending = q.row.withdrawal_status === "PENDING"
 		if (!isPending) {
 			res.sendStatus(421);
 			return;
 		} else {
-			const changeStatus = await confirmItems(id, q.data.withdrawal_type);
+			const changeStatus = await confirmItems(id, q.row.withdrawal_type);
 			if (changeStatus.length > 0) {
 				res.status(500).send(changeStatus.errors);
 			} else {
@@ -336,10 +336,10 @@ router.put("/:id/add-items", async (req, res) => {
 		tables: "withdrawal",
 		where: `"id" = ${id}`,
 	});
-	branch_code = q.data.for_branch_code
+	branch_code = q.row.for_branch_code
 
 	// Check if Pending
-	const isPending = q.data.withdrawal_status === 'PENDING'
+	const isPending = q.row.withdrawal_status === 'PENDING'
 	if (!isPending) {
 		res.status(400).json([{ msg: "This withdrawal must be PENDING." }]);
 		return;
