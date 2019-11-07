@@ -1,4 +1,4 @@
-const utils = require("../utils/query");
+const utils = require("../utils/");
 
 let Item = {}
 

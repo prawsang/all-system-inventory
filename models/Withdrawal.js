@@ -1,5 +1,5 @@
 const Withdrawal = {};
-const utils = require("../utils/query");
+const utils = require("../utils/");
 const Item = require("./Item");
 
 Withdrawal.getColumns = `"withdrawal"."id" AS "withdrawal_id",

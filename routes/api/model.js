@@ -7,7 +7,7 @@ const {
 	Supplier,
 	Bulk
 } = models;
-const utils = require("../../utils/query");
+const utils = require("../../utils/");
 const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {

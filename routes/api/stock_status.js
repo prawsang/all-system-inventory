@@ -6,7 +6,7 @@ const {
 } = models
 
 const pool = require("../../config/database");
-const utils = require("../../utils/query");
+const utils = require("../../utils/");
 const { check, validationResult } = require("express-validator/check");
 
 const checkSerial = [

@@ -6,7 +6,7 @@ const {
 	Branch
 } = models;
 const { check, validationResult } = require("express-validator/check");
-const { query, update, insert, del, findOne } = require("../../utils/query");
+const { query, update, insert, del, findOne } = require("../../utils/");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;

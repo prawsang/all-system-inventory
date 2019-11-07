@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const models = require("../../models/");
 const ProductType = models.ProductType;
-const utils = require("../../utils/query");
+const utils = require("../../utils/");
 const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {
