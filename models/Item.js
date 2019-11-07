@@ -1,4 +1,5 @@
 const utils = require("../utils/");
+const pool = require("../config/database");
 
 let Item = {}
 
@@ -10,6 +11,16 @@ Item.getColumns = `"item"."serial_no",
 	"item"."from_bulk_code"`;
 
 // Class Methods
+Item.buildWhere = serial_no => {
+	let arr = [];
+	serial_no.forEach(no => {
+		const t = `
+			"item"."serial_no" = '${no}'
+		`
+		arr.push(t)
+	})
+	return arr.join(" OR ");
+}
 
 // Change status of multiple items
 // This will check if the items are of a valid status, and change those of valid statuses only.
@@ -19,29 +30,23 @@ Item.changeStatus = async params => {
 	let errors = [];
 	if (serial_no.length == 0)
 		return { updatedSerials, errors: [{ msg: "Serial No. cannot be empty." }] };
+	const validateStatus = await Item.checkStatus(serial_no, validStatus);
+	errors = [...validateStatus.errors]
 
 	await Promise.all(
-		serial_no.map(async no => {
-			let valid = true;
-			if (validStatus) {
-				valid = await Item.checkStatus(no, validStatus);
-			}
-			if (valid) {
-				const q = await utils.update({
-					table: "item",
-					info: {
-						status: toStatus,
-						...otherInfo
-					},
-					where: `"serial_no" = '${no}'`
-				})
-				if (q.errors) {
-					errors.push(err)
-				} else {
-					updatedSerials.push(no)
-				}
+		validateStatus.validSerials.map(async no => {
+			const q = await utils.update({
+				table: "item",
+				info: {
+					status: toStatus,
+					...otherInfo
+				},
+				where: `"serial_no" = '${no}'`
+			})
+			if (q.errors) {
+				errors.push({ msg: `Item ${no} cannot be updated.`})
 			} else {
-				errors.push({ msg: `The item serial no. ${no} is not ${validStatus[0]}` });
+				updatedSerials.push(no)
 			}
 		})
 	);
@@ -51,22 +56,36 @@ Item.changeStatus = async params => {
 	};
 };
 
-// Check if the item's (single item) is of a status
+// Check if the items are of a status
 Item.checkStatus = async (serial_no, status) => {
 	if (typeof status == "string") status = [status];
 
-	const q = await utils.findOne({
-		tables: "item",
-		cols: Item.getColumns,
-		where: `"serial_no" = '${serial_no}'`
-	})
-	if (q.errors) {
-		return false
-	} else {
-		if (q.data) {
-			if (status.indexOf(q.data.status) >= 0) return true;
+	const q = await pool.query(`
+	SELECT "item"."serial_no", "item"."status", "item"."reserved_branch_code"
+	FROM "item"
+	WHERE ${Item.buildWhere(serial_no)}
+	`);
+	let errors = []
+	let validSerials = []
+	let validData = []
+
+	q.rows.forEach(e => {
+		if (status) {
+			if (status.indexOf(e.status) >= 0) {
+				validSerials.push(e.serial_no)
+				validData.push(e)
+			} else {
+				errors.push({ msg: `Item ${e.serial_no} is not ${status[0]}`})
+			}
+		} else {
+			validSerials.push(e.serial_no)
+			validData.push(e)
 		}
-		return false
+	})
+	return {
+		validSerials,
+		validData,
+		errors
 	}
 };
 
