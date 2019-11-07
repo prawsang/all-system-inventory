@@ -29,11 +29,12 @@ class NewModel extends React.Component {
 	handleSubmit() {
 		const { typeName } = this.state;
 		const { modalType, data } = this.props;
+
 		Axios.request({
 			method: modalType === "EDIT" ? "PUT" : "POST",
-			url: modalType === "EDIT" ? `/model/${data.model_code}/edit` : "/model/add",
+			url: modalType === "EDIT" ? `/product-type/${data.product_type_name}/edit` : "/model/add",
 			data: {
-				name: typeName,
+				type_name: typeName,
 			}
 		}).then(res => window.location.reload());
 	}
