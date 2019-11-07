@@ -16,6 +16,7 @@ Withdrawal.getColumns = `"withdrawal"."id" AS "withdrawal_id",
 // Class Methods
 Withdrawal.validate = data => {
 	const { type, return_by, install_date, for_branch_code, for_department_code } = data;
+
 	let errors = [];
 	if (type == "LENDING" && (!return_by || return_by == "")) {
 		errors.push({ msg: "Return date is required for lending." });
@@ -24,13 +25,14 @@ Withdrawal.validate = data => {
 		errors.push({ msg: "Installation date is required for installation." });
 	}
 	if (type == "TRANSFER" && (!for_department_code)) {
-		errors.push({ msg: "Department code required for transfering"});
+		errors.push({ msg: "Department code required for transferring"});
 	}
 	if (type !== "TRANSFER" && (!for_branch_code)) {
 		errors.push({ msg: "Branch code required for lending or installation"});
 	}
 	return { errors };
 };
+
 Withdrawal.getType = async withdrawal_id => {
 	const q = await utils.findOne({
 		tables: "withdrawal",

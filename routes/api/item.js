@@ -84,7 +84,7 @@ router.get("/:serial_no/details", async (req, res) => {
 	FROM "withdrawal"
 	LEFT OUTER JOIN "department" ON "withdrawal"."for_department_code" = "department"."department_code"
 	LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
-	JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
+	LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
 	JOIN "staff" ON "created_by_staff_code" = "staff_code"
 	JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
 	WHERE "withdrawal_has_item"."serial_no" = '${serial_no}'

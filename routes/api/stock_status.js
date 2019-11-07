@@ -25,17 +25,11 @@ installItems = async (serial_no, branch_code) => {
 	let errors = [];
 	let updatedSerials = [];
 
+	const validateSerial = await Item.checkStatus(serial_no, ["IN_STOCK","RESERVED"]);
+	errors = [...validateSerial.errors];
 	await Promise.all(
-		serial_no.map(async no => {
-			const q = await utils.findOne({
-				cols: Item.getColumns,
-				tables: "item",
-				where: `"serial_no" = '${no}'`,
-			});
-			if (q.data.status !== "IN_STOCK" && q.data.status !== "RESERVED") {
-				errors.push({ msg: `The item ${no} is not IN_STOCK` });
-			}
-			if (q.data.reserved_branch_code && q.data.reserved_branch_code != branch_code) {
+		validateSerial.validData.map(async d => {
+			if (d.reserved_branch_code && d.reserved_branch_code != branch_code) {
 				errors.push({ msg: `The item ${no} is reserved by another branch.` });
 			} else {
 				const r = await utils.update({
@@ -43,16 +37,16 @@ installItems = async (serial_no, branch_code) => {
 					info: {
 						status: "PENDING",
 					},
-					where: `"serial_no" = '${no}'`
+					where: `"serial_no" = '${d.serial_no}'`
 				});
 				if (r.errors) {
-					errors = r.errors
+					errors = [...validateSerial.errors, ...r.errors]
 				} else {
-					updatedSerials.push(no)
+					updatedSerials.push(d.serial_no)
 				}
 			}
 		})
-	);
+	)
 	return {
 		updatedSerials,
 		errors
@@ -161,12 +155,8 @@ router.put("/return", checkSerial, async (req, res) => {
 
 	// serial_no is an array
 	const { serial_no } = req.body;
-	let serial_string_a = [];
 	let trans_string_a = [];
 	serial_no.forEach(no => {
-		const t = `
-			"item"."serial_no" = '${no}'
-		`
 		const s = `
 		UPDATE "item" 
 		SET "status" = 'IN_STOCK' 
@@ -174,10 +164,9 @@ router.put("/return", checkSerial, async (req, res) => {
 		
 		INSERT INTO "return_history" ("return_datetime", "serial_no")
 		VALUES (current_timestamp, '${no}');`;
-		serial_string_a.push(t)
-		trans_string_a.push(s);
+		trans_string_a.push(s)
 	})
-	const serial_string = serial_string_a.join(" OR ");
+	const serial_string = Item.buildWhere(serial_no);
 	const trans_string = trans_string_a.join("; ");
 
 	// Get status of the items, make sure they are either INSTALLED, TRANSFERRED, or LENT.
@@ -233,7 +222,7 @@ router.put(
 					where: `"serial_no" = '${no}'`,
 				});
 				if (q.errors) {
-					errors.push(q.errors);
+					errors.push({ msg: `Item serial no. ${no} was not updated.`});
 				}
 			})
 		);
