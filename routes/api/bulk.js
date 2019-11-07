@@ -24,7 +24,7 @@ router.get("/get-all", async (req, res) => {
 		cols: `${models.Bulk.getColumns}, ${models.Model.getColumns}, ${models.Supplier.getColumns}`,
         tables: `"bulk"
 		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
-		JOIN "supplier" ON "model"."from_bulk_code" = "supplier"."bulk_code"`,
+		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"`,
 		where: dateFilter,
 		availableCols: ["bulk_code","model_name","model_code","supplier_name","bulk_code"]
 	});
