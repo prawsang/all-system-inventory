@@ -141,7 +141,7 @@ router.post("/add", branchValidation, async (req, res) => {
 		address,
 	} = req.body;
 	const q = await utils.insert({
-		table: "customer",
+		table: "branch",
 		info: {
 			branch_code,
 			owner_customer_code,
