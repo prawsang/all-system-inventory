@@ -56,7 +56,7 @@ const replaceValues = (string, replacements) => {
 	let values = [];
 	Object.keys(replacements).forEach(key => {
 		if (replacements[key]) {
-			string = string.replace(`:${key}`, `$${n}`);
+			string = string.replace(new RegExp(`:${key}`, 'g'), `$${n}`)
 			values.push(replacements[key]);
 			n++;
 		}
@@ -215,6 +215,32 @@ module.exports = {
 		}
 		return response[0] ? { row: response[0]} : {
 			row: null
+		};
+	},
+	raw: async function(data) {
+		const { string, replacements } = data;
+		const rString = replaceValues(string, replacements);
+		let response = null;
+		let errors = [];
+
+		console.log(rString.string);
+
+		await pool
+			.query(rString.string, rString.values)
+			.then(r => {
+				response = r.rows;
+			})
+			.catch(err => {
+				errors.push(err);
+				console.log(errors);
+			});
+		if (errors.length > 0) {
+			return {
+				errors
+			};
+		}
+		return {
+			rows: response,
 		};
 	},
 	insert: async function(data) {

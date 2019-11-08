@@ -13,11 +13,13 @@ Item.getColumns = `"item"."serial_no",
 // Class Methods
 Item.buildWhere = serial_no => {
 	let arr = [];
+	let n = 1
 	serial_no.forEach(no => {
 		const t = `
-			"item"."serial_no" = '${no}'
+			"item"."serial_no" = :serial_no_${n}
 		`
 		arr.push(t)
+		n++;
 	})
 	return arr.join(" OR ");
 }
@@ -60,11 +62,21 @@ Item.changeStatus = async params => {
 Item.checkStatus = async (serial_no, status) => {
 	if (typeof status == "string") status = [status];
 
-	const q = await pool.query(`
-	SELECT "item"."serial_no", "item"."status", "item"."reserved_branch_code"
-	FROM "item"
-	WHERE ${Item.buildWhere(serial_no)}
-	`);
+	let replacements = [];
+	let n = 1
+	serial_no.forEach(no => {
+		replacements[`serial_no_${n}`] = no;
+		n++;
+	})
+
+	const q = await utils.raw({
+		string: `
+		SELECT "item"."serial_no", "item"."status", "item"."reserved_branch_code"
+		FROM "item"
+		WHERE ${Item.buildWhere(serial_no)}
+		`,
+		replacements
+	});
 	let errors = []
 	let validSerials = []
 	let validData = []
@@ -97,8 +109,8 @@ Item.filter = data => {
 			? `"item"."is_broken"`
 			: `NOT "item"."is_broken"`
 		: null;
-	let statusFilter = status ? `"item"."status" = '${status}'` : null;
-	let typeFilter = type ? `"model"."is_product_type_name" = '${type}'`: null
+	let statusFilter = status ? `"item"."status" = :status` : null;
+	let typeFilter = type ? `"model"."is_product_type_name" = :type`: null
 
 	return [brokenFilter, statusFilter, typeFilter].filter(e => e).join(" AND ");
 };

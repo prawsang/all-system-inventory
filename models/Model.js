@@ -3,7 +3,7 @@ const Model = {};
 // Filtering
 Model.filter = data => {
 	const { type } = data;
-	let typeFilter = type ? `"model"."is_product_type_name" = '${type}'` : null;
+	let typeFilter = type ? `"model"."is_product_type_name" = :type` : null;
 	return typeFilter
 };
 

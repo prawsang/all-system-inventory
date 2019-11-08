@@ -37,7 +37,10 @@ Withdrawal.getType = async withdrawal_id => {
 	const q = await utils.findOne({
 		tables: "withdrawal",
 		cols: Withdrawal.getColumns,
-		where: `"id" = ${withdrawal_id}`
+		where: `"id" = :withdrawal_id`,
+		replacements: {
+			withdrawal_id
+		}
 	})
 	if (q.errors) {
 		return { errors: err }
@@ -53,7 +56,10 @@ Withdrawal.checkStatus = async (id, status) => {
 	const q = await utils.findOne({
 		tables: "withdrawal",
 		cols: Withdrawal.getColumns,
-		where: `"id" = ${id}`
+		where: `"id" = :id`,
+		replacements: {
+			id
+		}
 	})
 	if (q.errors) {
 		return false
@@ -70,7 +76,11 @@ Withdrawal.checkItem = async (id, serial_no) => {
 	const q = await utils.findOne({
 		tables: "withdrawal_has_item",
 		cols: Item.getColumns,
-		where: `"withdrawal_id" = ${id} AND "serial_no" = ${serial_no}`
+		where: `"withdrawal_id" = :id AND "serial_no" = :serial_no`,
+		replacements: {
+			id,
+			serial_no
+		}
 	})
 	if (q.errors) {
 		return false
@@ -88,7 +98,10 @@ Withdrawal.changeStatus = async (id, status) => {
 		info: {
 			status
 		},
-		where: `"id" = ${id}`
+		where: `"id" = :id`,
+		replacements: {
+			id
+		}
 	})
 	if (q.errors) {
 		return q.errors
@@ -118,28 +131,28 @@ Withdrawal.filter = data => {
 	let staffCodeFilter = null;
 
 	if (from || to) {
-		const f = from ? `"withdrawal"."date" >= '${from}'` : null;
-		const t = to ? `"withdrawal"."date" <= '${to}'` : null;
+		const f = from ? `"withdrawal"."date" >= :from` : null;
+		const t = to ? `"withdrawal"."date" <= :to` : null;
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (install_from || install_to) {
-		const f = install_from ? `"withdrawal"."install_date" >= '${install_from}'` : null;
-		const t = install_to ? `"withdrawal"."install_date" <= '${install_to}'` : null;
+		const f = install_from ? `"withdrawal"."install_date" >= :from` : null;
+		const t = install_to ? `"withdrawal"."install_date" <= :to` : null;
 		installDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (return_from || return_to) {
-		const f = return_from ? `"withdrawal"."return_by" >= '${return_from}'` : null;
-		const t = return_to ? `"withdrawal"."return_by" <= '${return_to}'` : null;
+		const f = return_from ? `"withdrawal"."return_by" >= :return_form` : null;
+		const t = return_to ? `"withdrawal"."return_by" <= :return_to` : null;
 		returnDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (type) {
-		typeFilter = `"withdrawal"."type" = '${type}'`;
+		typeFilter = `"withdrawal"."type" = :type`;
 	}
 	if (status) {
-		statusFilter = `"withdrawal"."status" = '${status}'`;
+		statusFilter = `"withdrawal"."status" = :status`;
 	}
 	if (staff_code) {
-		staffCodeFilter = `"withdrawal"."created_by_staff_code" = '${staff_code}'`;
+		staffCodeFilter = `"withdrawal"."created_by_staff_code" = :staff_code`;
 	}
 
 	return [dateFilter, returnDateFilter, installDateFilter, typeFilter, statusFilter, staffCodeFilter]

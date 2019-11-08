@@ -64,8 +64,11 @@ router.put("/:type_name/edit", productTypeValidation, async (req,res) => {
 		info: {
 			type_name
 		},
-		where: `"type_name" = '${type_name_params}'`,
-		returning: "type_name"
+		where: `"type_name" = :type_name_params`,
+		returning: "type_name",
+		replacements: {
+			type_name_params
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -79,7 +82,10 @@ router.delete("/:type_name/delete", async (req,res) => {
 	
 	const q = await utils.del({
 		table: "product_type",
-		where: `"type_name" = '${type_name}'`,
+		where: `"type_name" = :type_name`,
+		replacements: {
+			type_name
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);

@@ -65,7 +65,18 @@ router.get("/get-all", async (req, res) => {
 			"staff_name",
 			"department_code",
 			"department_name"
-		]
+		],
+		replacements: {
+			from,
+			to,
+			install_from,
+			install_to,
+			return_from,
+			return_to,
+			type,
+			status,
+			staff_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -83,7 +94,10 @@ router.get("/:id/details", async (req, res) => {
 		LEFT OUTER JOIN "customer" ON "customer"."customer_code" = "branch"."owner_customer_code"
 		JOIN "staff" ON "staff"."staff_code" = "withdrawal"."created_by_staff_code"
 		LEFT OUTER JOIN "department" ON "department"."department_code" = "withdrawal"."for_department_code"`,
-		where: `"id" = ${id}`,
+		where: `"id" = :id`,
+		replacements: {
+			id
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -113,7 +127,7 @@ router.get("/:id/items", async (req, res) => {
 		JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
 		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"
 		`,
-		where: `"withdrawal_has_item"."withdrawal_id" = ${id} ${filters ? `AND ${filters}` : ""}`,
+		where: `"withdrawal_has_item"."withdrawal_id" = :id ${filters ? `AND ${filters}` : ""}`,
 		availableCols: [
 			"serial_no",
 			"status",
@@ -122,7 +136,13 @@ router.get("/:id/items", async (req, res) => {
 			"supplier_code",
 			"supplier_name",
 			"bulk_code"
-		]
+		],
+		replacements: {
+			id,
+			status,
+			is_broken,
+			type
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -248,8 +268,11 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 			install_date: type === "INSTALLATION" ? install_date : null,
 			date
 		},
-		where: `"id" = ${id}`,
-		returning: "id"
+		where: `"id" = :id`,
+		returning: "id",
+		replacements: {
+			id
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -268,8 +291,11 @@ router.put("/:id/edit-remarks", async (req, res) => {
 		info: {
 			remarks
 		},
-		where: `"id" = ${id}`,
-		returning: "id"
+		where: `"id" = :id`,
+		returning: "id",
+		replacements: {
+			id
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -287,7 +313,10 @@ router.put("/:id/change-status", async (req, res) => {
 		const q = await utils.findOne({
 			cols: Withdrawal.getColumns,
 			tables: "withdrawal",
-			where: `"id" = ${id}`,
+			where: `"id" = :id`,
+			replacements: {
+				id
+			}
 		});
 		const isPending = q.row.withdrawal_status === "PENDING"
 		if (!isPending) {
@@ -333,7 +362,10 @@ router.put("/:id/add-items", async (req, res) => {
 	const q = await utils.findOne({
 		cols: Withdrawal.getColumns,
 		tables: "withdrawal",
-		where: `"id" = ${id}`,
+		where: `"id" = :id`,
+		replacements: {
+			id
+		}
 	});
 	branch_code = q.row.for_branch_code
 
@@ -395,7 +427,11 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 		r.updatedSerials.map(async no => {
 			const q = await utils.del({
 				table: "withdrawal_has_item",
-				where: `"withdrawal_id" = ${id} AND "serial_no" = '${no}'`,
+				where: `"withdrawal_id" = :id AND "serial_no" = :no`,
+				replacements:{
+					id,
+					no
+				}
 			});
 			if (q.errors) {
 				errors = q.errors

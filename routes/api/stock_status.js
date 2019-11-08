@@ -37,7 +37,10 @@ installItems = async (serial_no, branch_code) => {
 					info: {
 						status: "PENDING",
 					},
-					where: `"serial_no" = '${d.serial_no}'`
+					where: `"serial_no" = :serial_no`,
+					replacements: {
+						serial_no: d.serial_no
+					}
 				});
 				if (r.errors) {
 					errors = [...validateSerial.errors, ...r.errors]
@@ -156,6 +159,8 @@ router.put("/return", checkSerial, async (req, res) => {
 	// serial_no is an array
 	const { serial_no } = req.body;
 	let trans_string_a = [];
+	replacements = {}
+	let n = 1
 	serial_no.forEach(no => {
 		const s = `
 		UPDATE "item" 
@@ -165,16 +170,21 @@ router.put("/return", checkSerial, async (req, res) => {
 		INSERT INTO "return_history" ("return_datetime", "serial_no")
 		VALUES (current_timestamp, '${no}');`;
 		trans_string_a.push(s)
+		replacements[`serial_no_${n}`] = no;
+		n++
 	})
 	const serial_string = Item.buildWhere(serial_no);
 	const trans_string = trans_string_a.join("; ");
 
 	// Get status of the items, make sure they are either INSTALLED, TRANSFERRED, or LENT.
-	const r = await pool.query(`
-		SELECT "item"."status", "item"."serial_no"
-		FROM "item"
-		WHERE ${serial_string}
-	`)
+	const r = await utils.raw({
+		string: `
+			SELECT "item"."status", "item"."serial_no"
+			FROM "item"
+			WHERE ${serial_string}
+		`,
+		replacements
+	})
 	let errors = [];
 	r.rows.forEach(re => {
 		if (re.status !== "INSTALLED" && re.status !== "TRANSFERRED" && re.status !== "LENT") {
@@ -185,7 +195,6 @@ router.put("/return", checkSerial, async (req, res) => {
 		res.status(400).json(errors);
 		return;
 	}
-
 	await pool.query(`
 		BEGIN;
 			${trans_string}
@@ -219,7 +228,10 @@ router.put(
 					info: {
 						is_broken,
 					},
-					where: `"serial_no" = '${no}'`,
+					where: `"serial_no" = :no`,
+					replacements: {
+						no
+					}
 				});
 				if (q.errors) {
 					errors.push({ msg: `Item serial no. ${no} was not updated.`});

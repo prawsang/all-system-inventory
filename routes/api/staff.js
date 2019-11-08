@@ -32,7 +32,10 @@ router.get("/:staff_code/details", async (req, res) => {
 	const q = await utils.findOne({
 		cols: Staff.getColumns,
 		tables: "staff",
-		where: `"staff_code" = '${staff_code}'`,
+		where: `"staff_code" = :staff_code`,
+		replacements: {
+			staff_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -93,8 +96,11 @@ router.put("/:staff_code/edit", staffValidation, async (req,res) => {
 			name, 
 			works_for_dep_code
 		},
-		where: `"staff_code" = '${staff_code}'`,
-		returning: "staff_code"
+		where: `"staff_code" = :staff_code_2`,
+		returning: "staff_code",
+		replacements: {
+			staff_code_2: staff_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -108,7 +114,10 @@ router.delete("/:staff_code/delete", async (req,res) => {
 	
 	const q = await utils.del({
 		table: "staff",
-		where: `"staff_code" = '${staff_code}'`,
+		where: `"staff_code" = :staff_code`,
+		replacements: {
+			staff_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
