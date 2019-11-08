@@ -54,8 +54,9 @@ const correctValueString = (value, rep) => {
 const replaceValues = (string, replacements) => {
 	let n = 1;
 	let values = [];
+	console.log(replacements);
 	Object.keys(replacements).forEach(key => {
-		if (replacements[key]) {
+		if (replacements[key] !== null && replacements[key] !== "" && replacements[key] !== undefined) {
 			string = string.replace(new RegExp(`:${key}`, 'g'), `$${n}`)
 			values.push(replacements[key]);
 			n++;
@@ -71,6 +72,7 @@ const buildString = (data) => {
 	const { limit, page, cols, tables, availableCols, where, groupBy } = data;
 
 	let { search_col, search_term } = data;
+
 	if (search_term) {
 		search_term = search_term.toLowerCase();
 	}
@@ -87,12 +89,9 @@ const buildString = (data) => {
 	if (where || (search_col && search_term)) {
 		const search =
 			search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(${search_term ? `:search_term` : ""})` : null;
-		if (search_col && search_term) {
-			searchValues = [`%${search_term}%`]
-		}
 		whereString = `WHERE ${[where, search].filter(e => e).join(" AND ")}`;
 	}
-
+	
 	let countString = `SELECT COUNT(*) 
 	FROM ${tables} 
 	${whereString}
@@ -104,6 +103,8 @@ const buildString = (data) => {
 	${groupBy ? groupBy : ""}
 	${limit ? `LIMIT :limit` : ""}
 	${limit && page ? `OFFSET :offset` : ""}`
+
+	console.log(queryString);
 
 	return {
 		countString,
@@ -124,7 +125,6 @@ module.exports = {
 			search_term, 
 			replacements 
 		} = data;
-		
 		let count = 0;
 		let response = [];
 		let errors = [];
@@ -151,12 +151,13 @@ module.exports = {
 		const rQuery = replaceValues(queryString,{
 			search_term: search_term ? `%${search_term}%` : "",
 			limit,
-			offset: limit * (page - 1),
+			offset: limit ? limit * (page - 1) : null,
 			...replacements
 		});
 
 		console.log(rCount.string);
 		console.log(rQuery.string);
+
 		await pool
 			.query(rCount.string, rCount.values)
 			.then(c => {

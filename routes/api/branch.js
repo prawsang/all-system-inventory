@@ -68,9 +68,14 @@ router.get("/:branch_code/items/", async (req, res) => {
 			${filters ? `AND ${filters}` : ""}
 			${withdrawalFilters ? `AND ${withdrawalFilters}` : ""}
 			`,
-		availableCols: ["serial_no"],
+		availableCols: ["serial_no", "model_name"],
 		replacements: {
-			branch_code
+			branch_code,
+			install_to,
+			install_from,
+			return_to,
+			return_from,
+			type
 		}
 	});
 	if (q.errors) {
@@ -107,7 +112,8 @@ router.get("/:branch_code/reserved-items", async (req, res) => {
 			"model_name"
 		],
 		replacements: {
-			branch_code
+			branch_code,
+			type
 		}
 	});
 	if (q.errors) {
