@@ -34,7 +34,7 @@ const getFromAlias = col => {
 		case "department_name":
 			return `"department"."name"`;
 		default:
-			return `"${col}"`;
+			return `""`;
 	}
 };
 
@@ -51,8 +51,25 @@ const correctValueString = (value, rep) => {
 	}
 }
 
+const replaceValues = (string, replacements) => {
+	let n = 1;
+	let values = [];
+	Object.keys(replacements).forEach(key => {
+		if (replacements[key]) {
+			string = string.replace(`:${key}`, `$${n}`);
+			values.push(replacements[key]);
+			n++;
+		}
+	})
+	return {
+		string,
+		values
+	}
+}
+
 const buildString = (data) => {
 	const { limit, page, cols, tables, availableCols, where, groupBy } = data;
+
 	let { search_col, search_term } = data;
 	if (search_term) {
 		search_term = search_term.toLowerCase();
@@ -69,7 +86,10 @@ const buildString = (data) => {
 	let whereString = "";
 	if (where || (search_col && search_term)) {
 		const search =
-			search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(${search_term ? `'%${search_term}%'` : ""})` : null;
+			search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(${search_term ? `:search_term` : ""})` : null;
+		if (search_col && search_term) {
+			searchValues = [`%${search_term}%`]
+		}
 		whereString = `WHERE ${[where, search].filter(e => e).join(" AND ")}`;
 	}
 
@@ -82,18 +102,28 @@ const buildString = (data) => {
 	FROM ${tables}
 	${whereString}
 	${groupBy ? groupBy : ""}
-	${limit ? `LIMIT ${limit}` : ""}
-	${limit && page ? `OFFSET ${limit * (page - 1)}` : ""}`
+	${limit ? `LIMIT :limit` : ""}
+	${limit && page ? `OFFSET :offset` : ""}`
 
 	return {
 		countString,
-		queryString
+		queryString,
 	}
 }
 
 module.exports = {
 	query: async function(data) {
-		const { limit, page, cols, tables, availableCols, where, groupBy, search_col, search_term } = data;
+		const { limit, 
+			page, 
+			cols, 
+			tables, 
+			availableCols, 
+			where, 
+			groupBy, 
+			search_col, 
+			search_term, 
+			replacements 
+		} = data;
 		
 		let count = 0;
 		let response = [];
@@ -101,7 +131,7 @@ module.exports = {
 
 		const {
 			countString,
-			queryString
+			queryString,
 		} = buildString({
 			limit, 
 			page, 
@@ -113,10 +143,22 @@ module.exports = {
 			search_col, 
 			search_term
 		})
-		console.log(countString);
-		console.log(queryString);
+
+		const rCount = replaceValues(countString,{
+			search_term: search_term ? `%${search_term}%` : "",
+			...replacements
+		});
+		const rQuery = replaceValues(queryString,{
+			search_term: search_term ? `%${search_term}%` : "",
+			limit,
+			offset: limit * (page - 1),
+			...replacements
+		});
+
+		console.log(rCount.string);
+		console.log(rQuery.string);
 		await pool
-			.query(countString)
+			.query(rCount.string, rCount.values)
 			.then(c => {
 				count = c.rows[0].count;
 			})
@@ -126,7 +168,7 @@ module.exports = {
 			});
 
 		await pool
-			.query(queryString)
+			.query(rQuery.string, rQuery.values)
 			.then(r => {
 				response = r.rows;
 			})
@@ -145,7 +187,7 @@ module.exports = {
 		};
 	},
 	findOne: async function(data) {
-		const { tables, cols, where } = data;
+		const { tables, cols, where, replacements } = data;
 		let string = `
 		SELECT ${cols}
 		FROM ${tables}
@@ -154,10 +196,11 @@ module.exports = {
 		let errors = [];
 		let response = [];
 		
-		console.log(string);
+		const rString = replaceValues(string, replacements);
+		console.log(rString.string);
 
 		await pool
-			.query(string)
+			.query(rString.string, rString.values)
 			.then(r => {
 				response = r.rows;
 			})
@@ -177,28 +220,29 @@ module.exports = {
 	insert: async function(data) {
 		const { table, info, returning } = data;
 		let cols = [];
-		let values = []
+		let params = []
 		Object.keys(info).forEach(key => {
 			cols.push(`"${key}"`);
-			const valueS = correctValueString(info[key]);
-			values.push(valueS ? valueS : "null");
+			params.push(`:${key}`)
 		});
 		const colString = `(${cols.join(", ")})`
-		const valueString = `(${values.join(", ")})`
+		const paramString = `(${params.join(", ")})`
 
 		let string = `
 		INSERT INTO ${table} ${colString}
-		VALUES ${valueString}
+		VALUES ${paramString}
 		${returning ? `RETURNING ${returning}` : ""}
 		`
 
-		console.log(string);
+		const rString = replaceValues(string, info);
+
+		console.log(rString.string);
 
 		let errors = [];
 		let response = [];
 
 		await pool
-			.query(string)
+			.query(rString.string, rString.values)
 			.then(r => {
 				response = r.rows;
 			})
@@ -216,13 +260,11 @@ module.exports = {
 		};
 	},
 	update: async function(data) {
-		const { table, info, from, where, returning } = data;
+		const { table, info, from, where, returning, replacements } = data;
 
 		let setArray = []
 		Object.keys(info).forEach(key => {
-			let value = info[key];
-			const valueS = correctValueString(value);
-			setArray.push(`"${key}" = ${valueS ? valueS : "null"}`);
+			setArray.push(`"${key}" = :${key}`);
 		})
 		const setString = setArray.join(", ")
 
@@ -233,14 +275,17 @@ module.exports = {
 		WHERE ${where}
 		${returning ? `RETURNING ${returning}` : ""}
 		` 
-
-		console.log(string);
+		const rString = replaceValues(string, {
+			...info,
+			...replacements
+		})
+		console.log(rString.string);
 
 		let errors = [];
 		let response = [];
 
 		await pool
-			.query(string)
+			.query(rString.string, rString.values)
 			.then(r => {
 				response = r.rows;
 			})
@@ -258,20 +303,22 @@ module.exports = {
 		};
 	},
 	del: async function(data) {
-		const { table, using, from, where } = data;
+		const { table, using, where, replacements } = data;
 		let string = `
 		DELETE FROM ${table}
 		${using ? `USING ${using}` : ""}
 		WHERE ${where}
 		`
 
-		console.log(string);
+		const rString = replaceValues(string, replacements)
+
+		console.log(rString.string);
 
 		let errors = [];
 		let response = [];
 
 		await pool
-			.query(string)
+			.query(rString.string, rString.values)
 			.then(r => {
 				response = r.rows;
 			})

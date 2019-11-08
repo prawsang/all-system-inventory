@@ -30,7 +30,10 @@ router.get("/:customer_code/details", async (req, res) => {
 	const q = await findOne({
 		cols: Customer.getColumns,
 		tables: "customer",
-		where: `"customer_code" = '${customer_code}'`,
+		where: `"customer_code" = :customer_code`,
+		replacements: {
+			customer_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -50,11 +53,14 @@ router.get("/:customer_code/branches", async (req, res) => {
 		search_term,
 		cols: `${Branch.getColumns}`,
 		tables: `"branch"`,
-		where: `"branch"."owner_customer_code" = '${customer_code}'`,
+		where: `"branch"."owner_customer_code" = :customer_code`,
 		availableCols: [
 			"branch_code",
 			"branch_name",
-		]
+		],
+		replacements: {
+			customer_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -112,8 +118,11 @@ router.put("/:customer_code/edit", customerValidation, async (req, res) => {
 			customer_code,
 			name
 		},
-		where: `"customer_code" = '${customer_code}'`,
-		returning: "customer_code"
+		where: `"customer_code" = :customer_code_2`,
+		returning: "customer_code",
+		replacements: {
+			customer_code_2: customer_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -128,7 +137,10 @@ router.delete("/:customer_code/delete", async (req, res) => {
 
 	const q = await del({
 		table: "customer",
-		where: `"customer_code" = '${customer_code}'`,
+		where: `"customer_code" = :customer_code`,
+		replacements: {
+			customer_code
+		}
 	});
 	if (q.errors) {
 		res.status(400).json({ errors:
