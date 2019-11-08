@@ -85,18 +85,28 @@ router.get("/:branch_code/reserved-items", async (req, res) => {
 		type
 	});
 
-	// TODO: Join with bulk, model and supplier tables
+	// FINISHED: Join with bulk, model and supplier tables
 	const q = await utils.query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${models.Item.getColumns}`,
-		tables: `"item"`,
-		where: `"item"."reserved_branch_code" = '${branch_code}' ${filters ? `AND ${filters}` : ""}`,
+		cols: `${models.Item.getColumns}, ${models.Bulk.getColumns}, ${models.Model.getColumns}, ${models.Supplier.getColumns}`,
+		tables: `"item"
+			JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
+			JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
+			JOIN "supplier" ON "supplier_code" = "model"."from_supplier_code"
+		`,
+		where: `"item"."reserved_branch_code" = '${branch_code}'
+			${filters ? `AND ${filters}` : ""}`,
 		availableCols: [
 			"serial_no",
 			"status",
+			"bulk_code",
+			"model_code",
+			"model_name",
+			"supplier_code",
+			"supplier_name",
 		]
 	});
 	if (q.errors) {
