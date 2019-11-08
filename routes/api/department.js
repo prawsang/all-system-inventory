@@ -28,7 +28,10 @@ router.get("/:department_code/details", async (req, res) => {
 	const q = await utils.findOne({
 		cols: Department.getColumns,
 		tables: "department",
-		where: `"department_code" = '${department_code}'`,
+		where: `"department_code" = :department_code`,
+		replacements: {
+			department_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -45,10 +48,14 @@ router.get("/:department_code/staff", async (req, res) => {
 		limit,
 		page,
 		search_term,
+		search_col,
 		tables: `"staff"
 		JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
-		where: `"department"."department_code" = '${department_code}'`,
-		availableCols: ["staff_name", "staff_code"]
+		where: `"department"."department_code" = :department_code`,
+		availableCols: ["staff_name", "staff_code"],
+		replacements: {
+			department_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -103,8 +110,11 @@ router.put("/:department_code/edit", depValidation, async (req,res) => {
 			department_code, 
 			name, 
 		},
-		where: `"department_code" = '${department_code}'`,
-		returning: "department_code"
+		where: `"department_code" = :department_code_2`,
+		returning: "department_code",
+		replacements: {
+			department_code_2: department_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -114,11 +124,14 @@ router.put("/:department_code/edit", depValidation, async (req,res) => {
 })
 
 router.delete("/:department_code/delete", async (req,res) => {
-	const { department } = req.params;
+	const { department_code } = req.params;
 	
 	const q = await utils.del({
 		table: "department",
-		where: `"department_code" = '${department_code}'`,
+		where: `"department_code" = :department_code`,
+		replacements: {
+			department_code
+		}
 	});
 	if (q.errors) {
 		res.status(400).json({ errors:

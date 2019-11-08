@@ -10,7 +10,10 @@ router.get("/:branch_code/details", async (req, res) => {
 		tables: `"branch"
 		JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"`,
 		cols: `${models.Customer.getColumns}, ${models.Branch.getColumns}`,
-		where: `"branch_code" = '${branch_code}'`,
+		where: `"branch_code" = :branch_code`,
+		replacements: {
+			branch_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -61,11 +64,14 @@ router.get("/:branch_code/items/", async (req, res) => {
 		where: `
 			NOT "item"."status" = 'IN_STOCK' 
 			AND NOT "item"."status" = 'RESERVED'
-			AND "branch"."branch_code" = '${branch_code}'
+			AND "branch"."branch_code" = :branch_code
 			${filters ? `AND ${filters}` : ""}
 			${withdrawalFilters ? `AND ${withdrawalFilters}` : ""}
 			`,
-		availableCols: ["serial_no"]
+		availableCols: ["serial_no"],
+		replacements: {
+			branch_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -92,14 +98,17 @@ router.get("/:branch_code/reserved-items", async (req, res) => {
 		tables: `"item"
 		JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
 		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"`,
-		where: `"item"."reserved_branch_code" = '${branch_code}' ${filters ? `AND ${filters}` : ""}`,
+		where: `"item"."reserved_branch_code" = :branch_code ${filters ? `AND ${filters}` : ""}`,
 		availableCols: [
 			"serial_no",
 			"status",
 			"bulk_code",
 			"model_code",
 			"model_name"
-		]
+		],
+		replacements: {
+			branch_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -173,8 +182,11 @@ router.put("/:branch_code/edit", branchValidation, async (req, res) => {
 			name,
 			address
 		},
-		where: `"branch_code" = '${branch_code}'`,
-		returning: "branch_code"
+		where: `"branch_code" = :branch_code`,
+		returning: "branch_code",
+		replacements: {
+			branch_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -189,7 +201,10 @@ router.delete("/:branch_code/delete", async (req, res) => {
 
 	const q = await utils.del({
 		table: "branch",
-		where: `"branch_code" = '${branch_code}'`,
+		where: `"branch_code" = :branch_code`,
+		replacements: {
+			branch_code
+		}
 	});
 	if (q.errors) {
 		res.status(400).json({ errors:

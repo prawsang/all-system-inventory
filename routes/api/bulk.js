@@ -11,8 +11,8 @@ router.get("/get-all", async (req, res) => {
 	let dateFilter = null;
 
 	if (from || to) {
-		const f = from ? `"bulk"."date_in" >= '${from}'` : null;
-		const t = to ? `"bulk"."date_in" <= '${to}'` : null;
+		const f = from ? `"bulk"."date_in" >= :from` : null;
+		const t = to ? `"bulk"."date_in" <= :to` : null;
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 
@@ -26,7 +26,11 @@ router.get("/get-all", async (req, res) => {
 		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
 		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"`,
 		where: dateFilter,
-		availableCols: ["bulk_code","model_name","model_code","supplier_name","bulk_code"]
+		availableCols: ["bulk_code","model_name","model_code","supplier_name","bulk_code"],
+		replacements: {
+			from,
+			to
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -40,7 +44,10 @@ router.get("/:bulk_code/details", async (req, res) => {
 	const q = await utils.findOne({
 		cols: models.Bulk.getColumns,
 		tables: "bulk",
-		where: `"bulk_code" = '${bulk_code}'`,
+		where: `"bulk_code" = :bulk_code`,
+		replacements: {
+			bulk_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -60,8 +67,11 @@ router.get("/:bulk_code/items", async (req, res) => {
 		search_col,
 		cols: `${models.Item.getColumns}`,
 		tables: `"item"`,
-		where: `"item"."from_bulk_code" = '${bulk_code}'`,
+		where: `"item"."from_bulk_code" = :bulk_code`,
 		availableCols: ["serial_no"],
+		replacements: {
+			bulk_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -229,8 +239,11 @@ router.put("/:bulk_code/edit", bulkValidation, async (req,res) => {
 			price_per_unit,
 			date_in
 		},
-		where: `"bulk_code" = '${bulk_code}'`,
-		returning: "bulk_code"
+		where: `"bulk_code" = :bulk_code_2`,
+		returning: "bulk_code",
+		replacements: {
+			bulk_code_2: bulk_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -245,7 +258,10 @@ router.delete("/:bulk_code/delete", async (req,res) => {
 	
 	const q = await utils.del({
 		table: "bulk",
-		where: `"bulk_code" = '${bulk_code}'`,
+		where: `"bulk_code" = :bulk_code`,
+		replacements: {
+			bulk_code
+		}
 	});
 	if (q.errors) {
 		res.status(400).json({ errors:

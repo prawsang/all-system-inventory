@@ -32,7 +32,10 @@ router.get("/:supplier_code/details", async (req, res) => {
 	const q = await utils.findOne({
 		cols: Supplier.getColumns,
 		tables: "supplier",
-		where: `"supplier_code" = '${supplier_code}'`,
+		where: `"supplier_code" = :supplier_code`,
+		replacements: {
+			supplier_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -57,8 +60,11 @@ router.get("/:supplier_code/models", async (req, res) => {
 		search_col,
 		cols: `${Model.getColumns}`,
 		tables: `"model"`,
-		where: `"model"."from_supplier_code" = '${supplier_code}' ${filters ? `AND ${filters}` : ""}`,
+		where: `"model"."from_supplier_code" = :supplier_code ${filters ? `AND ${filters}` : ""}`,
 		availableCols: ["model_name", "model_code"],
+		replacements: {
+			supplier_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -120,8 +126,11 @@ router.put("/:supplier_code/edit", supplierValidation, async (req,res) => {
 			phone, 
 			email
 		},
-		where: `"supplier_code" = '${supplier_code}'`,
-		returning: "supplier_code"
+		where: `"supplier_code" = :supplier_code_2`,
+		returning: "supplier_code",
+		replacements: {
+			supplier_code_2: supplier_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -136,7 +145,10 @@ router.delete("/:supplier_code/delete", async (req,res) => {
 	
 	const q = await utils.del({
 		table: "supplier",
-		where: `"supplier_code" = '${supplier_code}'`,
+		where: `"supplier_code" = :supplier_code`,
+		replacements: {
+			supplier_code
+		}
 	});
 	if (q.errors) {
 		res.status(400).json({ errors:

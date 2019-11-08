@@ -15,7 +15,7 @@ router.route("/get-all").get(async (req, res) => {
 
 	let filters = null;
 	if (type) {
-		filters = `"model"."is_product_type_name" = ${type}`;
+		filters = `"model"."is_product_type_name" = :type`;
 	}
 
 	const q = await utils.query({
@@ -30,6 +30,9 @@ router.route("/get-all").get(async (req, res) => {
 		`,
 		where: filters ? filters : null,
 		availableCols: ["model_code", "model_name", "supplier_code", "supplier_name", "product_type_name"],
+		replacements: {
+			type
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -44,7 +47,10 @@ router.route("/:model_code/details").get( async (req, res) => {
 		cols: `${Model.getColumns}, ${Supplier.getColumns}`,
 		tables: `"model"
 		JOIN "supplier" ON "model"."from_supplier_code" = "supplier"."supplier_code"`,
-		where: `"model_code" = '${model_code}'`,
+		where: `"model_code" = :model_code`,
+		replacements: {
+			model_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -58,7 +64,10 @@ router.route("/:model_code/bulks").get( async (req, res) => {
 	const q = await utils.query({
 		cols: Bulk.getColumns,
 		tables: "bulk",
-		where: `"of_model_code" = '${model_code}'`,
+		where: `"of_model_code" = :model_code`,
+		replacements: {
+			model_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -150,8 +159,11 @@ router.put("/:model_code/edit", async (req, res) => {
 			depth, 
 			weight 
 		},
-		where: `"model_code" = '${model_code}'`,
-		returning: "model_code"
+		where: `"model_code" = :model_code_2`,
+		returning: "model_code",
+		replacements: {
+			model_code_2: model_code
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -165,7 +177,10 @@ router.delete("/:model_code", async (req, res) => {
 	const { model_code } = req.params;
 	const q = await utils.del({
 		table: "model",
-		where: `"model_code" = '${model_code}'`,
+		where: `"model_code" = :model_code`,
+		replacements: {
+			model_code
+		}
 	});
 	if (q.errors) {
 		res.status(400).json({ errors:

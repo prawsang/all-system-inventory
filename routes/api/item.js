@@ -15,7 +15,6 @@ const {
 } = models;
 const { check, validationResult } = require("express-validator/check");
 const utils = require("../../utils/");
-const pool = require("../../config/database");
 
 router.use("/", require("./stock_status").router);
 
@@ -70,36 +69,49 @@ router.get("/:serial_no/details", async (req, res) => {
 		JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
 		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"
 		LEFT OUTER JOIN "branch" ON "branch"."branch_code" = "item"."reserved_branch_code"`,
-		where: `"item"."serial_no" = '${serial_no}'`,
+		where: `"item"."serial_no" = :serial_no`,
+		replacements: {
+			serial_no
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
 		return;
 	}
 
-	const w = await pool.query(`
-	SELECT ${Withdrawal.getColumns}, 
-	${Department.getColumns},
-	${Branch.getColumns}, 
-	${Customer.getColumns}, 
-	${Staff.getColumns}
-	FROM "withdrawal"
-	LEFT OUTER JOIN "department" ON "withdrawal"."for_department_code" = "department"."department_code"
-	LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
-	LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
-	JOIN "staff" ON "created_by_staff_code" = "staff_code"
-	JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
-	WHERE "withdrawal_has_item"."serial_no" = '${serial_no}'
-	`);
+	const w = await utils.raw({
+		string: `
+		SELECT ${Withdrawal.getColumns}, 
+		${Department.getColumns},
+		${Branch.getColumns}, 
+		${Customer.getColumns}, 
+		${Staff.getColumns}
+		FROM "withdrawal"
+		LEFT OUTER JOIN "department" ON "withdrawal"."for_department_code" = "department"."department_code"
+		LEFT OUTER JOIN "branch" ON "withdrawal"."for_branch_code" = "branch"."branch_code"
+		LEFT OUTER JOIN "customer" ON "branch"."owner_customer_code" = "customer"."customer_code"
+		JOIN "staff" ON "created_by_staff_code" = "staff_code"
+		JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
+		WHERE "withdrawal_has_item"."serial_no" = :serial_no
+		`,
+		replacements: {
+			serial_no
+		}
+	});
 	if (w.errors) {
 		res.status(500).json(w);
 		return;
 	}
 
-	const r = await pool.query(`
-	SELECT ${Return.getColumns}
-	FROM "return_history"
-	WHERE "return_history"."serial_no" = '${serial_no}'`)
+	const r = await utils.raw({
+		string: `
+		SELECT ${Return.getColumns}
+		FROM "return_history"
+		WHERE "return_history"."serial_no" = :serial_no`,
+		replacements: {
+			serial_no
+		}
+	})
 
 	if (r.errors) {
 		res.status(500).json(r);
@@ -117,8 +129,8 @@ router.get("/lent", async (req, res) => {
 	const { limit, page, search_col, search_term, return_to, return_from } = req.query;
 	let filters = null;
 	if (return_from || return_to) {
-		const f = return_from ? `"withdrawal"."return_by" >= '${return_from}'` : null;
-		const t = return_to ? `"withdrawal"."return_by" <= '${return_to}'` : null;
+		const f = return_from ? `"withdrawal"."return_by" >= :return_from` : null;
+		const t = return_to ? `"withdrawal"."return_by" <= :return_to` : null;
 		filters = [f, t].filter(e => e).join(" AND ");
 	}
 
@@ -147,7 +159,11 @@ router.get("/lent", async (req, res) => {
 		where: `"item"."status" = 'LENT' 
 			AND "withdrawal"."type" = 'LENDING' 
 			${filters ? `AND ${filters}` : ""}`,
-		availableCols: ["serial_no","branch_name","branch_code"]
+		availableCols: ["serial_no","branch_name","branch_code"],
+		replacements: {
+			return_from,
+			return_to
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -184,7 +200,10 @@ router.get("/reserved", async (req, res) => {
 			"customer_name",
 			"model_code",
 			"model_name"
-		]
+		],
+		replacements: {
+			type
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -224,8 +243,11 @@ router.put("/:serial_no/edit", stockValidation, async (req, res) => {
 			remarks,
 			is_broken
 		},
-		where: `"serial_no" = '${serial_no}'`,
-		returning: "serial_no"
+		where: `"serial_no" = :serial_no_2`,
+		returning: "serial_no",
+		replacements: {
+			serial_no_2: serial_no
+		}
 	})
 	if (q.errors) {
 		res.status(500).json(q);
@@ -248,7 +270,10 @@ router.delete("/:serial_no/delete", async (req, res) => {
 
 	const q = await utils.del({
 		table: "item",
-		where: `"serial_no" = '${serial_no}'`,
+		where: `"serial_no" = :serial_no`,
+		replacements: {
+			serial_no
+		}
 	});
 	if (q.errors) {
 		res.status(400).json({ errors:
