@@ -23,7 +23,7 @@ router.route("/get-all").get(async (req, res) => {
 
 	const filters = Item.filter({
 		is_broken,
-		status: status ? status.toUpperCase() : null,
+		status,
 		type
 	});
 
@@ -46,7 +46,11 @@ router.route("/get-all").get(async (req, res) => {
 			"model_code",
 			"model_name",
 			"product_type_name"
-		]
+		],
+		replacements: {
+			status: status ? status.toUpperCase() : null,
+			type
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);

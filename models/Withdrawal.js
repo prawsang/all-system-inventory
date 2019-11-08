@@ -136,12 +136,12 @@ Withdrawal.filter = data => {
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (install_from || install_to) {
-		const f = install_from ? `"withdrawal"."install_date" >= :from` : null;
-		const t = install_to ? `"withdrawal"."install_date" <= :to` : null;
+		const f = install_from ? `"withdrawal"."install_date" >= :install_from` : null;
+		const t = install_to ? `"withdrawal"."install_date" <= :install_to` : null;
 		installDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (return_from || return_to) {
-		const f = return_from ? `"withdrawal"."return_by" >= :return_form` : null;
+		const f = return_from ? `"withdrawal"."return_by" >= :return_from` : null;
 		const t = return_to ? `"withdrawal"."return_by" <= :return_to` : null;
 		returnDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
