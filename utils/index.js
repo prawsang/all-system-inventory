@@ -34,7 +34,7 @@ const getFromAlias = col => {
 		case "department_name":
 			return `"department"."name"`;
 		default:
-			return `""`;
+			return `"${col}"`;
 	}
 };
 
