@@ -1,30 +1,30 @@
 import React from "react";
 import history from "@/common/history";
 
-class SearchItem extends React.Component {
+class SearchWithdrawal extends React.Component {
 	state = {
-		serialNo: ""
+		id: ""
 	};
 
 	handleSearch() {
-		history.push(`/single/item/${this.state.serialNo}`);
+		history.push(`/single/withdrawal/${this.state.id}`);
 	}
 
 	render() {
-		const { serialNo } = this.state;
+		const { id } = this.state;
 		return (
 			<div className="content">
-				<h3>ค้นหาสินค้า</h3>
+				<h3>ค้นหาใบเบิก</h3>
 				<div className="panel">
 					<div className="panel-content">
 						<form onSubmit={() => this.handleSearch()}>
 							<div className="field">
-								<label className="label">Serial No.</label>
+								<label className="label">Withdrawal ID</label>
 								<input
 									className="input is-fullwidth"
-									value={serialNo}
-									onChange={e => this.setState({ serialNo: e.target.value })}
-									placeholder="Scan Serial No."
+									value={id}
+									onChange={e => this.setState({ id: e.target.value })}
+									placeholder="Withdrawal ID"
 								/>
 							</div>
 							<button className="button" type="submit">
@@ -38,4 +38,4 @@ class SearchItem extends React.Component {
 	}
 }
 
-export default SearchItem;
+export default SearchWithdrawal;

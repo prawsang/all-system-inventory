@@ -6,6 +6,7 @@ import Record from "../modules/record";
 import Single from "../modules/single";
 import SearchItem from "../modules/searchitem";
 import PublicRoute from "./components/PublicRoute";
+import SearchWithdrawal from "../modules/searchwithdrawal";
 
 class AppRouter extends React.Component {
 	render() {
@@ -17,6 +18,7 @@ class AppRouter extends React.Component {
 						<PublicRoute path="/record" component={Record} />
 						<PublicRoute path="/report" component={Report} />
 						<PublicRoute path="/search-item" component={SearchItem} />
+						<PublicRoute path="/search-withdrawal" component={SearchWithdrawal} />
 						<PublicRoute path="/" component={Home} />
 					</Switch>
 				</Router>

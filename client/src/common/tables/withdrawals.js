@@ -8,6 +8,7 @@ const WithdrawalsTable = ({ data }) => (
 			<tr>
 				<td>Withdrawal ID</td>
 				<td>Type</td>
+				<td>Status</td>
 				<td>Branch</td>
 				<td>Customer</td>
 				<td>Department</td>
@@ -15,7 +16,6 @@ const WithdrawalsTable = ({ data }) => (
 				<td>Date</td>
 				<td className="has-no-line-break">Install Date</td>
 				<td className="has-no-line-break">Return Date</td>
-				<td>Status</td>
 			</tr>
 		</thead>
 		<tbody className="is-hoverable">
@@ -32,6 +32,7 @@ const WithdrawalsTable = ({ data }) => (
 						>
 							<td className="has-no-line-break">{e.withdrawal_id}</td>
 							<td className="has-no-line-break">{e.withdrawal_type}</td>
+							<td>{e.withdrawal_status}</td>
 							<td className="has-no-line-break">
 								{ e.withdrawal_type !== "TRANSFER" ? `${e.branch_name} (${e.branch_code})` : "-"}
 							</td>
@@ -45,7 +46,6 @@ const WithdrawalsTable = ({ data }) => (
 							<td className="has-no-line-break">{formatDate(e.withdrawal_date)}</td>
 							<td className="has-no-line-break">{formatDate(e.install_date)}</td>
 							<td className="has-no-line-break">{formatDate(e.return_by)}</td>
-							<td>{e.withdrawal_status}</td>
 						</tr>
 					)))}
 		</tbody>

@@ -2,7 +2,6 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faTable,
-	faReceipt,
 	faListUl,
 	faArrowAltCircleUp,
 	faArrowAltCircleDown,
@@ -18,10 +17,11 @@ import history from "@/common/history";
 class Menu extends React.Component {
 	state = {
 		showReportMenu: false,
-		showEditMenu: false
+		showEditMenu: false,
+		showSearchMenu: false
 	};
 	render() {
-		const { showReportMenu, showEditMenu } = this.state;
+		const { showReportMenu, showEditMenu, showSearchMenu } = this.state;
 		const { active, close } = this.props;
 		return (
 			<div className={`side-bar ${active && "is-active"}`}>
@@ -47,16 +47,38 @@ class Menu extends React.Component {
 					<small className="is-6 is-bold">All System Inventory</small>
 				</div>
 				<ul className="side-bar-menu">
-					<SideBarLink link="/search-item">
-						<FontAwesomeIcon className="icon has-mr-05" icon={faSearch} />
-						ค้นหาของ
-					</SideBarLink>
+					<li
+						className="side-bar-menu-item is-clickable"
+						onClick={e =>
+							this.setState({
+								showSearchMenu: !showSearchMenu,
+								showEditMenu: false,
+								showReportMenu: false
+							})
+						}
+					>
+						<div className="is-flex is-jc-space-between">
+							<div>
+								<FontAwesomeIcon className="icon has-mr-05" icon={faSearch} />
+								ค้นหา
+							</div>
+							<FontAwesomeIcon
+								className="icon has-mr-05"
+								icon={showSearchMenu ? faAngleLeft : faAngleRight}
+							/>
+						</div>
+						<ul className={`panel menu dropright ${showSearchMenu || "is-hidden"}`}>
+							<Link link="/search-item">ค้นหาสินค้า</Link>
+							<Link link="/search-withdrawal">ค้นหาใบเบิก</Link>
+						</ul>
+					</li>
 					<li
 						className="side-bar-menu-item is-clickable"
 						onClick={e =>
 							this.setState({
 								showReportMenu: !showReportMenu,
-								showEditMenu: false
+								showEditMenu: false,
+								showSearchMenu: false
 							})
 						}
 					>
@@ -94,7 +116,8 @@ class Menu extends React.Component {
 						onClick={e =>
 							this.setState({
 								showReportMenu: false,
-								showEditMenu: !showEditMenu
+								showEditMenu: !showEditMenu,
+								showSearchMenu: false
 							})
 						}
 					>

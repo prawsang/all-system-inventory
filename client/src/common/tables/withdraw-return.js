@@ -9,7 +9,7 @@ const WithdrawalsTable = ({ data }) => {
 	d = d.sort((a,b) => {
 		const ad = a.return_datetime ? a.return_datetime : a.withdrawal_date;
 		const bd = b.return_datetime ? b.return_datetime : b.withdrawal_date;
-		return  moment(ad) - moment(bd);
+		return  moment(bd) - moment(ad);
 	})
 
 	return (
@@ -20,13 +20,13 @@ const WithdrawalsTable = ({ data }) => {
 					<td>Date</td>
 					<td>Withdrawal ID</td>
 					<td>Type</td>
+					<td>Status</td>
 					<td>Branch</td>
 					<td>Customer</td>
 					<td>Department</td>
 					<td className="has-no-line-break">ผู้เบิก</td>
 					<td className="has-no-line-break">Install Date</td>
 					<td className="has-no-line-break">Return Date</td>
-					<td>Status</td>
 				</tr>
 			</thead>
 			<tbody className="is-hoverable">
@@ -53,6 +53,7 @@ const WithdrawalsTable = ({ data }) => {
 								<td className="has-no-line-break">{e.withdrawal_date ? formatDateTime(e.withdrawal_date) : formatDateTime(e.return_datetime)}</td>
 								<td className="has-no-line-break">{e.withdrawal_id ? e.withdrawal_id : "-"}</td>
 								<td className="has-no-line-break">{e.withdrawal_type ? e.withdrawal_type : "-"}</td>
+								<td>{e.withdrawal_status ? e.withdrawal_status : "-"}</td>
 								<td className="has-no-line-break">
 									{e.withdrawal_type && e.withdrawal_type !== "TRANSFER" ? `${e.branch_name} (${e.branch_code})` : "-"}
 								</td>
@@ -65,7 +66,6 @@ const WithdrawalsTable = ({ data }) => {
 								<td className="has-no-line-break">{e.staff_name ? e.staff_name : "-"}</td>
 								<td className="has-no-line-break">{e.install_date ? formatDate(e.install_date): "-"}</td>
 								<td className="has-no-line-break">{e.return_by ? formatDate(e.return_by) : "-"}</td>
-								<td>{e.withdrawal_status ? e.withdrawal_status : "-"}</td>
 							</tr>
 						)))}
 			</tbody>
