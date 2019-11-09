@@ -2,16 +2,27 @@ import React from "react";
 import Table from "@/common/components/InnerTable";
 import WithdrawalsTable from "@/common/tables/withdraw-return";
 import history from "@/common/history";
+import DeleteModal from "@/common/components/DeleteModal";
 import Edit from "./Edit";
+import Axios from "axios";
+import { formatDateTime } from "@/common/date";
 
 class Item extends React.Component {
 	state = {
-		edit: false
+		edit: false,
+		showDeleteConfirm: false
 	};
+	handleDelete() {
+		const { data } = this.props;
+		const { serial_no, from_bulk_code } = data.row;
+		Axios.request({
+			method: "DELETE",
+			url: `/item/${serial_no}/delete`
+		}).then(res => history.push(`/single/bulk/${from_bulk_code}`));
+	}
 	render() {
 		const { data } = this.props;
-		console.log(data)
-		const { edit } = this.state;
+		const { edit, showDeleteConfirm } = this.state;
 		if (data) {
 			if (!data.row) return <p>ไม่พบรายการ</p>;
 		}
@@ -23,9 +34,9 @@ class Item extends React.Component {
 						<React.Fragment>
 							<div className="panel-content no-pb">
 								<div>
-									<div style={{ float: "right" }}>
+									<div className="is-flex is-ai-center" style={{ float: "right" }}>
 										<button
-											className="button"
+											className="button no-mb"
 											onClick={() =>
 												this.setState({
 													edit: true
@@ -33,6 +44,16 @@ class Item extends React.Component {
 											}
 										>
 											Edit
+										</button>
+										<button
+											className="button is-danger"
+											onClick={() =>
+												this.setState({
+													showDeleteConfirm: true
+												})
+											}
+										>
+											Delete
 										</button>
 									</div>
 									<h5 className="no-mt has-mb-10">Item</h5>
@@ -57,7 +78,22 @@ class Item extends React.Component {
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Model Name:</label>
-										<span>{data.row.model_name}</span>
+										<span
+											className="accent is-clickable"
+											onClick={() =>
+												history.push(
+													`/single/model/${
+														data.row.of_model_code
+													}`
+												)
+											}
+										>
+											{data.row.model_name}
+										</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Date In:</label>
+										<span>{formatDateTime(data.row.date_in)}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Price Per Unit:</label>
@@ -120,6 +156,11 @@ class Item extends React.Component {
 								item={data.row}
 								close={() => this.setState({ edit: false })}
 								active={edit}
+							/>
+							<DeleteModal 
+								active={showDeleteConfirm}
+								close={() => this.setState({ showDeleteConfirm: false })}
+								onDelete={() => this.handleDelete()}
 							/>
 						</React.Fragment>
 					)}

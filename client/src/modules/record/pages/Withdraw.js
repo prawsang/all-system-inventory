@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import Axios from "axios";
 import { resetRecordData } from "@/actions/record";
 import history from "@/common/history";
+import moment from "moment";
 
 const INSTALLATION = "INSTALLATION";
 const LENDING = "LENDING";
@@ -15,7 +16,6 @@ const TRANSFER = "TRANSFER";
 class Withdraw extends React.Component {
 	state = {
 		type: INSTALLATION,
-		date: "",
 		returnDate: "",
 		installDate: "",
 		remarks: "",
@@ -24,7 +24,6 @@ class Withdraw extends React.Component {
 	async handleSubmit() {
 		const {
 			type,
-			date,
 			returnDate,
 			installDate,
 			remarks,
@@ -36,7 +35,7 @@ class Withdraw extends React.Component {
 			url: "/withdrawal/add",
 			data: {
 				type,
-				date,
+				date: moment().format(),
 				return_by: type === LENDING ? returnDate : null,
 				install_date: type === INSTALLATION ? installDate : null,
 				for_branch_code: type !== TRANSFER && selectedBranch.branch_code,
@@ -59,7 +58,6 @@ class Withdraw extends React.Component {
 	render() {
 		const {
 			type,
-			date,
 			returnDate,
 			installDate,
 			remarks,
@@ -86,13 +84,6 @@ class Withdraw extends React.Component {
 								</select>
 							</div>
 						</div>
-						<Field
-							type="date"
-							placeholder="Date"
-							label="Date"
-							value={date}
-							onChange={e => this.setState({ date: e.target.value })}
-						/>
 						<StaffSearch />
 						{type === LENDING && (
 							<Field

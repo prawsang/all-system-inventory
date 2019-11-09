@@ -5,17 +5,29 @@ import ItemsTable from "@/common/tables/items";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
 import { CustomerData } from "../../data";
+import DeleteModal from "@/common/components/DeleteModal";
 import Edit from "./Edit";
+import Axios from "axios";
+import history from "@/common/history";
 
 class Branch extends React.Component {
 	state = {
 		edit: false,
 		activeTable: 0, // 0 = items, 1 = po, 2 = reserved items
-		showAddJob: false
+		showAddJob: false,
+		showDeleteModal: false
 	};
+	handleDelete() {
+		const { data } = this.props;
+		const { branch_code, customer_code } = data.row;
+		Axios.request({
+			method: "DELETE",
+			url: `/branch/${branch_code}/delete`
+		}).then(res => history.push(`/single/customer/${customer_code}`));
+	}
 	render() {
 		const { data } = this.props;
-		const { edit, activeTable } = this.state;
+		const { edit, activeTable, showDeleteModal } = this.state;
 		if (data) {
 			if (!data.row) return <p>ไม่พบรายการ</p>;
 		}
@@ -37,6 +49,16 @@ class Branch extends React.Component {
 											}
 										>
 											Edit
+										</button>
+										<button
+											className="button is-danger"
+											onClick={() =>
+												this.setState({
+													showDeleteModal: true
+												})
+											}
+										>
+											Delete
 										</button>
 									</div>
 									<h5 className="no-mt has-mb-10">Branch</h5>
@@ -141,6 +163,11 @@ class Branch extends React.Component {
 								branch={data.row}
 								close={() => this.setState({ edit: false })}
 								active={edit}
+							/>
+							<DeleteModal 
+								active={showDeleteModal}
+								close={() => this.setState({ showDeleteModal: false })}
+								onDelete={() => this.handleDelete()}
 							/>
 						</React.Fragment>
 					)}

@@ -5,17 +5,30 @@ import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
 import BranchesTable from "@/common/tables/branches";
 import AddBranch from "./AddBranch";
+import DeleteModal from "@/common/components/DeleteModal";
 import Edit from "./Edit";
+import Axios from "axios";
+import history from "@/common/history";
 
 class Customer extends React.Component {
 	state = {
 		edit: false,
 		showAddBranchModal: false,
+		showDeleteConfirm: false
 	};
+
+	handleDelete() {
+		const { data } = this.props;
+		const { customer_code } = data.row;
+		Axios.request({
+			method: "DELETE",
+			url: `/customer/${customer_code}/delete`
+		}).then(res => history.push("/report/customers"));
+	}
 
 	render() {
 		const { data } = this.props;
-		const { edit, showAddBranchModal } = this.state;
+		const { edit, showAddBranchModal, showDeleteConfirm } = this.state;
 		if (data) {
 			if (!data.row) return <p>ไม่พบรายการ</p>;
 		}
@@ -36,6 +49,16 @@ class Customer extends React.Component {
 										}
 									>
 										Edit
+									</button>
+									<button
+										className="button is-danger"
+										onClick={() =>
+											this.setState({
+												showDeleteConfirm: true
+											})
+										}
+									>
+										Delete
 									</button>
 								</div>
 								<div>
@@ -97,6 +120,11 @@ class Customer extends React.Component {
 						</React.Fragment>
 					)}
 				</div>
+				<DeleteModal 
+					active={showDeleteConfirm}
+					close={() => this.setState({ showDeleteConfirm: false })}
+					onDelete={() => this.handleDelete()}
+				/>
 			</React.Fragment>
 		);
 	}

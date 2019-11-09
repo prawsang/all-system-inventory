@@ -3,6 +3,7 @@ import Table from "@/common/components/InnerTable";
 import ItemsTable from "@/common/tables/items";
 import { BranchData, CustomerData } from "../../data/";
 import Modal from "@/common/components/Modal";
+import DeleteModal from "@/common/components/DeleteModal";
 import EditModal from "./EditModal";
 import ChangeCustomer from "./ChangeCustomer";
 import RemarksModal from "./RemarksModal";
@@ -51,7 +52,7 @@ class Withdrawal extends React.PureComponent {
 		const { data } = this.props;
 		Axios.request({
 			method: "DELETE",
-			url: `/withdrawal/${data.row.withdrawal_id}`
+			url: `/withdrawal/${data.row.withdrawal_id}/delete`
 		}).then(res => history.push("/"));
 	}
 
@@ -103,6 +104,17 @@ class Withdrawal extends React.PureComponent {
 										disabled={data.row.withdrawal_status === "CANCELLED"}
 									>
 										Cancel
+									</button>
+									<button
+										className="button is-danger"
+										onClick={() =>
+											this.setState({
+												showDeleteConfirm: true
+											})
+										}
+										disabled={data.row.withdrawal_status !== "CANCELLED"}
+									>
+										Delete
 									</button>
 								</div>
 								<div>
@@ -260,10 +272,10 @@ class Withdrawal extends React.PureComponent {
 								close={() => this.setState({ showCancelConfirm: false })}
 								active={showCancelConfirm}
 							/>
-							<DeleteConfirm
-								onSubmit={() => this.deleteWithdrawal()}
-								close={() => this.setState({ showDeleteConfirm: false })}
+							<DeleteModal 
 								active={showDeleteConfirm}
+								close={() => this.setState({ showDeleteConfirm: false })}
+								onDelete={() => this.deleteWithdrawal()}
 							/>
 						</React.Fragment>
 					)}
@@ -282,20 +294,6 @@ const CancelConfirm = ({ onSubmit, close, active }) => (
 			</button>
 			<button className="button is-light" onClick={close}>
 				ไม่ Cancel
-			</button>
-		</div>
-	</Modal>
-);
-
-const DeleteConfirm = ({ onSubmit, close, active }) => (
-	<Modal title="Confirm" close={close} active={active}>
-		<p>เมื่อลบใบเบิกแล้ว จะไม่สามารถนำกลับมาได้อีก</p>
-		<div className="buttons">
-			<button className="button is-danger" onClick={onSubmit}>
-				Delete
-			</button>
-			<button className="button is-light" onClick={close}>
-				Cancel
 			</button>
 		</div>
 	</Modal>

@@ -1,5 +1,6 @@
 import React from "react";
 import ProductType from "../modals/ProductType";
+import DeleteModal from "@/common/components/DeleteModal";
 import Modal from "@/common/components/Modal";
 import Axios from "axios";
 
@@ -76,24 +77,11 @@ class ProductTypesTable extends React.Component {
 				>
 					<ProductType data={selected} modalType="EDIT" />
 				</Modal>
-				<Modal
+				<DeleteModal 
 					active={showDeleteConfirm}
 					close={() => this.setState({ showDeleteConfirm: false })}
-					title="Confirm Deletion"
-				>
-					<p>Are you sure you want to delete?</p>
-					<div className="buttons">
-						<button className="button is-danger" onClick={() => this.handleDelete()}>
-							Delete
-						</button>
-						<button
-							className="button is-light"
-							onClick={() => this.setState({ showDeleteConfirm: false })}
-						>
-							Cancel
-						</button>
-					</div>
-				</Modal>
+					onDelete={() => this.handleDelete()}
+				/>
 			</React.Fragment>
 		);
 	}

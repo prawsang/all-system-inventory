@@ -1,6 +1,6 @@
 import React from "react";
 // import Model from "../modals/Model";
-import Modal from "@/common/components/Modal";
+import DeleteModal from "@/common/components/DeleteModal";
 import ModelModal from "./ModelModal";
 import Axios from "axios";
 
@@ -79,24 +79,11 @@ class ModelsTable extends React.Component {
 					}}
 					modalType="EDIT"
 				/>
-				<Modal
+				<DeleteModal 
 					active={showDeleteConfirm}
 					close={() => this.setState({ showDeleteConfirm: false })}
-					title="Confirm Deletion"
-				>
-					<p>Are you sure you want to delete?</p>
-					<div className="buttons">
-						<button className="button is-danger" onClick={() => this.handleDelete()}>
-							Delete
-						</button>
-						<button
-							className="button is-light"
-							onClick={() => this.setState({ showDeleteConfirm: false })}
-						>
-							Cancel
-						</button>
-					</div>
-				</Modal>
+					onDelete={() => this.handleDelete()}
+				/>
 			</React.Fragment>
 		);
 	}

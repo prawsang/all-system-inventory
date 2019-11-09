@@ -3,7 +3,7 @@ import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/InnerTable";
 import ModelsTable from "./ModelsTable";
 import ModelModal from "./ModelModal";
-import Modal from "@/common/components/Modal";
+import DeleteModal from "@/common/components/DeleteModal";
 import Edit from "./Edit";
 import Axios from "axios";
 import history from "@/common/history";
@@ -128,24 +128,11 @@ class Supplier extends React.Component {
 						</React.Fragment>
 					)}
 				</div>
-				<Modal
+				<DeleteModal 
 					active={showDeleteConfirm}
 					close={() => this.setState({ showDeleteConfirm: false })}
-					title="Confirm Deletion"
-				>
-					<p>Are you sure you want to delete?</p>
-					<div className="buttons">
-						<button className="button is-danger" onClick={() => this.handleDelete()}>
-							Delete
-						</button>
-						<button
-							className="button is-light"
-							onClick={() => this.setState({ showDeleteConfirm: false })}
-						>
-							Cancel
-						</button>
-					</div>
-				</Modal>
+					onDelete={() => this.handleDelete()}
+				/>
 			</React.Fragment>
 		);
 	}
