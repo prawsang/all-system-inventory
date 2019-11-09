@@ -215,7 +215,6 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 		created_by_staff_code,
 		type,
 		return_by,
-		date,
 		install_date
 	} = req.body;
 	const moreValidation = await Withdrawal.validate({
@@ -246,7 +245,6 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 			created_by_staff_code,
 			return_by: type === "LENDING" ? return_by : null,
 			install_date: type === "INSTALLATION" ? install_date : null,
-			date
 		},
 		where: `"id" = ${id}`,
 		returning: "id"
