@@ -93,7 +93,9 @@ router.get("/:staff_code/details", async (req, res) => {
 		where: `"staff_code" = '${staff_code}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "This staff has created withdrawals and cannot be deleted."}]
+		});
 	} else {
 		res.json(q);
 	}

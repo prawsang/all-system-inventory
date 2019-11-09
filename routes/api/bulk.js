@@ -248,7 +248,9 @@ router.delete("/:bulk_code/delete", async (req,res) => {
 		where: `"bulk_code" = '${bulk_code}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "Some items in this bulk has been withdrawn or reserved and cannot be deleted"}]
+		});
 	} else {
 		res.json(q);
 	}

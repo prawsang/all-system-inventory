@@ -131,7 +131,9 @@ router.delete("/:customer_code/delete", async (req, res) => {
 		where: `"customer_code" = '${customer_code}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "This customer has items and cannot be deleted."}]
+		});
 	} else {
 		res.json(q);
 	}

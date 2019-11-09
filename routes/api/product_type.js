@@ -84,7 +84,9 @@ router.delete("/:type_name/delete", async (req,res) => {
 		where: `"type_name" = '${type_name}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "This product type is used and cannot be deleted."}]
+		});
 	} else {
 		res.json(q);
 	}

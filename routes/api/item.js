@@ -235,15 +235,25 @@ router.put("/:serial_no/edit", stockValidation, async (req, res) => {
 });
 
 // Delete Item from Stock (superadmins only)
-router.delete("/:serial_no", async (req, res) => {
+router.delete("/:serial_no/delete", async (req, res) => {
 	const { serial_no } = req.params;
 
-	const q = await del({
+	const ch = await Item.checkStatus([serial_no],"IN_STOCK");
+	if (ch.errors) {
+		res.status(400).json({ errors:
+			[{ msg: "This item is reserved and cannot be deleted."}]
+		});
+		return;
+	}
+
+	const q = await utils.del({
 		table: "item",
 		where: `"serial_no" = '${serial_no}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "This item has been withdrawn and cannot be deleted."}]
+		});
 	} else {
 		res.json(q);
 	}

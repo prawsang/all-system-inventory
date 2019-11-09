@@ -192,9 +192,9 @@ router.delete("/:branch_code", async (req, res) => {
 		where: `"branch_code" = '${branch_code}'`,
 	});
 	if (q.errors) {
-		res
-			.status(500)
-			.json({ errors: [{ msg: "This branch cannot be deleted.", errors: err }] })
+		res.status(400).json({ errors:
+			[{ msg: "This branch has items and cannot be deleted."}]
+		});
 	} else {
 		res.json(q);
 	}

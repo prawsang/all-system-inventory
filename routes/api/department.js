@@ -121,7 +121,9 @@ router.delete("/:department_code/delete", async (req,res) => {
 		where: `"department_code" = '${department_code}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "This department has staff and/or items and cannot be deleted."}]
+		});
 	} else {
 		res.json(q);
 	}

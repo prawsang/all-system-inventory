@@ -168,7 +168,9 @@ router.delete("/:model_code", async (req, res) => {
 		where: `"model_code" = '${model_code}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "Cannot delete model. Some items of this model has already been withdrawn or reserved."}]
+		});
 	} else {
 		res.json(q);
 	}

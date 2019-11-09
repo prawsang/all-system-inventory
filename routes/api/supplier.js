@@ -139,7 +139,9 @@ router.delete("/:supplier_code/delete", async (req,res) => {
 		where: `"supplier_code" = '${supplier_code}'`,
 	});
 	if (q.errors) {
-		res.status(500).json(q);
+		res.status(400).json({ errors:
+			[{ msg: "Cannot delete supplier. Some items of this supplier has been withdrawn or reserved."}]
+		});
 	} else {
 		res.json(q);
 	}
