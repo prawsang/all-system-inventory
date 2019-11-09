@@ -184,7 +184,7 @@ router.put("/:branch_code/edit", branchValidation, async (req, res) => {
 });
 
 // Delete branch
-router.delete("/:branch_code", async (req, res) => {
+router.delete("/:branch_code/delete", async (req, res) => {
 	const { branch_code } = req.params;
 
 	const q = await utils.del({
