@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import Branch from "./pages/branch/";
 import Item from "./pages/item/";
+import Bulk from "./pages/bulk/";
 import Customer from "./pages/customer/";
 import Withdrawal from "./pages/withdrawal/";
 import Supplier from "./pages/supplier";
@@ -15,6 +16,7 @@ class Single extends React.Component {
 				<Switch>
 					<Route path="/single/branch/:branch_id" component={BranchPage} />
 					<Route path="/single/item/:serial_no" component={ItemPage} />
+					<Route path="/single/bulk/:bulk_code" component={BulkPage} />
 					<Route path="/single/customer/:customer_code" component={CustomerPage} />
 					<Route path="/single/supplier/:supplier_code" component={SupplierPage} />
 					<Route
@@ -44,6 +46,16 @@ const ItemPage = props => {
 		<FetchDataFromServer
 			url={`/item/${serial_no}/details`}
 			render={data => <Item data={data} />}
+		/>
+	);
+};
+
+const BulkPage = props => {
+	const { bulk_code } = props.match.params;
+	return (
+		<FetchDataFromServer
+			url={`/bulk/${bulk_code}/details`}
+			render={data => <Bulk data={data} />}
 		/>
 	);
 };
