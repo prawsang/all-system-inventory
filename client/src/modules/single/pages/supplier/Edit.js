@@ -29,19 +29,37 @@ class EditSupplier extends React.Component {
 	}
 
 	render() {
-		const { name } = this.state;
+		const { name, email, phone } = this.state;
 		const { close, active } = this.props;
 
 		return (
 			<Modal active={active} close={close} title="Edit Supplier">
 				<div className="form">
 					<div className="field">
-						<label className="label">Supplier Name</label>
+						<label className="label">Supplier Name:</label>
 						<input
 							className="input is-fullwidth"
 							placeholder="Supplier Name"
 							onChange={e => this.setState({ name: e.target.value })}
 							value={name}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">Phone:</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="Phone"
+							onChange={e => this.setState({ phone: e.target.value })}
+							value={phone}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">Email:</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="Email"
+							onChange={e => this.setState({ email: e.target.value })}
+							value={email}
 						/>
 					</div>
 					<div className="buttons">

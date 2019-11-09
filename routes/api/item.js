@@ -163,7 +163,7 @@ router.get("/lent", async (req, res) => {
 		where: `"item"."status" = 'LENT' 
 			AND "withdrawal"."type" = 'LENDING' 
 			${filters ? `AND ${filters}` : ""}`,
-		availableCols: ["serial_no","branch_name","branch_code"],
+		availableCols: ["serial_no","branch_name","branch_code","customer_name", "customer_code"],
 		replacements: {
 			return_from,
 			return_to

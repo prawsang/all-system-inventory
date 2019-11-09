@@ -21,8 +21,20 @@ const Borrowed = () => (
 						name: "Serial No."
 					},
 					{
-						col: "model_name",
-						name: "Model Name"
+						col: "branch_name",
+						name: "Branch Name"
+					},
+					{
+						col: "branch_code",
+						name: "Branch Code"
+					},
+					{
+						col: "customer_name",
+						name: "Customer Name"
+					},
+					{
+						col: "customer_code",
+						name: "Customer Code"
 					}
 				]}
 			/>

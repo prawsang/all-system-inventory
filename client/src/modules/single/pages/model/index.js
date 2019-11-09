@@ -57,10 +57,10 @@ class Model extends React.Component {
 											Delete
 										</button>
 									</div>
-									<h5 className="no-mt has-mb-10">Model: {data.row.model_name}</h5>
+									<h5 className="no-mt has-mb-10">Model</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Model:</label>
-										<span>{data.row.model_code}</span>
+										<span>{data.row.model_name}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Product Type:</label>
@@ -91,7 +91,7 @@ class Model extends React.Component {
 										className="accent is-clickable"
 										onClick={() =>
 											history.push(
-												`/single/model/${
+												`/single/supplier/${
 													data.row.from_supplier_code
 												}`
 											)

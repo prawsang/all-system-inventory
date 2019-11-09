@@ -53,7 +53,7 @@ class Withdrawal extends React.PureComponent {
 		Axios.request({
 			method: "DELETE",
 			url: `/withdrawal/${data.row.withdrawal_id}/delete`
-		}).then(res => history.push("/"));
+		}).then(res => history.push("/report/all-withdrawals"));
 	}
 
 	// async handlePrint() {
