@@ -191,8 +191,9 @@ router.put("/return", checkSerial, async (req, res) => {
 			errors.push({ msg: `Item serial no. ${re.serial_no} is either reserved or already returned.`});
 		}
 	})
+
 	if (errors.length > 0) {
-		res.status(400).json(errors);
+		res.status(400).json({ errors });
 		return;
 	}
 	await pool.query(`

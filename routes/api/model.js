@@ -173,7 +173,7 @@ router.put("/:model_code/edit", async (req, res) => {
 });
 
 // Delete Model
-router.delete("/:model_code", async (req, res) => {
+router.delete("/:model_code/delete", async (req, res) => {
 	const { model_code } = req.params;
 	const q = await utils.del({
 		table: "model",
