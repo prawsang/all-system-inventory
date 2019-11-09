@@ -54,13 +54,25 @@ const correctValueString = (value, rep) => {
 const replaceValues = (string, replacements) => {
 	let n = 1;
 	let values = [];
-	console.log(replacements);
 	Object.keys(replacements).forEach(key => {
 		if (replacements[key] !== null && replacements[key] !== "" && replacements[key] !== undefined) {
-			string = string.replace(new RegExp(`:${key}`, 'g'), `$${n}`)
+			string = string.replace(`:${key}`,`$${n}`)
 			values.push(replacements[key]);
 			n++;
 		}
+	})
+	return {
+		string,
+		values
+	}
+}
+const replaceValuesWithNull = (string, replacements) => {
+	let n = 1;
+	let values = [];
+	Object.keys(replacements).forEach(key => {
+		string = string.replace(`:${key}`,`$${n}`)
+		values.push(replacements[key]);
+		n++;
 	})
 	return {
 		string,
@@ -261,7 +273,7 @@ module.exports = {
 		${returning ? `RETURNING ${returning}` : ""}
 		`
 
-		const rString = replaceValues(string, info);
+		const rString = replaceValuesWithNull(string, info);
 
 		console.log(rString.string);
 
@@ -302,7 +314,7 @@ module.exports = {
 		WHERE ${where}
 		${returning ? `RETURNING ${returning}` : ""}
 		` 
-		const rString = replaceValues(string, {
+		const rString = replaceValuesWithNull(string, {
 			...info,
 			...replacements
 		})

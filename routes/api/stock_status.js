@@ -30,7 +30,7 @@ installItems = async (serial_no, branch_code) => {
 	await Promise.all(
 		validateSerial.validData.map(async d => {
 			if (d.reserved_branch_code && d.reserved_branch_code != branch_code) {
-				errors.push({ msg: `The item ${no} is reserved by another branch.` });
+				errors.push({ msg: `The item ${d.serial_no} is reserved by another branch.` });
 			} else {
 				const r = await utils.update({
 					table: "item",

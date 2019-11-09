@@ -42,8 +42,10 @@ router.get("/get-all", async (req, res) => {
 router.get("/:bulk_code/details", async (req, res) => {
 	const { bulk_code } = req.params;
 	const q = await utils.findOne({
-		cols: models.Bulk.getColumns,
-		tables: "bulk",
+		cols: `${models.Bulk.getColumns}, ${models.Model.getColumns}, ${models.Supplier.getColumns}`,
+		tables: `"bulk"
+		JOIN "model" ON "bulk"."of_model_code" = "model"."model_code"
+		JOIN "supplier" ON "supplier"."supplier_code" = "model"."from_supplier_code"`,
 		where: `"bulk_code" = :bulk_code`,
 		replacements: {
 			bulk_code
