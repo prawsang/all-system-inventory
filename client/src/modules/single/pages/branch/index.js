@@ -13,8 +13,7 @@ import history from "@/common/history";
 class Branch extends React.Component {
 	state = {
 		edit: false,
-		activeTable: 0, // 0 = items, 1 = po, 2 = reserved items
-		showAddJob: false,
+		activeTable: 0, // 0 = items,1 = reserved items
 		showDeleteModal: false
 	};
 	handleDelete() {

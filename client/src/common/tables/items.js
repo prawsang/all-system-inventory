@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import Modal from "@/common/components/Modal";
+import { formatDate } from "@/common/date";
 
 const removeItemFromWithdrawal = (serialNo, withdrawalId) => {
 	Axios.request({
@@ -79,7 +80,7 @@ class ItemsTable extends React.Component {
 										)}
 										<td>{e.status}</td>
 										{showInstallDate && <td>{e.install_date}</td>}
-										{showReturnDate && <td>{e.return_by}</td>}
+										{showReturnDate && <td>{formatDate(e.return_by)}</td>}
 										{showDelete && (
 											<td>
 												<button

@@ -28,7 +28,7 @@ class EditBranch extends React.Component {
 	componentDidMount() {
 		const { branch } = this.props;
 		this.setState({
-			name: branch.name,
+			name: branch.branch_name,
 			address: branch.address,
 		});
 	}

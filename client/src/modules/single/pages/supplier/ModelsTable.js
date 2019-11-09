@@ -3,6 +3,7 @@ import React from "react";
 import DeleteModal from "@/common/components/DeleteModal";
 import ModelModal from "./ModelModal";
 import Axios from "axios";
+import history from "@/common/history";
 
 class ModelsTable extends React.Component {
 	state = {
@@ -28,44 +29,23 @@ class ModelsTable extends React.Component {
 							<td className="has-no-line-break">Model Code</td>
 							<td className="has-no-line-break">Model Name</td>
 							<td className="has-no-line-break">Type</td>
-							<td />
-							<td />
 						</tr>
 					</thead>
-					<tbody>
+					<tbody className="is-hoverable">
 						{data &&
 							(data.rows.length > 0 &&
 								data.rows.map((e, i) => (
-									<tr key={i + e.model_name} className="is-short">
+									<tr 
+										key={i + e.model_name} 
+										className="is-hoverable is-clickable"
+										onClick={event => {
+											history.push(`/single/model/${e.model_code}`);
+											event.stopPropagation();
+										}}
+									>
 										<td className="has-no-line-break">{e.model_code}</td>
 										<td className="has-no-line-break">{e.model_name}</td>
 										<td className="is-fullwidth has-no-line-break">{e.is_product_type_name}</td>
-										<td className="no-pr">
-											<button
-												className="button"
-												onClick={() =>
-													this.setState({
-														showEdit: true,
-														selected: e
-													})
-												}
-											>
-												Edit
-											</button>
-										</td>
-										<td>
-											<button
-												className="button is-danger"
-												onClick={() =>
-													this.setState({
-														showDeleteConfirm: true,
-														selected: e
-													})
-												}
-											>
-												Delete
-											</button>
-										</td>
 									</tr>
 								)))}
 					</tbody>

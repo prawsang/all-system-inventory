@@ -3,10 +3,12 @@ import { Route, Switch } from "react-router-dom";
 import Branch from "./pages/branch/";
 import Item from "./pages/item/";
 import Bulk from "./pages/bulk/";
+import Model from "./pages/model/";
 import Customer from "./pages/customer/";
 import Withdrawal from "./pages/withdrawal/";
 import Supplier from "./pages/supplier";
 import AddItemsToWithdrawal from "./pages/withdrawal/addItems";
+import AddItemsToBulk from "./pages/bulk/addItems";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
 class Single extends React.Component {
@@ -16,7 +18,12 @@ class Single extends React.Component {
 				<Switch>
 					<Route path="/single/branch/:branch_id" component={BranchPage} />
 					<Route path="/single/item/:serial_no" component={ItemPage} />
+					<Route
+						path="/single/bulk/:bulk_code/add-items"
+						component={AddItemsToBulk}
+					/>
 					<Route path="/single/bulk/:bulk_code" component={BulkPage} />
+					<Route path="/single/model/:model_code" component={ModelPage} />
 					<Route path="/single/customer/:customer_code" component={CustomerPage} />
 					<Route path="/single/supplier/:supplier_code" component={SupplierPage} />
 					<Route
@@ -56,6 +63,16 @@ const BulkPage = props => {
 		<FetchDataFromServer
 			url={`/bulk/${bulk_code}/details`}
 			render={data => <Bulk data={data} />}
+		/>
+	);
+};
+
+const ModelPage = props => {
+	const { model_code } = props.match.params;
+	return (
+		<FetchDataFromServer
+			url={`/model/${model_code}/details`}
+			render={data => <Model data={data} />}
 		/>
 	);
 };

@@ -1,28 +1,25 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/InnerTable";
-import ItemsTable from "@/common/tables/items";
-import { setPage } from "@/actions/report";
-import { connect } from "react-redux";
+import BulksTable from "@/common/tables/bulks";
 import DeleteModal from "@/common/components/DeleteModal";
-import Edit from "./Edit";
+// import Edit from "./Edit";
 import Axios from "axios";
 import history from "@/common/history";
-import { formatDateTime } from "@/common/date"
-import { Link } from "react-router-dom";
+import ModelModal from "../supplier/ModelModal";
 
-class Bulk extends React.Component {
+class Model extends React.Component {
 	state = {
 		edit: false,
 		showDeleteModal: false
 	};
 	handleDelete() {
 		const { data } = this.props;
-		const { bulk_code } = data.row;
+		const { model_code } = data.row;
 		Axios.request({
 			method: "DELETE",
-			url: `/bulk/${bulk_code}/delete`
-		}).then(res => history.push("/report/bulks"));
+			url: `/model/${model_code}/delete`
+		}).then(res => history.push(`/single/supplier/${data.row.from_supplier_code}/`));
 	}
 	render() {
 		const { data } = this.props;
@@ -32,7 +29,7 @@ class Bulk extends React.Component {
 		}
 		return (
 			<React.Fragment>
-				<h3>Bulk: {data && data.row.bulk_code}</h3>
+				<h3>Model: {data && data.row.model_code}</h3>
 				<div className="panel">
 					{data && (
 						<React.Fragment>
@@ -60,32 +57,31 @@ class Bulk extends React.Component {
 											Delete
 										</button>
 									</div>
-									<h5 className="no-mt has-mb-10">Bulk</h5>
+									<h5 className="no-mt has-mb-10">Model: {data.row.model_name}</h5>
 									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Date In:</label>
-										<span>{formatDateTime(data.row.date_in)}</span>
+										<label className="is-bold has-mr-05">Model:</label>
+										<span>{data.row.model_code}</span>
 									</div>
 									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Price Per Unit:</label>
-										<span>{data.row.price_per_unit}</span>
+										<label className="is-bold has-mr-05">Product Type:</label>
+										<span>{data.row.is_product_type_name}</span>
 									</div>
-								</div>
-								<hr />
-								<h5 className="no-mt has-mb-10">Model</h5>
-								<div className="has-mb-10">
-									<label className="is-bold has-mr-05">Model Name:</label>
-									<span
-										className="accent is-clickable"
-										onClick={() =>
-											history.push(
-												`/single/model/${
-													data.row.of_model_code
-												}`
-											)
-										}
-									>
-										{data.row.model_name}
-									</span>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Width (mm):</label>
+										<span>{data.row.width}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Height (mm):</label>
+										<span>{data.row.height}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Depth (mm):</label>
+										<span>{data.row.depth}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Weight (kg):</label>
+										<span>{data.row.weight}</span>
+									</div>
 								</div>
 								<hr/>
 								<h5 className="no-mt has-mb-10">Supplier</h5>
@@ -95,7 +91,7 @@ class Bulk extends React.Component {
 										className="accent is-clickable"
 										onClick={() =>
 											history.push(
-												`/single/supplier/${
+												`/single/model/${
 													data.row.from_supplier_code
 												}`
 											)
@@ -106,35 +102,20 @@ class Bulk extends React.Component {
 								</div>
 							</div>
 							<hr/>
-							<div className="panel-content no-pt">
-								<Link to={`/single/bulk/${data.row.bulk_code}/add-items`}>
-									<button
-										className="button mr"
-										onClick={() =>
-											history.push()
-										}
-									>
-										Add Items
-									</button>
-								</Link>
-							</div>
 							<FetchDataFromServer
-								url={data && `/bulk/${data.row.bulk_code}/items`}
+								url={data && `/model/${data.row.model_code}/bulks`}
 								render={d => (
 									<Table
 										data={d}
 										table={d => (
-											<ItemsTable
+											<BulksTable
 												data={d}
-												showInstallDate={false}
-												showReturnDate={false}
-												hideDetails={true}
 											/>
 										)}
 										columns={[
 											{
-												col: "serial_no",
-												name: "Serial No."
+												col: "bulk_code",
+												name: "Bulk Code"
 											}
 										]}
 										className="no-pt"
@@ -142,16 +123,30 @@ class Bulk extends React.Component {
 									/>
 								)}
 							/>
-							<Edit
-								bulk={data.row}
-								close={() => this.setState({ edit: false })}
-								active={edit}
-							/>
 							<DeleteModal 
 								active={showDeleteModal}
 								close={() => this.setState({ showDeleteModal: false })}
 								onDelete={() => this.handleDelete()}
 							/>
+							{ data && (
+								<ModelModal 
+									active={edit} 
+									close={() => this.setState({ showEdit: false })} 
+									model={{
+										model_code: data.row.model_code,
+										model_name: data.row.model_name,
+										height: data.row.height,
+										width: data.row.width,
+										depth: data.row.depth,
+										weight: data.row.weight,
+										is_product_type_name: data.row.is_product_type_name,
+									}}
+									supplier={{
+										supplier_code: data.row.from_supplier_code
+									}}
+									modalType="EDIT"
+								/>
+							)}
 						</React.Fragment>
 					)}
 				</div>
@@ -160,11 +155,4 @@ class Bulk extends React.Component {
 	}
 }
 
-const mapDispatchToProps = {
-	setPage
-};
-
-export default connect(
-	null,
-	mapDispatchToProps
-)(Bulk);
+export default Model
