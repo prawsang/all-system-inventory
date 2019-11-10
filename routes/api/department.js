@@ -83,7 +83,7 @@ router.post("/add", depValidation, async (req,res) => {
 	}
 	const { department_code, name } = req.body;
 	const q = await utils.insert({
-		table: "staff",
+		table: "department",
 		info: {
 			department_code, 
 			name
@@ -106,7 +106,7 @@ router.put("/:department_code/edit", depValidation, async (req,res) => {
 	const { department_code } = req.params;
 	
 	const q = await utils.update({
-		table: "staff",
+		table: "department",
 		info: {
 			department_code, 
 			name, 
