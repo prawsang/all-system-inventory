@@ -43,9 +43,11 @@ router.get("/get-all", async (req, res) => {
 router.get("/:staff_code/details", async (req, res) => {
 	const { staff_code } = req.params;
 	const q = await utils.findOne({
-		cols: Staff.getColumns,
-		tables: "staff",
-		where: `"staff_code" = '${staff_code}'`,
+		cols: `${Staff.getColumns}, ${Department.getColumns}`,
+		tables: `"staff"
+        JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
+		where: `"staff"."staff_code" = '${staff_code}'`,
+		availableCols: ["staff_name", "staff_code", "department_name", "department_code"]
 	});
 	if (q.errors) {
 		res.status(500).json(q);
