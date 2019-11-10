@@ -88,8 +88,9 @@ router.post("/add", staffValidation, async (req,res) => {
 router.get("/:staff_code/details", async (req, res) => {
 	const { staff_code } = req.params;
 	const q = await utils.findOne({
-		cols: Staff.getColumns,
-		tables: "staff",
+		cols: `${Staff.getColumns}, ${Department.getColumns}`,
+		tables: `"staff"
+		JOIN "department" ON "department"."department_code" = "staff"."works_for_dep_code"`,
 		where: `"staff_code" = :staff_code`,
 		replacements: {
 			staff_code
