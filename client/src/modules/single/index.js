@@ -12,6 +12,7 @@ import Supplier from "./pages/supplier";
 import AddItemsToWithdrawal from "./pages/withdrawal/addItems";
 import AddItemsToBulk from "./pages/bulk/addItems";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
+import Page from "@/common/components/Page";
 
 class Single extends React.Component {
 	render() {
@@ -46,7 +47,11 @@ const BranchPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/branch/${branch_id}/details`}
-			render={data => <Branch data={data} />}
+			render={data => 
+				<Page title={`Branch ${branch_id}`}>
+					<Branch data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -56,7 +61,11 @@ const ItemPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/item/${serial_no}/details`}
-			render={data => <Item data={data} />}
+			render={data => 
+				<Page title={`Item ${serial_no}`}>
+					<Item data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -66,7 +75,11 @@ const BulkPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/bulk/${bulk_code}/details`}
-			render={data => <Bulk data={data} />}
+			render={data => 
+				<Page title={`Bulk ${bulk_code}`}>
+					<Bulk data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -76,7 +89,11 @@ const ModelPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/model/${model_code}/details`}
-			render={data => <Model data={data} />}
+			render={data => 
+				<Page title={`Model ${model_code}`}>
+					<Model data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -86,7 +103,11 @@ const CustomerPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/customer/${customer_code}/details`}
-			render={data => <Customer data={data} />}
+			render={data => 
+				<Page title={`Customer ${customer_code}`}>
+					<Customer data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -96,7 +117,11 @@ const DepartmentPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/department/${department_code}/details`}
-			render={data => <Department data={data} />}
+			render={data => 
+				<Page title={`Department ${department_code}`}>
+					<Department data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -106,7 +131,11 @@ const StaffPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/staff/${staff_code}/details`}
-			render={data => <Staff data={data} />}
+			render={data => 
+				<Page title={`Staff ${staff_code}`}>
+					<Staff data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -116,7 +145,11 @@ const WithdrawalPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/withdrawal/${id}/details`}
-			render={data => <Withdrawal data={data} id={id} />}
+			render={data => 
+				<Page title={`Withdrawal ${id}`}>
+					<Withdrawal data={data} />
+				</Page>
+			}
 		/>
 	);
 };
@@ -126,7 +159,11 @@ const SupplierPage = props => {
 	return (
 		<FetchDataFromServer
 			url={`/supplier/${supplier_code}/details`}
-			render={data => <Supplier data={data} />}
+			render={data => 
+				<Page title={`Supplier ${supplier_code}`}>
+					<Supplier data={data} />
+				</Page>
+			}
 		/>
 	);
 };

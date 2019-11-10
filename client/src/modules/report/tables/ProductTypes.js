@@ -35,8 +35,8 @@ class ProductTypesTable extends React.Component {
 							(data.rows.length > 0 &&
 								data.rows.map((e, i) => (
 									<tr key={i + e.product_type_name} className="is-short">
-										<td className="has-no-line-break is-fullwidth">{e.product_type_name}</td>
-										<td className="no-pr">
+										<td className="has-no-line-break is-fullwidth no-link">{e.product_type_name}</td>
+										<td className="no-pr no-link">
 											<button
 												className="button"
 												onClick={() =>
@@ -51,7 +51,7 @@ class ProductTypesTable extends React.Component {
 												Edit
 											</button>
 										</td>
-										<td>
+										<td className="no-link">
 											<button
 												className="button is-danger"
 												onClick={() =>

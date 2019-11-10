@@ -1,5 +1,5 @@
 {
-	"name": "all-system",
+	"name": "all-system-inventory",
 	"version": "0.1.0",
 	"private": true,
 	"proxy": "http://localhost:5000/api",

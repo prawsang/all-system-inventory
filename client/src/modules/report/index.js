@@ -1,6 +1,6 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
-
+import { Switch } from "react-router-dom";
+import InnerPageRoute from "@/common/components/route/InnerPageRoute";
 import Broken from "./pages/Broken";
 import Borrowed from "./pages/Borrowed";
 import InStock from "./pages/InStock";
@@ -17,16 +17,16 @@ class Report extends React.Component {
 		return (
 			<div className="content">
 				<Switch>
-					<Route path="/report/broken" component={Broken} />
-					<Route path="/report/lent" component={Borrowed} />
-					<Route path="/report/in-stock" component={InStock} />
-					<Route path="/report/customers" component={Customers} />
-					<Route path="/report/suppliers" component={Suppliers} />
-					<Route path="/report/bulks" component={Bulks} />
-					<Route path="/report/staff" component={Staff} />
-					<Route path="/report/departments" component={Department} />
-					<Route path="/report/product-types" component={ProductTypes} />
-					<Route path="/report/all-withdrawals" component={AllWithdrawals} />
+					<InnerPageRoute path="/report/broken" component={Broken} title="Broken Items"/>
+					<InnerPageRoute path="/report/lent" component={Borrowed} title="Lent Items"/>
+					<InnerPageRoute path="/report/in-stock" component={InStock} title="In Stock Items" />
+					<InnerPageRoute path="/report/customers" component={Customers} title="All Customers" />
+					<InnerPageRoute path="/report/suppliers" component={Suppliers} title="All Suppliers" />
+					<InnerPageRoute path="/report/bulks" component={Bulks} title="All Bulks" />
+					<InnerPageRoute path="/report/staff" component={Staff} title="All Staff"/>
+					<InnerPageRoute path="/report/departments" component={Department} title="Department" />
+					<InnerPageRoute path="/report/product-types" component={ProductTypes} title="Product Types" />
+					<InnerPageRoute path="/report/all-withdrawals" component={AllWithdrawals} title="All Withdrawals" />
 				</Switch>
 			</div>
 		);

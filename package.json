@@ -1,7 +1,7 @@
 {
-	"name": "stock-management",
+	"name": "all-system-inventory",
 	"version": "1.0.0",
-	"description": "Stock Management",
+	"description": "All System Inventory",
 	"main": "app.js",
 	"scripts": {
 		"dev": "concurrently \"npm run server\" \"npm run client\"",

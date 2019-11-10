@@ -5,7 +5,8 @@ import Report from "../modules/report";
 import Record from "../modules/record";
 import Single from "../modules/single";
 import SearchItem from "../modules/searchitem";
-import PublicRoute from "./components/PublicRoute";
+import PublicRoute from "./components/route/PublicRoute";
+import PageRoute from "./components/route/PageRoute";
 import SearchWithdrawal from "../modules/searchwithdrawal";
 
 class AppRouter extends React.Component {
@@ -17,9 +18,9 @@ class AppRouter extends React.Component {
 						<PublicRoute path="/single" component={Single} />
 						<PublicRoute path="/record" component={Record} />
 						<PublicRoute path="/report" component={Report} />
-						<PublicRoute path="/search-item" component={SearchItem} />
-						<PublicRoute path="/search-withdrawal" component={SearchWithdrawal} />
-						<PublicRoute path="/" component={Home} />
+						<PageRoute path="/search-item" component={SearchItem} title="Search Items"/>
+						<PageRoute path="/search-withdrawal" component={SearchWithdrawal} title="Search Withdrawal"/>
+						<PageRoute path="/" component={Home} title="Home"/>
 					</Switch>
 				</Router>
 			</React.Fragment>
