@@ -8,6 +8,8 @@ import Customers from "./pages/Customers";
 import Suppliers from "./pages/Suppliers";
 import ProductTypes from "./pages/ProductTypes";
 import Bulks from "./pages/Bulks";
+import Staff from "./pages/Staff";
+import Department from "./pages/Department";
 import AllWithdrawals from "./pages/AllWithdrawals";
 
 class Report extends React.Component {
@@ -21,6 +23,8 @@ class Report extends React.Component {
 					<Route path="/report/customers" component={Customers} />
 					<Route path="/report/suppliers" component={Suppliers} />
 					<Route path="/report/bulks" component={Bulks} />
+					<Route path="/report/staff" component={Staff} />
+					<Route path="/report/departments" component={Department} />
 					<Route path="/report/product-types" component={ProductTypes} />
 					<Route path="/report/all-withdrawals" component={AllWithdrawals} />
 				</Switch>

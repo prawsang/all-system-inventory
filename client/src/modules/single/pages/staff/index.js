@@ -22,7 +22,7 @@ class Staff extends React.Component {
 		Axios.request({
 			method: "DELETE",
 			url: `/staff/${staff_code}/delete`
-		}).then(res => history.push("/reports/staff"))
+		}).then(res => history.push("/report/staff"))
 	}
 	render() {
 		const { data } = this.props;

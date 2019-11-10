@@ -3,7 +3,7 @@ import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import BulksTable from "@/common/tables/bulks";
 import Table from "@/common/components/Table";
 
-const Suppliers = () => (
+const Bulks = () => (
 	<FetchDataFromServer
 		url="/bulk/get-all"
 		render={data => (
@@ -26,4 +26,4 @@ const Suppliers = () => (
 	/>
 );
 
-export default Suppliers;
+export default Bulks;
