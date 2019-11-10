@@ -34,10 +34,12 @@ const WithdrawalsTable = ({ data }) => {
 					(d.length > 0 &&
 						d.map((e, i) => (
 							<tr
-								className="is-hoverable is-clickable"
+								className={e.withdrawal_id ? `is-hoverable is-clickable` : ""}
 								key={`${i} ${e.withdrawal_id}`}
 								onClick={event => {
-									history.push(`/single/withdrawal/${e.withdrawal_id}`);
+									if (e.withdrawal_id) {
+										history.push(`/single/withdrawal/${e.withdrawal_id}`);
+									}
 									event.stopPropagation();
 								}}
 							>

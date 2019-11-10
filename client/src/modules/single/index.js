@@ -5,6 +5,7 @@ import Item from "./pages/item/";
 import Bulk from "./pages/bulk/";
 import Model from "./pages/model/";
 import Customer from "./pages/customer/";
+import Staff from "./pages/staff/";
 import Withdrawal from "./pages/withdrawal/";
 import Supplier from "./pages/supplier";
 import AddItemsToWithdrawal from "./pages/withdrawal/addItems";
@@ -26,6 +27,7 @@ class Single extends React.Component {
 					<Route path="/single/model/:model_code" component={ModelPage} />
 					<Route path="/single/customer/:customer_code" component={CustomerPage} />
 					<Route path="/single/supplier/:supplier_code" component={SupplierPage} />
+					<Route path="/single/staff/:staff_code" component={StaffPage} />
 					<Route
 						path="/single/withdrawal/:id/add-items"
 						component={AddItemsToWithdrawal}
@@ -83,6 +85,16 @@ const CustomerPage = props => {
 		<FetchDataFromServer
 			url={`/customer/${customer_code}/details`}
 			render={data => <Customer data={data} />}
+		/>
+	);
+};
+
+const StaffPage = props => {
+	const { staff_code } = props.match.params;
+	return (
+		<FetchDataFromServer
+			url={`/staff/${staff_code}/details`}
+			render={data => <Staff data={data} />}
 		/>
 	);
 };

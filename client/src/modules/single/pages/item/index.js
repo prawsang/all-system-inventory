@@ -91,23 +91,6 @@ class Item extends React.Component {
 											{data.row.model_name}
 										</span>
 									</div>
-									<hr/>
-									<h5 className="no-mt has-mb-10">Supplier</h5>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Supplier Name:</label>
-										<span
-											className="accent is-clickable"
-											onClick={() =>
-												history.push(
-													`/single/supplier/${
-														data.row.from_supplier_code
-													}`
-												)
-											}
-										>
-											{data.row.supplier_name}
-										</span>
-									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Date In:</label>
 										<span>{formatDateTime(data.row.date_in)}</span>
@@ -133,6 +116,23 @@ class Item extends React.Component {
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Remarks:</label>
 										<span>{data.row.remarks}</span>
+									</div>
+									<hr/>
+									<h5 className="no-mt has-mb-10">Supplier</h5>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Supplier Name:</label>
+										<span
+											className="accent is-clickable"
+											onClick={() =>
+												history.push(
+													`/single/supplier/${
+														data.row.from_supplier_code
+													}`
+												)
+											}
+										>
+											{data.row.supplier_name}
+										</span>
 									</div>
 								</div>
 								<hr />
