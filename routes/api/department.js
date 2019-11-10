@@ -26,7 +26,7 @@ router.get("/get-all", async (req, res) => {
 router.get("/:department_code/details", async (req, res) => {
 	const { department_code } = req.params;
 	const q = await utils.findOne({
-		cols: Department.getColumns,
+		cols: models.Department.getColumns,
 		tables: "department",
 		where: `"department_code" = :department_code`,
 		replacements: {
@@ -49,6 +49,7 @@ router.get("/:department_code/staff", async (req, res) => {
 		page,
 		search_term,
 		search_col,
+		cols: models.Staff.getColumns,
 		tables: `"staff"
 		JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
 		where: `"department"."department_code" = :department_code`,
