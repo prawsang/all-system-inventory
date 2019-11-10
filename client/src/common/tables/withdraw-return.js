@@ -1,8 +1,8 @@
 import React from "react";
-import history from "@/common/history";
 import { formatDate } from "@/common/date";
 import moment from "moment";
 import { formatDateTime } from "@/common/date";
+import Td from "../components/Td";
 
 const WithdrawalsTable = ({ data }) => {
 	let d = [...data.withdrawals,...data.returns];
@@ -36,38 +36,47 @@ const WithdrawalsTable = ({ data }) => {
 							<tr
 								className={e.withdrawal_id ? `is-hoverable is-clickable` : ""}
 								key={`${i} ${e.withdrawal_id}`}
-								onClick={event => {
-									if (e.withdrawal_id) {
-										history.push(`/single/withdrawal/${e.withdrawal_id}`);
-									}
-									event.stopPropagation();
-								}}
 							>
-								<td 
+								<Td 
 									className="has-no-line-break"
 									style={{ 
 										backgroundColor: e.withdrawal_id ? "rgba(230, 69, 57, 0.5)" : "rgba(77, 194, 82, 0.5)", 
 										borderWidth: 1,
-										borderColor: e.withdrawal_id ? "#e64539" : "#4dc252",
-										borderStyle: "solid"
+										borderColor: "#e64539",
+										borderStyle: e.withdrawal_id ? "solid" : "none"
 									}}
-								><b>{e.withdrawal_id ? "Withdraw" : "Return"}</b></td>
-								<td className="has-no-line-break">{e.withdrawal_date ? formatDateTime(e.withdrawal_date) : formatDateTime(e.return_datetime)}</td>
-								<td className="has-no-line-break">{e.withdrawal_id ? e.withdrawal_id : "-"}</td>
-								<td className="has-no-line-break">{e.withdrawal_type ? e.withdrawal_type : "-"}</td>
-								<td>{e.withdrawal_status ? e.withdrawal_status : "-"}</td>
-								<td className="has-no-line-break">
+									to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}
+								><b>{e.withdrawal_id ? "Withdraw" : "Return"}</b></Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
+									{e.withdrawal_date ? formatDateTime(e.withdrawal_date) : formatDateTime(e.return_datetime)}
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
+									{e.withdrawal_id ? e.withdrawal_id : "-"}
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
+									{e.withdrawal_type ? e.withdrawal_type : "-"}
+								</Td>
+								<Td to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
+									{e.withdrawal_status ? e.withdrawal_status : "-"}
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
 									{e.withdrawal_type && e.withdrawal_type !== "TRANSFER" ? `${e.branch_name} (${e.branch_code})` : "-"}
-								</td>
-								<td className="has-no-line-break">
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
 									{e.withdrawal_type && e.withdrawal_type !== "TRANSFER" ? `${e.customer_name} (${e.customer_code})` : "-"}
-								</td>
-								<td className="has-no-line-break">
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
 									{e.withdrawal_type && e.withdrawal_type === "TRANSFER" ? `${e.department_name} (${e.department_code})` : "-"}
-								</td>
-								<td className="has-no-line-break">{e.staff_name ? e.staff_name : "-"}</td>
-								<td className="has-no-line-break">{e.install_date ? formatDate(e.install_date): "-"}</td>
-								<td className="has-no-line-break">{e.return_by ? formatDate(e.return_by) : "-"}</td>
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
+									{e.staff_name ? e.staff_name : "-"}
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
+									{e.install_date ? formatDate(e.install_date): "-"}
+								</Td>
+								<Td className="has-no-line-break" to={e.withdrawal_id ? `/single/withdrawal/${e.withdrawal_id}` : null}>
+									{e.return_by ? formatDate(e.return_by) : "-"}
+								</Td>
 							</tr>
 						)))}
 			</tbody>

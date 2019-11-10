@@ -4,6 +4,7 @@ import DeleteModal from "@/common/components/DeleteModal";
 import ModelModal from "./ModelModal";
 import Axios from "axios";
 import history from "@/common/history";
+import Td from "@/common/components/Td";
 
 class ModelsTable extends React.Component {
 	state = {
@@ -38,14 +39,10 @@ class ModelsTable extends React.Component {
 									<tr 
 										key={i + e.model_name} 
 										className="is-hoverable is-clickable"
-										onClick={event => {
-											history.push(`/single/model/${e.model_code}`);
-											event.stopPropagation();
-										}}
 									>
-										<td className="has-no-line-break">{e.model_code}</td>
-										<td className="has-no-line-break">{e.model_name}</td>
-										<td className="is-fullwidth has-no-line-break">{e.is_product_type_name}</td>
+										<Td to={`/single/model/${e.model_code}`} className="has-no-line-break">{e.model_code}</Td>
+										<Td to={`/single/model/${e.model_code}`} className="has-no-line-break">{e.model_name}</Td>
+										<Td to={`/single/model/${e.model_code}`} className="is-fullwidth has-no-line-break">{e.is_product_type_name}</Td>
 									</tr>
 								)))}
 					</tbody>

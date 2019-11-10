@@ -1,10 +1,10 @@
 import React from "react";
-import history from "@/common/history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import Modal from "@/common/components/Modal";
 import { formatDate } from "@/common/date";
+import Td from "../components/Td";
 
 const removeItemFromWithdrawal = (serialNo, withdrawalId) => {
 	Axios.request({
@@ -66,23 +66,19 @@ class ItemsTable extends React.Component {
 										className={`is-hoverable is-clickable ${showDelete &&
 											"is-short"}`}
 										key={i + e.serial_no}
-										onClick={event => {
-											history.push(`/single/item/${e.serial_no}`);
-											event.stopPropagation();
-										}}
 									>
-										<td>{e.serial_no}</td>
+										<Td to={`/single/item/${e.serial_no}`}>{e.serial_no}</Td>
 										{ hideDetails || (
-											<td>{e.model_name}</td>
+											<Td to={`/single/item/${e.serial_no}`}>{e.model_name}</Td>
 										)}
 										{ hideDetails || (
-											<td>{e.is_product_type_name}</td>
+											<Td to={`/single/item/${e.serial_no}`}>{e.is_product_type_name}</Td>
 										)}
-										<td>{e.status}</td>
-										{showInstallDate && <td>{e.install_date}</td>}
-										{showReturnDate && <td>{formatDate(e.return_by)}</td>}
+										<Td to={`/single/item/${e.serial_no}`}>{e.status}</Td>
+										{showInstallDate && <Td to={`/single/item/${e.serial_no}`}>{e.install_date}</Td>}
+										{showReturnDate && <Td to={`/single/item/${e.serial_no}`}>{formatDate(e.return_by)}</Td>}
 										{showDelete && (
-											<td>
+											<td className="no-link">
 												<button
 													className="button is-danger"
 													onClick={event => {

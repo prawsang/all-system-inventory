@@ -1,5 +1,5 @@
 import React from "react";
-import history from "@/common/history";
+import Td from "../components/Td";
 
 const BranchesTable = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -13,17 +13,13 @@ const BranchesTable = ({ data }) => (
 			{data &&
 				(data.rows.length > 0 &&
 					data.rows.map((e, i) => (
-						<tr
-							className="is-hoverable is-clickable"
-							key={i + e.branch_code}
-							onClick={event => {
-								history.push(`/single/branch/${e.branch_code}`);
-								event.stopPropagation();
-							}}
-						>
-							<td>{e.branch_code}</td>
-							<td>{e.branch_name}</td>
-						</tr>
+							<tr
+								className="is-hoverable is-clickable"
+								key={i + e.branch_code}
+							>
+								<Td to={`/single/branch/${e.branch_code}`}>{e.branch_code}</Td>
+								<Td to={`/single/branch/${e.branch_code}`}>{e.branch_name}</Td>
+							</tr>
 					)))}
 		</tbody>
 	</table>

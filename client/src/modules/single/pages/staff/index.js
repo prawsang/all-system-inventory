@@ -10,6 +10,7 @@ import DeleteModal from "@/common/components/DeleteModal";
 import Edit from "./Edit";
 import Axios from "axios";
 import history from "@/common/history";
+import { Link } from "react-router-dom";
 
 class Staff extends React.Component {
 	state = {
@@ -70,12 +71,12 @@ class Staff extends React.Component {
 								<div>
 									<h5 className="no-mt has-mb-10">
 										Department
-										<span
+										<Link
 											className="is-clickable accent has-ml-10 is-6"
-											onClick={() => history.push(`/single/department/${data.row.department_code}`)}
+											to={`/single/department/${data.row.department_code}`}
 										>
 											<FontAwesomeIcon icon={faExternalLinkAlt} />
-										</span>
+										</Link>
 									</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Department Code:</label>

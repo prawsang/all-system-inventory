@@ -1,7 +1,7 @@
 import React from "react";
-import history from "@/common/history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export const BranchData = ({ data }) => {
 	if (!data) return <p className="no-mt has-mb-10 is-gray-4">No Branch</p>;
@@ -9,12 +9,12 @@ export const BranchData = ({ data }) => {
 		<div>
 			<h5 className="no-mt has-mb-10">
 				Branch
-				<span
+				<Link
 					className="is-clickable accent has-ml-10 is-6"
-					onClick={() => history.push(`/single/branch/${data.branch_code}`)}
+					to={`/single/branch/${data.branch_code}`}
 				>
 					<FontAwesomeIcon icon={faExternalLinkAlt} />
-				</span>
+				</Link>
 			</h5>
 			<div className="has-mb-10">
 				<label className="is-bold has-mr-05">Branch Code:</label>
@@ -34,12 +34,12 @@ export const CustomerData = ({ data }) => {
 		<div>
 			<h5 className="no-mt has-mb-10">
 				Customer
-				<span
+				<Link
 					className="is-clickable accent has-ml-10 is-6"
-					onClick={() => history.push(`/single/customer/${data.customer_code}`)}
+					to={`/single/customer/${data.customer_code}`}
 				>
 					<FontAwesomeIcon icon={faExternalLinkAlt} />
-				</span>
+				</Link>
 			</h5>
 			<div className="has-mb-10">
 				<label className="is-bold has-mr-05">Customer Code:</label>

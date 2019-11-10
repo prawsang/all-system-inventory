@@ -1,5 +1,5 @@
 import React from "react";
-import history from "@/common/history";
+import Td from "../components/Td";
 
 const DepartmentsTable = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -16,13 +16,9 @@ const DepartmentsTable = ({ data }) => (
 						<tr
 							className="is-hoverable is-clickable"
 							key={i + e.department_code}
-							onClick={event => {
-								history.push(`/single/department/${e.department_code}`);
-								event.stopPropagation();
-							}}
 						>
-							<td>{e.department_code}</td>
-							<td>{e.department_name}</td>
+							<Td to={`/single/department/${e.department_code}`}>{e.department_code}</Td>
+							<Td to={`/single/department/${e.department_code}`}>{e.department_name}</Td>
 						</tr>
 					)))}
 		</tbody>

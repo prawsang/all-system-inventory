@@ -1,5 +1,5 @@
 import React from "react";
-import history from "@/common/history";
+import Td from "../components/Td";
 
 const CustomersTable = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -16,13 +16,9 @@ const CustomersTable = ({ data }) => (
 						<tr
 							className="is-hoverable is-clickable"
 							key={i + e.customer_code}
-							onClick={event => {
-								history.push(`/single/customer/${e.customer_code}`);
-								event.stopPropagation();
-							}}
 						>
-							<td>{e.customer_code}</td>
-							<td>{e.customer_name}</td>
+							<Td to={`/single/customer/${e.customer_code}`}>{e.customer_code}</Td>
+							<Td to={`/single/customer/${e.customer_code}`}>{e.customer_name}</Td>
 						</tr>
 					)))}
 		</tbody>

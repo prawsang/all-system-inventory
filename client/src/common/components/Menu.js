@@ -12,6 +12,7 @@ import {
 	faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import history from "@/common/history";
+import { Link as RouterLink } from "react-router-dom";
 // import logo from "@/assets/logo.png";
 
 class Menu extends React.Component {
@@ -148,16 +149,20 @@ class Menu extends React.Component {
 
 const Link = props => {
 	return (
-		<li className="list-item is-clickable" onClick={() => history.push(props.link)}>
-			{props.children}
-		</li>
+		<RouterLink to={props.link}>
+			<li className="list-item is-clickable">
+				{props.children}
+			</li>
+		</RouterLink>
 	);
 };
 const SideBarLink = props => {
 	return (
-		<li className="side-bar-menu-item is-clickable" onClick={() => history.push(props.link)}>
-			{props.children}
-		</li>
+		<RouterLink to={props.link}>
+			<li className="side-bar-menu-item is-clickable">
+				{props.children}
+			</li>
+		</RouterLink>
 	);
 };
 

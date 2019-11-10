@@ -7,6 +7,7 @@ import DeleteModal from "@/common/components/DeleteModal";
 import Axios from "axios";
 import history from "@/common/history";
 import ModelModal from "../supplier/ModelModal";
+import { Link } from "react-router-dom";
 
 class Model extends React.Component {
 	state = {
@@ -87,18 +88,16 @@ class Model extends React.Component {
 								<h5 className="no-mt has-mb-10">Supplier</h5>
 								<div className="has-mb-10">
 									<label className="is-bold has-mr-05">Supplier Name:</label>
-									<span
-										className="accent is-clickable"
-										onClick={() =>
-											history.push(
+									<Link
+											className="accent is-clickable"
+											to={
 												`/single/supplier/${
 													data.row.from_supplier_code
 												}`
-											)
-										}
+											}
 									>
 										{data.row.supplier_name}
-									</span>
+									</Link>
 								</div>
 							</div>
 							<hr/>

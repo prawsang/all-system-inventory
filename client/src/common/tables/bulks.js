@@ -1,6 +1,6 @@
 import React from "react";
-import history from "@/common/history";
 import { formatDate } from "../date";
+import Td from "../components/Td";
 
 const BulksTable = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -18,14 +18,10 @@ const BulksTable = ({ data }) => (
 						<tr
 							className="is-hoverable is-clickable"
 							key={i + e.bulk_code}
-							onClick={event => {
-								history.push(`/single/bulk/${e.bulk_code}`);
-								event.stopPropagation();
-							}}
 						>
-							<td>{e.bulk_code}</td>
-							<td>{e.price_per_unit}</td>
-                            <td>{formatDate(e.date_in)}</td>
+							<Td to={`/single/bulk/${e.bulk_code}`}>{e.bulk_code}</Td>
+							<Td to={`/single/bulk/${e.bulk_code}`}>{e.price_per_unit}</Td>
+                            <Td to={`/single/bulk/${e.bulk_code}`}>{formatDate(e.date_in)}</Td>
 						</tr>
 					)))}
 		</tbody>

@@ -1,7 +1,7 @@
 import React from "react";
-import history from "@/common/history";
 import moment from "moment";
 import { formatDate } from "@/common/date";
+import Td from "@/common/components/Td";
 
 const Borrowed = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -22,19 +22,18 @@ const Borrowed = ({ data }) => (
 							<tr
 								className="is-hoverable is-clickable"
 								key={i + e.serial_no}
-								onClick={() => history.push(`/single/item/${e.serial_no}`)}
 							>
-								<td>{e.serial_no}</td>
-								<td>{e.branch_name} ({e.branch_code})</td>
-								<td>{e.customer_name} ({e.customer_code})</td>
-								<td>{formatDate(e.return_by)}</td>
-								<td>
+								<Td to={`/single/item/${e.serial_no}`}>{e.serial_no}</Td>
+								<Td to={`/single/item/${e.serial_no}`}>{e.branch_name} ({e.branch_code})</Td>
+								<Td to={`/single/item/${e.serial_no}`}>{e.customer_name} ({e.customer_code})</Td>
+								<Td to={`/single/item/${e.serial_no}`}>{formatDate(e.return_by)}</Td>
+								<Td to={`/single/item/${e.serial_no}`}>
 									{moment(e.return_by).isBefore() ? (
 										<span className="is-bold danger">Overdue</span>
 									) : (
 										<span>No</span>
 									)}
-								</td>
+								</Td>
 							</tr>
 						);
 					}))}

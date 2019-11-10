@@ -6,6 +6,7 @@ import DeleteModal from "@/common/components/DeleteModal";
 import Edit from "./Edit";
 import Axios from "axios";
 import { formatDateTime } from "@/common/date";
+import { Link } from "react-router-dom";
 
 class Item extends React.Component {
 	state = {
@@ -63,33 +64,25 @@ class Item extends React.Component {
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Bulk Code:</label>
-										<span
+										<Link
 											className="accent is-clickable"
-											onClick={() =>
-												history.push(
-													`/single/bulk/${
-														data.row.from_bulk_code
-													}`
-												)
+											to={
+												`/single/bulk/${
+													data.row.from_bulk_code
+												}`
 											}
-										>
-											{data.row.from_bulk_code}
-										</span>
+										>{data.row.from_bulk_code}</Link>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Model Name:</label>
-										<span
+										<Link
 											className="accent is-clickable"
-											onClick={() =>
-												history.push(
-													`/single/model/${
-														data.row.of_model_code
-													}`
-												)
+											to={
+												`/single/model/${
+													data.row.of_model_code
+												}`
 											}
-										>
-											{data.row.model_name}
-										</span>
+										>{data.row.model_name}</Link>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Date In:</label>
@@ -121,18 +114,14 @@ class Item extends React.Component {
 									<h5 className="no-mt has-mb-10">Supplier</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Supplier Name:</label>
-										<span
+										<Link
 											className="accent is-clickable"
-											onClick={() =>
-												history.push(
-													`/single/supplier/${
-														data.row.from_supplier_code
-													}`
-												)
+											to={
+												`/single/supplier/${
+													data.row.from_supplier_code
+												}`
 											}
-										>
-											{data.row.supplier_name}
-										</span>
+										>{data.row.supplier_name}</Link>
 									</div>
 								</div>
 								<hr />
@@ -141,19 +130,17 @@ class Item extends React.Component {
 									{data.row.reserved_branch_code && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Branch:</label>
-											<span
-												className="accent is-clickable"
-												onClick={() =>
-													history.push(
-														`/single/branch/${
-															data.row.branch_code
-														}`
-													)
-												}
+											<Link
+											className="accent is-clickable"
+											to={
+												`/single/branch/${
+													data.row.branch_code
+												}`
+											}
 											>
 												{data.row.branch_name}{" "}
 												({data.row.branch_code})
-											</span>
+											</Link>
 										</div>
 									)}
 									{!data.row.reserved_branch_code && (

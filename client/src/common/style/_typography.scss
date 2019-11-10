@@ -11,9 +11,9 @@ body {
 }
 /* Color */
 .accent {
-	color: $primary;
+	color: $primary !important;
 	&.is-clickable:hover {
-		color: $primary-dark;
+		color: $primary-dark !important;
 		text-decoration: underline;
 	}
 }
@@ -40,6 +40,14 @@ body {
 	&.success {
 		color: $success-dark;
 	}
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}
+a:visited {
+	color: inherit;
 }
 
 .is-gray-1 {

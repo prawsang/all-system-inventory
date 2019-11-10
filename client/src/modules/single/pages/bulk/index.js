@@ -74,35 +74,29 @@ class Bulk extends React.Component {
 								<h5 className="no-mt has-mb-10">Model</h5>
 								<div className="has-mb-10">
 									<label className="is-bold has-mr-05">Model Name:</label>
-									<span
+									<Link
 										className="accent is-clickable"
-										onClick={() =>
-											history.push(
+										to={
 												`/single/model/${
 													data.row.of_model_code
 												}`
-											)
 										}
 									>
 										{data.row.model_name}
-									</span>
+									</Link>
 								</div>
 								<hr/>
 								<h5 className="no-mt has-mb-10">Supplier</h5>
 								<div className="has-mb-10">
 									<label className="is-bold has-mr-05">Supplier Name:</label>
-									<span
+									<Link
 										className="accent is-clickable"
-										onClick={() =>
-											history.push(
-												`/single/supplier/${
-													data.row.from_supplier_code
-												}`
-											)
+										to={
+											`/single/supplier/${
+												data.row.from_supplier_code
+											}`
 										}
-									>
-										{data.row.supplier_name}
-									</span>
+									>{data.row.supplier_name}</Link>
 								</div>
 							</div>
 							<hr/>
@@ -110,9 +104,6 @@ class Bulk extends React.Component {
 								<Link to={`/single/bulk/${data.row.bulk_code}/add-items`}>
 									<button
 										className="button mr"
-										onClick={() =>
-											history.push()
-										}
 									>
 										Add Items
 									</button>

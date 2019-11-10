@@ -18,23 +18,26 @@ table {
 				background-color: white;
 				box-shadow: 0 0 10px 2px $gray-4;
 			}
-			td {
+			td a {
+				display: block;
+				padding: 20px;
+			}
+			td.no-link {
 				padding: 20px;
 			}
 		}
 		tr.is-short {
-			td {
+			td a {
+				display: block;
+				padding: 10px 20px;
+			}
+			td.no-link {
 				padding: 10px 20px;
 			}
 		}
 	}
 	a {
-		color: $primary;
-		font-weight: bold;
 		text-decoration: none;
-		&:hover {
-			color: $primary-dark;
-		}
 	}
 }
 
