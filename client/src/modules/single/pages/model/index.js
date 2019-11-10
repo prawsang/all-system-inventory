@@ -119,7 +119,7 @@ class Model extends React.Component {
 											}
 										]}
 										className="no-pt"
-										title="Items"
+										title="Bulks"
 									/>
 								)}
 							/>

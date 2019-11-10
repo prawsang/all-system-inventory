@@ -25,6 +25,7 @@ class SearchWithdrawal extends React.Component {
 									value={id}
 									onChange={e => this.setState({ id: e.target.value })}
 									placeholder="Withdrawal ID"
+									type="number"
 								/>
 							</div>
 							<button className="button" type="submit">

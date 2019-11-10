@@ -1,15 +1,17 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import DepartmentTable from "@/common/tables/department";
-import Table from "@/common/components/Table";
+import TableWithNew from "@/common/components/TableWithNew";
+import NewDepartment from "../modals/NewDepartment";
 
 const Department = () => (
 	<FetchDataFromServer
 		url="/department/get-all"
 		render={data => (
-			<Table
+			<TableWithNew
 				data={data}
 				table={data => <DepartmentTable data={data}/>}
+				newModalContent={data => <NewDepartment />}
 				title="All Departments"
 				columns={[
                     {

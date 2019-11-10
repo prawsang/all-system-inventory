@@ -1,15 +1,17 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import StaffTable from "@/common/tables/staff";
-import Table from "@/common/components/Table";
+import TableWithNew from "@/common/components/TableWithNew";
+import NewStaff from "../modals/NewStaff";
 
 const Staff = () => (
 	<FetchDataFromServer
 		url="/staff/get-all"
 		render={data => (
-			<Table
+			<TableWithNew
 				data={data}
 				table={data => <StaffTable data={data} showDepartment={true}/>}
+				newModalContent={data => <NewStaff />}
 				title="All Staff"
 				columns={[
 					{

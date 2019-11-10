@@ -1,7 +1,7 @@
 import React from "react";
 import Axios from "axios";
-import ProductTypeSearch from "@common/modules/record/components/search/ProductTypeSearch"
-import { setSelectedObject } from "@common/actions/record";
+import ProductTypeSearch from "@/modules/record/components/search/ProductTypeSearch"
+import { setSelectedObject } from "@/actions/record";
 import { connect } from "react-redux";
 
 class ModelModal extends React.Component {
