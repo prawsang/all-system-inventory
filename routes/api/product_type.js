@@ -31,5 +31,80 @@ router.get("/get-all", async (req, res) => {
 		res.json(q);
 	}
 });
+// Validation
+const productValidation = [
+	check("product_code")
+		.not()
+		.isEmpty()
+		.withMessage("Product code cannot be empty."),
+	check("name")
+		.not()
+		.isEmpty()
+		.withMessage("Product name cannot be empty.")
+];
+
+// 2.
+router.post("/add", productValidation, async (req,res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+	const { product_code, name, phone } = req.body;
+	const q = await utils.insert({
+		table: "product",
+		info: {
+			product_code, 
+			name, 
+			phone
+		},
+		returning: "product_code"
+	})
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
+// 3.
+router.put("/:product_code/edit", productValidation, async (req,res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+	const { name, phone } = req.body;
+	const { product_code } = req.params;
+	
+	const q = await utils.update({
+		table: "product",
+		info: {
+			product_code, 
+			name, 
+			phone
+		},
+		where: `"product_code" = '${product_code}'`,
+		returning: "product_code"
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+})
+
+// 4.
+router.delete("/:product_code/delete", async (req,res) => {
+	const { product_code } = req.params;
+	
+	const q = await utils.del({
+		table: "product",
+		where: `"product_code" = '${product_code}'`,
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+})
 
 module.exports = router;
