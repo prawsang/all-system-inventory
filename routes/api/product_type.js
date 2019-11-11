@@ -33,14 +33,10 @@ router.get("/get-all", async (req, res) => {
 });
 // Validation
 const productValidation = [
-	check("product_code")
+	check("type_name")
 		.not()
 		.isEmpty()
-		.withMessage("Product code cannot be empty."),
-	check("name")
-		.not()
-		.isEmpty()
-		.withMessage("Product name cannot be empty.")
+		.withMessage("Type Name cannot be empty."),
 ];
 
 // 2.
@@ -49,15 +45,13 @@ router.post("/add", productValidation, async (req,res) => {
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
-	const { product_code, name, phone } = req.body;
+	const { type_name } = req.body;
 	const q = await utils.insert({
 		table: "product",
 		info: {
-			product_code, 
-			name, 
-			phone
+			type_name
 		},
-		returning: "product_code"
+		returning: "type_name"
 	})
 	if (q.errors) {
 		res.status(500).json(q);
@@ -72,18 +66,16 @@ router.put("/:product_code/edit", productValidation, async (req,res) => {
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
-	const { name, phone } = req.body;
-	const { product_code } = req.params;
+	const { type_name } = req.body;
+	
 	
 	const q = await utils.update({
 		table: "product",
 		info: {
-			product_code, 
-			name, 
-			phone
+			type_name
 		},
-		where: `"product_code" = '${product_code}'`,
-		returning: "product_code"
+		where: `"type_name" = '${type_name}'`,
+		returning: "type_name"
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -93,12 +85,12 @@ router.put("/:product_code/edit", productValidation, async (req,res) => {
 })
 
 // 4.
-router.delete("/:product_code/delete", async (req,res) => {
+router.delete("/:type_name/delete", async (req,res) => {
 	const { product_code } = req.params;
 	
 	const q = await utils.del({
 		table: "product",
-		where: `"product_code" = '${product_code}'`,
+		where: `"type_name" = '${type_name}'`,
 	});
 	if (q.errors) {
 		res.status(500).json(q);
