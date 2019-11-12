@@ -67,14 +67,14 @@ router.put("/:product_code/edit", productValidation, async (req,res) => {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
 	const { type_name } = req.body;
-	
+	const { type_name: type_name_params} = req.params;
 	
 	const q = await utils.update({
 		table: "product",
 		info: {
 			type_name
 		},
-		where: `"type_name" = '${type_name}'`,
+		where: `"type_name" = '${type_name_params}'`,
 		returning: "type_name"
 	});
 	if (q.errors) {
