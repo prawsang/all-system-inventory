@@ -32,7 +32,7 @@ class NewModel extends React.Component {
 
 		Axios.request({
 			method: modalType === "EDIT" ? "PUT" : "POST",
-			url: modalType === "EDIT" ? `/product-type/${data.product_type_name}/edit` : "/model/add",
+			url: modalType === "EDIT" ? `/product-type/${data.product_type_name}/edit` : "/product-type/add",
 			data: {
 				type_name: typeName,
 			}

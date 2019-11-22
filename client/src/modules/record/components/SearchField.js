@@ -58,11 +58,10 @@ class SearchField extends React.Component {
 	handleSearchFrontEnd() {
 		const { searchName } = this.props;
 		const { value, data } = this.state;
-		if (value.length >= 3) {
-			this.setState({
-				searchedDataFrontEnd: data ? data.rows.filter(e => e[searchName].includes(value)) : null
-			});
-		}
+		console.log(value);
+		this.setState({
+			searchedDataFrontEnd: data ? data.rows.filter(e => e[searchName].includes(value)) : null
+		});
 	}
 	handleKeyPress(e) {
 		const { frontEnd } = this.props;
@@ -105,11 +104,11 @@ class SearchField extends React.Component {
 				onFocus={() =>{
 					this.setState({ showResults: true });
 				}} 
-				onBlur={() => {
-					if (!this.props[responsibleFor]) {
-						this.setState({ value: ""});
-					}
-				}}
+				// onBlur={() => {
+				// 	if (!this.props[responsibleFor]) {
+				// 		this.setState({ value: ""});
+				// 	}
+				// }}
 			>
 				<label className="label has-no-line-break">{label}</label>
 				<div className="is-flex">
@@ -130,7 +129,13 @@ class SearchField extends React.Component {
 					<button
 						className="button has-ml-05 no-mb"
 						type="button"
-						onClick={() => this.handleSearch()}
+						onClick={() => {
+							if (frontEnd) {
+								this.handleSearchFrontEnd();
+							} else {
+								this.handleSearch();
+							}
+						}}
 					>
 						<FontAwesomeIcon icon={faSearch} />
 					</button>

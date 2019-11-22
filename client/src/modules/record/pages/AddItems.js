@@ -5,6 +5,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { connect } from "react-redux";
 import ModelSearch from "../components/search/ModelSearch";
 import SupplierSearch from "../components/search/SupplierSearch";
+import history from "@/common/history";
 
 class AddItems extends React.Component {
 	state = {
@@ -27,6 +28,7 @@ class AddItems extends React.Component {
 	handleSubmit() {
 		const { remarks, serialNos, bulkCode, pricePerUnit, dateIn } = this.state;
 		const { selectedModel } = this.props;
+		if (!selectedModel) return;
 		Axios.request({
 			method: "POST",
 			url: "/bulk/add",
@@ -39,18 +41,7 @@ class AddItems extends React.Component {
 				date_in: dateIn,
 				is_broken: false
 			}
-		}).then(res => this.resetPage());
-	}
-
-	resetPage() {
-		this.setState({
-			bulkCode: "",
-			pricePerUnit: 0,
-			dateIn: null,
-			remarks: "",
-			serialNos: [],
-			serialNo: ""
-		});
+		}).then(res => history.push(`/single/bulk/${res.data.rows[0].bulk_code}`));
 	}
 	render() {
 		const {

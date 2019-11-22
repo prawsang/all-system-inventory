@@ -3,7 +3,7 @@ import React from "react";
 import DeleteModal from "@/common/components/DeleteModal";
 import ModelModal from "./ModelModal";
 import Axios from "axios";
-import history from "@/common/history";
+// import history from "@/common/history";
 import Td from "@/common/components/Td";
 
 class ModelsTable extends React.Component {
