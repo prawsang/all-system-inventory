@@ -27,64 +27,6 @@ router.get("/get-all", async (req, res) => {
 	}
 })
 
-// 2.
-router.get("/:staff_code/details", async (req, res) => {
-	const { staff_code } = req.params;
-	const q = await utils.findOne({
-		cols: `${Staff.getColumns}, ${Department.getColumns}`,
-		tables: `"staff"
-        JOIN "department" ON "staff"."works_for_dep_code" = "department"."department_code"`,
-		where: `"staff"."staff_code" = '${staff_code}'`,
-		availableCols: ["staff_name", "staff_code", "department_name", "department_code"]
-	});
-	if (q.errors) {
-		res.status(500).json(q);
-	} else {
-		res.json(q);
-	}
-})
-
-// 3.
-
-// Validation
-const staffValidation = [
-	check("staff_code")
-		.not()
-		.isEmpty()
-		.withMessage("Staff code cannot be empty."),
-	check("name")
-		.not()
-		.isEmpty()
-		.withMessage("Staff name cannot be empty."),
-	check("works_for_dep_code")
-		.not()
-		.isEmpty()
-		.withMessage("Staff department code cannot be empty.")
-];
-
-// 4.
-router.post("/add", staffValidation, async (req,res) => {
-	const validationErrors = validationResult(req);
-	if (!validationErrors.isEmpty()) {
-		return res.status(422).json({ errors: validationErrors.array() });
-	}
-	const { staff_code, name, works_for_dep_code } = req.body;
-	const q = await utils.insert({
-		table: "staff",
-		info: {
-			staff_code, 
-			name, 
-			works_for_dep_code
-		},
-		returning: "staff_code"
-	})
-	if (q.errors) {
-		res.status(500).json(q);
-	} else {
-		res.json(q);
-	}
-});
-
 router.get("/:staff_code/details", async (req, res) => {
 	const { staff_code } = req.params;
 	const q = await utils.findOne({
