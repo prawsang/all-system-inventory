@@ -159,7 +159,10 @@ addBulkAndItems = async (body) => {
 			}
 		})
 	);
-	return errors;
+	return {
+		bulk_code: bulk,
+		errors
+	};
 }
 
 router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => {
@@ -177,7 +180,7 @@ router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => 
 		remarks 
 	} = req.body;
 
-	const errors = await addBulkAndItems({
+	const bulk = await addBulkAndItems({
 		bulk_code,
 		of_model_code,
 		price_per_unit,
@@ -185,8 +188,8 @@ router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => 
 		serial_no,
 		remarks 
 	})
-	if (errors.length > 0) res.status(400).json({ errors });
-	else res.sendStatus(200);
+	if (bulk.errors && bulk.errors.length > 0) res.status(400).json({ errors });
+	else res.status(200).json(bulk.bulk_code);
 });
 
 // Add Items to Bulk
