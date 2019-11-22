@@ -12,16 +12,16 @@ class Nav extends React.Component {
 		showSidebar: false,
 		currentUser: null
 	};
-	componentDidMount() {
-		this.setState({
-			currentUser: {
-				username: localStorage.getItem("username"),
-				id: localStorage.getItem("userId")
-			}
-		});
-	}
+	// componentDidMount() {
+	// 	this.setState({
+	// 		currentUser: {
+	// 			username: localStorage.getItem("username"),
+	// 			id: localStorage.getItem("userId")
+	// 		}
+	// 	});
+	// }
 	render() {
-		const { showUserMenu, showSidebar, currentUser } = this.state;
+		const { showUserMenu, showSidebar } = this.state;
 		return (
 			<React.Fragment>
 				<nav>
