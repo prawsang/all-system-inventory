@@ -14,7 +14,7 @@ class SearchWithdrawal extends React.Component {
 		const { id } = this.state;
 		return (
 			<div className="content">
-				<h3>ค้นหาใบเบิก</h3>
+				<h3>Search Withdrawals</h3>
 				<div className="panel">
 					<div className="panel-content">
 						<form onSubmit={() => this.handleSearch()}>

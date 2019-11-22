@@ -135,10 +135,10 @@ class SearchField extends React.Component {
 								this.getData().rows.length > 0 ? (
 									this.getData().rows.map((e, i) => listItem(e,i))
 								) : (
-									<span className="list-item">ไม่พบรายการ</span>
+									<span className="list-item">Not found.</span>
 								)
 							) : (
-								<span className="list-item">{frontEnd ? "กรุณารอสักครู่" : "กรุณาพิมพ์อย่างน้อย 3 ตัวอักษรแล้วกดค้นหา"}</span>
+								<span className="list-item">{frontEnd ? "Please Wait" : "Please type at least 3 characters and press enter to search."}</span>
 							)}
 						</div>
 					)}

@@ -25,7 +25,7 @@ class Item extends React.Component {
 		const { data } = this.props;
 		const { edit, showDeleteConfirm } = this.state;
 		if (data) {
-			if (!data.row) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>Not found.</p>;
 		}
 		return (
 			<React.Fragment>
@@ -153,7 +153,7 @@ class Item extends React.Component {
 								data={data}
 								table={data => <WithdrawalsTable data={data} />}
 								className="no-pt"
-								title="ประวัติการเบิก/คืน"
+								title="Movement"
 								noPage={true}
 							/>
 							<Edit

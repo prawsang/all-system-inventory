@@ -40,7 +40,7 @@ class AddBranch extends React.Component {
 			<Modal active={active} close={close} title="Add New Branch">
 				<div className="form">
 					<p>
-						ลูกค้า: <b>{customer && customer.customer_name}</b>
+						Customer: <b>{customer && customer.customer_name}</b>
 					</p>
 					<div className="field">
 						<label className="label">Branch Code</label>

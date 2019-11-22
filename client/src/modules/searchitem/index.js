@@ -14,7 +14,7 @@ class SearchItem extends React.Component {
 		const { serialNo } = this.state;
 		return (
 			<div className="content">
-				<h3>ค้นหาสินค้า</h3>
+				<h3>Search Items</h3>
 				<div className="panel">
 					<div className="panel-content">
 						<form onSubmit={() => this.handleSearch()}>

@@ -24,7 +24,7 @@ const WithdrawalsTable = ({ data }) => {
 					<td>Branch</td>
 					<td>Customer</td>
 					<td>Department</td>
-					<td className="has-no-line-break">ผู้เบิก</td>
+					<td className="has-no-line-break">Staff</td>
 					<td className="has-no-line-break">Install Date</td>
 					<td className="has-no-line-break">Return Date</td>
 				</tr>

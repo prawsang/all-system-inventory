@@ -11,7 +11,7 @@ const Broken = () => (
 			<Table
 				data={data}
 				table={data => <BrokenTable data={data} />}
-				title="ของเสีย"
+				title="Broken Items"
 				filters={{
 					itemType: true
 				}}

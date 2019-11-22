@@ -28,7 +28,7 @@ class Bulk extends React.Component {
 		const { data } = this.props;
 		const { edit, showDeleteModal } = this.state;
 		if (data) {
-			if (!data.row) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>Not found.</p>;
 		}
 		return (
 			<React.Fragment>

@@ -29,7 +29,7 @@ class Staff extends React.Component {
 		const { data } = this.props;
 		const { edit, showDeleteModal } = this.state;
 		if (data) {
-			if (!data.row) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>Not found.</p>;
 		}
 		return (
 			<React.Fragment>
@@ -95,7 +95,7 @@ class Staff extends React.Component {
 									<Table
 										data={d}
 										table={data => <WithdrawalsTable data={data} />}
-										title="ใบเบิกทั้งหมด"
+										title="All Withdrawals"
 										params={data && `staff_code=${data.row.staff_code}`}
 										filters={{
 											date: true,

@@ -65,7 +65,7 @@ class AddItems extends React.Component {
 
 		return (
 			<div className="content">
-				<h3>รับของเข้า Stock</h3>
+				<h3>Add Stock</h3>
 				<div className="panel">
 					<div className="panel-content">
 						<div className="field">
@@ -145,10 +145,10 @@ class AddItems extends React.Component {
 								</div>
 							))
 						) : (
-							<p className="is-gray-3">ยังไม่ได้ Scan</p>
+							<p className="is-gray-3">Not Scanned</p>
 						)}
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
-							ยื่นยันการรับของ
+							Confirm
 						</button>
 					</div>
 				</div>

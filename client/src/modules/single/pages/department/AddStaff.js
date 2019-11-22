@@ -37,7 +37,7 @@ class AddStaff extends React.Component {
 			<Modal active={active} close={close} title="Add New Staff">
 				<div className="form">
 					<p>
-						ลูกค้า: <b>{department && department.department_name}</b>
+						Department: <b>{department && department.department_name}</b>
 					</p>
 					<div className="field">
 						<label className="label">Staff Code</label>

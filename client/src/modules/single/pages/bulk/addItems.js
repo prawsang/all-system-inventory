@@ -38,7 +38,7 @@ class AddItemsToBulk extends React.Component {
 		const { serialNos, serialNo } = this.state;
 		return (
 			<React.Fragment>
-				<h3>เพิ่มของลงในล็อตสินค้าหมายเลข {bulk_code}</h3>
+				<h3>Add Items to Bulk {bulk_code}</h3>
 				<div className="panel">
 					<div className="panel-content">
 						<label className="label">Serial No.</label>
@@ -78,11 +78,11 @@ class AddItemsToBulk extends React.Component {
 								</div>
 							))
 						) : (
-							<p className="is-gray-3">ยังไม่ได้ Scan</p>
+							<p className="is-gray-3">Not Scanned</p>
 						)}
 						<div className="buttons">
 							<button className="button" onClick={() => this.handleSubmit()}>
-								ยื่นยันการเพิ่มสินค้า
+								Confirm Item Addition
 							</button>
 						</div>
 					</div>

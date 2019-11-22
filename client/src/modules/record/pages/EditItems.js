@@ -88,7 +88,7 @@ class EditItems extends React.Component {
 		const { action, serialNos, serialNo } = this.state;
 		return (
 			<div className="content">
-				<h3>ปรับปรุงรายการ</h3>
+				<h3>Edit Items</h3>
 				<div className="panel">
 					<div className="panel-content">
 						<div className="field is-flex is-ai-center">
@@ -100,17 +100,17 @@ class EditItems extends React.Component {
 										this.setState({ action: e.target.value });
 									}}
 								>
-									<option value={RETURN}>คืนของ</option>
-									<option value={RESERVE}>จองของ</option>
-									<option value={CANCEL}>ยกเลิกการจอง</option>
-									<option value={BROKEN}>เสีย</option>
+									<option value={RETURN}>Return</option>
+									<option value={RESERVE}>Reserve</option>
+									<option value={CANCEL}>Cancel Reservation</option>
+									<option value={BROKEN}>Mark as Broken</option>
 								</select>
 							</div>
 						</div>
 						{action === RESERVE && (
 							<div className="has-mb-10">
 								<label className="label" style={{ display: "block" }}>
-									ข้อมูลลูกค้าที่จอง
+									Reserving Branch
 								</label>
 								<CustomerSearch />
 								<BranchSearch />
@@ -160,10 +160,10 @@ class EditItems extends React.Component {
 								))}
 							</div>
 						) : (
-							<p className="is-gray-3">ยังไม่ได้ Scan</p>
+							<p className="is-gray-3">Not Scanned</p>
 						)}
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
-							ยื่นยันการแก้ไขรายการ
+							Confirm
 						</button>
 					</div>
 				</div>

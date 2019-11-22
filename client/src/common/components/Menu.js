@@ -11,7 +11,6 @@ import {
 	faTimes,
 	faSearch
 } from "@fortawesome/free-solid-svg-icons";
-import history from "@/common/history";
 import { Link as RouterLink } from "react-router-dom";
 // import logo from "@/assets/logo.png";
 
@@ -61,7 +60,7 @@ class Menu extends React.Component {
 						<div className="is-flex is-jc-space-between">
 							<div>
 								<FontAwesomeIcon className="icon has-mr-05" icon={faSearch} />
-								ค้นหา
+								Search
 							</div>
 							<FontAwesomeIcon
 								className="icon has-mr-05"
@@ -69,8 +68,8 @@ class Menu extends React.Component {
 							/>
 						</div>
 						<ul className={`panel menu dropright ${showSearchMenu || "is-hidden"}`}>
-							<Link link="/search-item">ค้นหาสินค้า</Link>
-							<Link link="/search-withdrawal">ค้นหาใบเบิก</Link>
+							<Link link="/search-item">Search Items</Link>
+							<Link link="/search-withdrawal">Search Withdrawals</Link>
 						</ul>
 					</li>
 					<li
@@ -86,7 +85,7 @@ class Menu extends React.Component {
 						<div className="is-flex is-jc-space-between">
 							<div>
 								<FontAwesomeIcon className="icon has-mr-05" icon={faTable} />
-								รายงาน
+								Report
 							</div>
 							<FontAwesomeIcon
 								className="icon has-mr-05"
@@ -94,23 +93,23 @@ class Menu extends React.Component {
 							/>
 						</div>
 						<ul className={`panel menu dropright ${showReportMenu || "is-hidden"}`}>
-							<Link link="/report/broken">ของเสีย</Link>
-							<Link link="/report/lent">ของยืม</Link>
-							<Link link="/report/in-stock">Stock คงเหลือ</Link>
-							<Link link="/report/all-withdrawals">ใบเบิกทั้งหมด</Link>
+							<Link link="/report/broken">Broken Items</Link>
+							<Link link="/report/lent">Lent Items</Link>
+							<Link link="/report/in-stock">In Stock Items</Link>
+							<Link link="/report/all-withdrawals">All Withdrawals</Link>
 						</ul>
 					</li>
 					<SideBarLink link="/record/edit-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faListUl} />
-						ปรับปรุงรายการ
+						Edit Items
 					</SideBarLink>
 					<SideBarLink link="/record/withdraw-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleUp} />
-						เบิกสินค้า
+						Withdraw
 					</SideBarLink>
 					<SideBarLink link="/record/add-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleDown} />
-						รับของเข้า Stock
+						Add Stock
 					</SideBarLink>
 					<li
 						className="side-bar-menu-item is-clickable"
@@ -125,7 +124,7 @@ class Menu extends React.Component {
 						<div className=" is-flex is-jc-space-between">
 							<div>
 								<FontAwesomeIcon className="icon has-mr-05" icon={faEdit} />
-								ดู/แก้ไขข้อมูล
+								Information
 							</div>
 							<FontAwesomeIcon
 								className="icon has-mr-05"
@@ -133,12 +132,12 @@ class Menu extends React.Component {
 							/>
 						</div>
 						<ul className={`panel menu dropright ${showEditMenu || "is-hidden"}`}>
-							<Link link="/report/customers">ข้อมูลลูกค้า</Link>
-							<Link link="/report/suppliers">Supplier ทั้งหมด</Link>
-							<Link link="/report/bulks">ล็อตสินค้าทั้งหมด</Link>
-							<Link link="/report/product-types">ประเภทสินค้าทั้งหมด</Link>
-							<Link link="/report/departments">แผนกทั้งหมด</Link>
-							<Link link="/report/staff">พนักงานทั้งหมด</Link>
+							<Link link="/report/customers">Customers</Link>
+							<Link link="/report/suppliers">Suppliers</Link>
+							<Link link="/report/bulks">Bulks</Link>
+							<Link link="/report/product-types">Product Types</Link>
+							<Link link="/report/departments">Departments</Link>
+							<Link link="/report/staff">Staff</Link>
 						</ul>
 					</li>
 				</ul>

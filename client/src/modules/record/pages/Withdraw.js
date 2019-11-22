@@ -66,7 +66,7 @@ class Withdraw extends React.Component {
 
 		return (
 			<div className="content">
-				<h3>เบิกสินค้า</h3>
+				<h3>Create Withdrawal</h3>
 				<div className="panel">
 					<div className="panel-content">
 						<div className="field is-flex is-ai-center">
@@ -78,9 +78,9 @@ class Withdraw extends React.Component {
 										this.setState({ type: e.target.value });
 									}}
 								>
-									<option value={INSTALLATION}>เบิกไปติดตั้ง</option>
-									<option value={LENDING}>ยืมสินค้า</option>
-									<option value={TRANSFER}>โอนสินค้าไปแผนกอื่น</option>
+									<option value={INSTALLATION}>Installation</option>
+									<option value={LENDING}>Lending</option>
+									<option value={TRANSFER}>Transfer</option>
 								</select>
 							</div>
 						</div>
@@ -128,7 +128,7 @@ class Withdraw extends React.Component {
 							/>
 						</div>
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
-							เปิดใบเบิกสินค้า
+							Create Withdrawal
 						</button>
 					</div>
 				</div>

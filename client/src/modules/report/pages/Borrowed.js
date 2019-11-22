@@ -10,7 +10,7 @@ const Borrowed = () => (
 			<Table
 				data={data}
 				table={data => <BorrowedTable data={data} />}
-				title="ของยืม"
+				title="Lent Items"
 				filters={{
 					itemType: true,
 					returnDate: true

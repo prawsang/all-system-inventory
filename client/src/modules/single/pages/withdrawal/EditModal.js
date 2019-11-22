@@ -61,8 +61,8 @@ class EditModal extends React.Component {
 		const { active, close, data } = this.props;
 		const { date, installDate, returnDate } = this.state;
 		return (
-			<Modal active={active} close={close} title="แก้ไขใบเบิก">
-				<Field editable={false} value={data.id} label="หมายเลขใบเบิก" />
+			<Modal active={active} close={close} title="Edit Withdrawal">
+				<Field editable={false} value={data.id} label="Withdrawal ID" />
 				<Field editable={false} value={data.type} label="Type" />
 				<Field
 					editable={true}

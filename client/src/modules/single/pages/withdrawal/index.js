@@ -77,11 +77,11 @@ class Withdrawal extends React.PureComponent {
 			showDeleteConfirm,
 		} = this.state;
 		if (data) {
-			if (!data.row) return <p>ไม่พบรายการ</p>;
+			if (!data.row) return <p>Not found.</p>;
 		}
 		return (
 			<React.Fragment>
-				<h3>ใบเบิกหมายเลข {data && data.row.withdrawal_id}</h3>
+				<h3>Withdrawal ID {data && data.row.withdrawal_id}</h3>
 				<div className="panel">
 					{data && (
 						<React.Fragment>
@@ -119,7 +119,7 @@ class Withdrawal extends React.PureComponent {
 								</div>
 								<div>
 									<h5 className="no-mt has-mb-10">
-										ใบเบิก
+										Withdrawal
 										<span
 											className={`is-clickable accent has-ml-10 is-6 ${data
 												.row.withdrawal_status === "PENDING" || "is-disabled"}`}
@@ -141,7 +141,7 @@ class Withdrawal extends React.PureComponent {
 										<span>{formatDate(data.row.withdrawal_date)}</span>
 									</div>
 									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">ผู้เบิก:</label>
+										<label className="is-bold has-mr-05">Staff:</label>
 										<span>{data.row.staff_name}</span>
 									</div>
 									{data.row.type === "LENDING" && (
@@ -287,13 +287,13 @@ class Withdrawal extends React.PureComponent {
 
 const CancelConfirm = ({ onSubmit, close, active }) => (
 	<Modal title="Confirm" close={close} active={active}>
-		<p>เมื่อ Cancel แล้ว ใบเบิกนี้จะไม่สามารถนำกลับมาใช้ได้อีก</p>
+		<p>Cancelled withdrawals cannot be used again.</p>
 		<div className="buttons">
 			<button className="button is-danger" onClick={onSubmit}>
-				Cancel ใบเบิก
+				Cancel
 			</button>
 			<button className="button is-light" onClick={close}>
-				ไม่ Cancel
+				Back
 			</button>
 		</div>
 	</Modal>

@@ -10,7 +10,7 @@ const AllWithdrawals = () => (
 			<Table
 				data={data}
 				table={data => <WithdrawalsTable data={data} />}
-				title="ใบเบิกทั้งหมด"
+				title="All Withdrawals"
 				filters={{
 					date: true,
 					returnDate: true,
@@ -48,7 +48,7 @@ const AllWithdrawals = () => (
 					},
 					{
 						col: "created_by_staff_name",
-						name: "ผู้เบิก"
+						name: "Staff"
 					}
 				]}
 			/>

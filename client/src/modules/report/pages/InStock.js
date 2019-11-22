@@ -17,7 +17,7 @@ class InStock extends React.Component {
 					<Table
 						data={data}
 						table={data => <ItemsTable data={data} />}
-						title="Stock คงเหลือ"
+						title="In Stock Items"
 						filters={{
 							itemType: true,
 							broken: true
