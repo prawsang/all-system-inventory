@@ -120,7 +120,8 @@ addBulkAndItems = async (body) => {
 		price_per_unit,
 		date_in, 
 		serial_no,
-		remarks
+		remarks,
+		selling_price_per_unit
 	} = body;
 
 	// Add bulk
@@ -130,7 +131,8 @@ addBulkAndItems = async (body) => {
 			bulk_code,
 			of_model_code,
 			price_per_unit,
-			date_in
+			date_in,
+			selling_price_per_unit
 		},
 		returning: "bulk_code"
 	})
@@ -177,7 +179,8 @@ router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => 
 		price_per_unit,
 		date_in, 
 		serial_no,
-		remarks 
+		remarks,
+		selling_price_per_unit 
 	} = req.body;
 
 	const bulk = await addBulkAndItems({
@@ -186,7 +189,8 @@ router.post("/add", [...bulkValidation, ...itemValidation], async (req, res) => 
 		price_per_unit,
 		date_in, 
 		serial_no,
-		remarks 
+		remarks,
+		selling_price_per_unit 
 	})
 	if (bulk.errors && bulk.errors.length > 0) res.status(400).json({ errors });
 	else res.status(200).json(bulk.bulk_code);
@@ -233,7 +237,7 @@ router.put("/:bulk_code/edit", bulkValidation, async (req,res) => {
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
-	const { of_model_code, price_per_unit, date_in } = req.body;
+	const { of_model_code, price_per_unit, selling_price_per_unit } = req.body;
 	const { bulk_code } = req.params;
 	
 	const q = await utils.update({
@@ -242,7 +246,7 @@ router.put("/:bulk_code/edit", bulkValidation, async (req,res) => {
 			bulk_code, 
 			of_model_code,
 			price_per_unit,
-			date_in
+			selling_price_per_unit
 		},
 		where: `"bulk_code" = :bulk_code_2`,
 		returning: "bulk_code",

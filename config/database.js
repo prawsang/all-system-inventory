@@ -46,8 +46,9 @@ pool.query(`
     CREATE TABLE IF NOT EXISTS public.bulk (
         bulk_code character varying(6) PRIMARY KEY,
         date_in timestamp(4) with time zone NOT NULL,
-        price_per_unit integer NOT NULL,
+        price_per_unit numeric(7,2) NOT NULL,
         of_model_code character varying(10),
+        selling_price_per_unit numeric(7,2) NOT NULL,
         CONSTRAINT of_model_code_fkey FOREIGN KEY (of_model_code) REFERENCES public.model(model_code) ON UPDATE CASCADE ON DELETE CASCADE
     );
     CREATE TABLE IF NOT EXISTS public.branch (
@@ -91,6 +92,7 @@ pool.query(`
         created_by_staff_code character varying(6) NOT NULL,
         type character varying(15) NOT NULL,
         status character varying(10) NOT NULL,
+        add_costs numeric(7,2) NOT NULL,
         CONSTRAINT for_branch_code_fkey FOREIGN KEY (for_branch_code) REFERENCES public.branch(branch_code),
         CONSTRAINT for_department_code_fkey FOREIGN KEY (for_department_code) REFERENCES public.department(department_code)
     );

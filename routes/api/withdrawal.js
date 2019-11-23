@@ -186,6 +186,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		install_date,
 		date,
 		remarks,
+		add_costs
 	} = req.body;
 	const moreValidation = await Withdrawal.validate({
 		type,
@@ -210,6 +211,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 			install_date: type === "INSTALLATION" ? install_date : null,
 			status: "PENDING",
 			remarks,
+			add_costs,
 			date
 		},
 		returning: "id"
@@ -235,7 +237,8 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 		created_by_staff_code,
 		type,
 		return_by,
-		install_date
+		install_date,
+		add_costs
 	} = req.body;
 	const moreValidation = await Withdrawal.validate({
 		type,
@@ -265,6 +268,7 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 			created_by_staff_code,
 			return_by: type === "LENDING" ? return_by : null,
 			install_date: type === "INSTALLATION" ? install_date : null,
+			add_costs
 		},
 		where: `"id" = :id`,
 		returning: "id",

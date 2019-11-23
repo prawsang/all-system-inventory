@@ -11,7 +11,8 @@ Withdrawal.getColumns = `"withdrawal"."id" AS "withdrawal_id",
     "withdrawal"."install_date",
     "withdrawal"."return_by",
     "withdrawal"."status" AS "withdrawal_status",
-    "withdrawal"."remarks" AS "withdrawal_remarks"`;
+	"withdrawal"."remarks" AS "withdrawal_remarks",
+	"withdrawal"."add_costs"`;
 
 // Class Methods
 Withdrawal.validate = data => {
