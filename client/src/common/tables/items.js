@@ -75,7 +75,7 @@ class ItemsTable extends React.Component {
 											<Td to={`/single/item/${e.serial_no}`}>{e.is_product_type_name}</Td>
 										)}
 										<Td to={`/single/item/${e.serial_no}`}>{e.status}</Td>
-										{showInstallDate && <Td to={`/single/item/${e.serial_no}`}>{e.install_date}</Td>}
+										{showInstallDate && <Td to={`/single/item/${e.serial_no}`}>{formatDate(e.install_date)}</Td>}
 										{showReturnDate && <Td to={`/single/item/${e.serial_no}`}>{formatDate(e.return_by)}</Td>}
 										{showDelete && (
 											<td className="no-link">

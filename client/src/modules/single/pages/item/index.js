@@ -93,6 +93,10 @@ class Item extends React.Component {
 										<span>{data.row.price_per_unit}</span>
 									</div>
 									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Selling Price Per Unit:</label>
+										<span>{data.row.selling_price_per_unit}</span>
+									</div>
+									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Product Type:</label>
 										<span>{data.row.is_product_type_name}</span>
 									</div>

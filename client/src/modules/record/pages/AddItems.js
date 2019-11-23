@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import ModelSearch from "../components/search/ModelSearch";
 import SupplierSearch from "../components/search/SupplierSearch";
 import history from "@/common/history";
+import moment from "moment";
 
 class AddItems extends React.Component {
 	state = {
@@ -14,7 +15,8 @@ class AddItems extends React.Component {
 		dateIn: null,
 		remarks: "",
 		serialNos: [],
-		serialNo: ""
+		serialNo: "",
+		sellingPricePerUnit: 0
 	};
 
 	handleAddSerial(e) {
@@ -26,7 +28,7 @@ class AddItems extends React.Component {
 	}
 
 	handleSubmit() {
-		const { remarks, serialNos, bulkCode, pricePerUnit, dateIn } = this.state;
+		const { remarks, serialNos, bulkCode, pricePerUnit, sellingPricePerUnit } = this.state;
 		const { selectedModel } = this.props;
 		if (!selectedModel) return;
 		Axios.request({
@@ -36,9 +38,10 @@ class AddItems extends React.Component {
 				bulk_code: bulkCode,
 				price_per_unit: pricePerUnit,
 				of_model_code: selectedModel.model_code,
+				selling_price_per_unit: sellingPricePerUnit,
 				serial_no: serialNos,
 				remarks,
-				date_in: dateIn,
+				date_in: moment(),
 				is_broken: false
 			}
 		}).then(res => history.push(`/single/bulk/${res.data.rows[0].bulk_code}`));
@@ -49,8 +52,8 @@ class AddItems extends React.Component {
 			serialNos,
 			serialNo,
 			bulkCode,
-			dateIn,
-			pricePerUnit
+			pricePerUnit,
+			sellingPricePerUnit
 		} = this.state;
 		const { selectedSupplier } = this.props;
 
@@ -79,13 +82,13 @@ class AddItems extends React.Component {
 							/>
 						</div>
 						<div className="field">
-							<label className="label">Date In</label>
+							<label className="label">Selling Price Per Unit</label>
 							<input
-								value={dateIn}
-								onChange={e => this.setState({ dateIn: e.target.value })}
+								value={sellingPricePerUnit}
+								onChange={e => this.setState({ sellingPricePerUnit: e.target.value })}
 								className="input is-fullwidth"
-								placeholder="Date In"
-								type="date"
+								placeholder="Selling Price Per Unit"
+								type="number"
 							/>
 						</div>
 						<SupplierSearch />
