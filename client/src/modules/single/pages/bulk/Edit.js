@@ -9,12 +9,14 @@ import moment from "moment";
 
 class EditBulk extends React.Component {
 	state = {
-		price_per_unit: 0
+		price_per_unit: 0,
+		selling_price_per_unit: 0
 	};
 
 	edit() {
 		const {
 			price_per_unit,
+			selling_price_per_unit
 		} = this.state;
 		const { bulk, selectedModel } = this.props;
 		Axios.request({
@@ -22,6 +24,7 @@ class EditBulk extends React.Component {
 			url: `/bulk/${bulk.bulk_code}/edit`,
 			data: {
 				price_per_unit,
+				selling_price_per_unit,
 				of_model_code: selectedModel.model_code,
 				date_in: moment().format()
 			}
@@ -31,7 +34,8 @@ class EditBulk extends React.Component {
 	componentDidMount() {
 		const { bulk, setSelectedObject } = this.props;
 		this.setState({
-			price_per_unit: bulk.price_per_unit
+			price_per_unit: bulk.price_per_unit,
+			selling_price_per_unit: bulk.selling_price_per_unit
 		});
 		setSelectedObject({
 			selectedModel: {
@@ -47,7 +51,8 @@ class EditBulk extends React.Component {
 
 	render() {
 		const {
-			price_per_unit
+			price_per_unit,
+			selling_price_per_unit
 		} = this.state;
 		const { close, active } = this.props;
 
@@ -62,6 +67,16 @@ class EditBulk extends React.Component {
 							type="number"
 							onChange={e => this.setState({ price_per_unit: e.target.value })}
 							value={price_per_unit}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">Selling Price Per Unit</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="Price Per Unit"
+							type="number"
+							onChange={e => this.setState({ selling_price_per_unit: e.target.value })}
+							value={selling_price_per_unit}
 						/>
 					</div>
 					<SupplierSearch />

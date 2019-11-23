@@ -69,6 +69,10 @@ class Bulk extends React.Component {
 										<label className="is-bold has-mr-05">Price Per Unit:</label>
 										<span>{data.row.price_per_unit}</span>
 									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Selling Price Per Unit:</label>
+										<span>{data.row.selling_price_per_unit}</span>
+									</div>
 								</div>
 								<hr />
 								<h5 className="no-mt has-mb-10">Model</h5>

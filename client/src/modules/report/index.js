@@ -11,6 +11,7 @@ import Bulks from "./pages/Bulks";
 import Staff from "./pages/Staff";
 import Department from "./pages/Department";
 import AllWithdrawals from "./pages/AllWithdrawals";
+import Income from "./pages/Income";
 
 class Report extends React.Component {
 	render() {
@@ -27,6 +28,7 @@ class Report extends React.Component {
 					<InnerPageRoute path="/report/departments" component={Department} title="Department" />
 					<InnerPageRoute path="/report/product-types" component={ProductTypes} title="Product Types" />
 					<InnerPageRoute path="/report/all-withdrawals" component={AllWithdrawals} title="All Withdrawals" />
+					<InnerPageRoute path="/report/income" component={Income} title="Income Report" />
 				</Switch>
 			</div>
 		);

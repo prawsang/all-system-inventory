@@ -56,6 +56,14 @@ class Withdrawal extends React.PureComponent {
 		}).then(res => history.push("/report/all-withdrawals"));
 	}
 
+	calculatePrice = (data) => {
+		// console.log(data);
+		let total = 0;
+		data.rows.forEach(e => {
+			total += e.price_per_unit;
+		})
+		return total
+	}
 	// async handlePrint() {
 	// 	const { data } = this.props;
 	// 	this.props.setCurrentWithdrawal(data.row);
@@ -145,6 +153,10 @@ class Withdrawal extends React.PureComponent {
 										<label className="is-bold has-mr-05">Staff:</label>
 										<span>{data.row.staff_name}</span>
 									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Additional Costs:</label>
+										<span>{data.row.add_costs}</span>
+									</div>
 									{data.row.type === "LENDING" && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Return By:</label>
@@ -180,13 +192,15 @@ class Withdrawal extends React.PureComponent {
 									</div>
 								</div>
 								<hr />
-								<button
-									className="button has-mb-10"
-									onClick={() => this.setState({ changeDepartment: true })}
-									disabled={data.row.withdrawal_status !== "PENDING"}
-								>
-									Change
-								</button>
+								{ data.row.withdrawal_type === "TRANSFER" && (
+									<button
+										className="button has-mb-10"
+										onClick={() => this.setState({ changeDepartment: true })}
+										disabled={data.row.withdrawal_status !== "PENDING"}
+									>
+										Change
+									</button>
+								)}
 								{ data.row.withdrawal_type !== "TRANSFER" ? (
 									<React.Fragment>
 										<div style={{ marginBottom: "2em" }}>
@@ -224,31 +238,36 @@ class Withdrawal extends React.PureComponent {
 							<FetchDataFromServer
 								url={data && `/withdrawal/${data.row.withdrawal_id}/items`}
 								render={d => (
-									<Table
-										data={d}
-										table={d => (
-											<ItemsTable
-												data={d}
-												showDelete={data.row.withdrawal_status === "PENDING"}
-												withdrawalId={data.row.withdrawal_id}
-											/>
-										)}
-										className="no-pt"
-										title="Items"
-										filters={{
-											itemType: true
-										}}
-										columns={[
-											{
-												col: "serial_no",
-												name: "Serial No."
-											},
-											{
-												col: "model_name",
-												name: "Model Name"
-											}
-										]}
-									/>
+									<React.Fragment>
+										<div style={{ float: 'right', paddingRight: 30 }}>
+											<b>Total Cost of Items: { d && Number(this.calculatePrice(d)).toLocaleString()} THB</b>
+										</div>
+										<Table
+											data={d}
+											table={d => (
+												<ItemsTable
+													data={d}
+													showDelete={data.row.withdrawal_status === "PENDING"}
+													withdrawalId={data.row.withdrawal_id}
+												/>
+											)}
+											className="no-pt"
+											title="Items"
+											filters={{
+												itemType: true
+											}}
+											columns={[
+												{
+													col: "serial_no",
+													name: "Serial No."
+												},
+												{
+													col: "model_name",
+													name: "Model Name"
+												}
+											]}
+										/>
+									</React.Fragment>
 								)}
 							/>
 							<EditModal

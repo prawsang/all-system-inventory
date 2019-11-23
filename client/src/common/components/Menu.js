@@ -93,6 +93,7 @@ class Menu extends React.Component {
 							/>
 						</div>
 						<ul className={`panel menu dropright ${showReportMenu || "is-hidden"}`}>
+							<Link link="/report/income">Income Report</Link>
 							<Link link="/report/broken">Broken Items</Link>
 							<Link link="/report/lent">Lent Items</Link>
 							<Link link="/report/in-stock">In Stock Items</Link>

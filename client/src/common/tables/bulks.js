@@ -7,7 +7,8 @@ const BulksTable = ({ data }) => (
 		<thead>
 			<tr>
 				<td>Bulk Code</td>
-				<td>Price Per Unit</td>
+				<td>Model</td>
+				<td>Supplier</td>
                 <td>Date In</td>
 			</tr>
 		</thead>
@@ -20,7 +21,8 @@ const BulksTable = ({ data }) => (
 							key={i + e.bulk_code}
 						>
 							<Td to={`/single/bulk/${e.bulk_code}`}>{e.bulk_code}</Td>
-							<Td to={`/single/bulk/${e.bulk_code}`}>{e.price_per_unit}</Td>
+							<Td to={`/single/bulk/${e.bulk_code}`}>{e.model_name}</Td>
+							<Td to={`/single/bulk/${e.bulk_code}`}>{e.supplier_name}</Td>
                             <Td to={`/single/bulk/${e.bulk_code}`}>{formatDate(e.date_in)}</Td>
 						</tr>
 					)))}

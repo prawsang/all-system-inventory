@@ -27,6 +27,7 @@ class Withdraw extends React.Component {
 			returnDate,
 			installDate,
 			remarks,
+			add_costs
 		} = this.state;
 		const { selectedBranch, selectedStaff, selectedDepartment } = this.props;
 		
@@ -40,6 +41,7 @@ class Withdraw extends React.Component {
 				install_date: type === INSTALLATION ? installDate : null,
 				for_branch_code: type !== TRANSFER && selectedBranch.branch_code,
 				remarks,
+				add_costs,
 				created_by_staff_code: selectedStaff.staff_code,
 				for_department_code: type === TRANSFER && selectedDepartment.department_code
 			}
@@ -61,6 +63,7 @@ class Withdraw extends React.Component {
 			returnDate,
 			installDate,
 			remarks,
+			add_costs
 		} = this.state;
 		const { selectedCustomer } = this.props;
 
@@ -84,6 +87,14 @@ class Withdraw extends React.Component {
 								</select>
 							</div>
 						</div>
+						<Field
+							type="number"
+							placeholder="Additional Costs (e.g. Shipping, Installation Costs)"
+							label="Additional Costs"
+							value={add_costs}
+							inputClass="is-fullwidth"
+							onChange={e => this.setState({ add_costs: e.target.value })}
+						/>
 						<StaffSearch />
 						{type === LENDING && (
 							<Field
@@ -139,7 +150,7 @@ class Withdraw extends React.Component {
 
 const Field = ({ value, onChange, placeholder, className, label, type, inputClass }) => (
 	<div className={className ? className : "field is-flex is-ai-center"}>
-		<label className="label">{label}:</label>
+		<label className="label has-no-line-break">{label}:</label>
 		<input
 			type={type ? type : "text"}
 			value={value}

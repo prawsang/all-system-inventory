@@ -35,7 +35,7 @@ const ConfirmModal = ({ active, close, onConfirm, currentSerial }) => (
 class ItemsTable extends React.Component {
 	state = {
 		showConfirm: false,
-		currentSerial: ""
+		currentSerial: "",
 	};
 	render() {
 		const { data, showInstallDate, showDelete, withdrawalId, showReturnDate, hideDetails } = this.props;

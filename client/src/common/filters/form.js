@@ -15,7 +15,7 @@ export const Checkbox = ({ label, checked, onChange, disabled }) => (
 
 export const Date = ({ fromValue, fromOnChange, toValue, toOnChange, label, disabled }) => (
 	<div className="field no-mb">
-		<label className="label">{label}</label>
+		{label && <label className="label">{label}</label>}
 		<div className="is-flex">
 			<div className="col-6 has-mr-05">
 				<small className="has-mb-05" style={{ display: "block" }}>
@@ -47,7 +47,7 @@ export const Date = ({ fromValue, fromOnChange, toValue, toOnChange, label, disa
 
 export const Select = ({ options, label, value, onChange, disabled }) => (
 	<div className="field no-mb">
-		<label className="label">{label}</label>
+		{label && <label className="label">{label}</label>}
 		<div className="select">
 			<select value={value === null ? "" : value} onChange={onChange} disabled={disabled}>
 				<option value="">-- Select --</option>
