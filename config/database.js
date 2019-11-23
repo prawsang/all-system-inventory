@@ -73,8 +73,15 @@ pool.query(`
         PRIMARY KEY (return_datetime, serial_no),
         CONSTRAINT serial_no_fkey FOREIGN KEY (serial_no) REFERENCES public.item(serial_no)
     );
+    CREATE SEQUENCE IF NOT EXISTS public.withdrawal_id_seq
+        AS integer
+        START WITH 1
+        INCREMENT BY 1
+        NO MINVALUE
+        NO MAXVALUE
+        CACHE 1;
     CREATE TABLE IF NOT EXISTS public.withdrawal (
-        id integer PRIMARY KEY,
+        id integer PRIMARY KEY DEFAULT nextval('public.withdrawal_id_seq'::regclass),
         date timestamp(4) with time zone NOT NULL,
         remarks text,
         for_branch_code character varying(6),
@@ -87,6 +94,7 @@ pool.query(`
         CONSTRAINT for_branch_code_fkey FOREIGN KEY (for_branch_code) REFERENCES public.branch(branch_code),
         CONSTRAINT for_department_code_fkey FOREIGN KEY (for_department_code) REFERENCES public.department(department_code)
     );
+    ALTER SEQUENCE public.withdrawal_id_seq OWNED BY public.withdrawal.id;
     CREATE TABLE IF NOT EXISTS public.withdrawal_has_item (
         withdrawal_id integer NOT NULL,
         serial_no character varying(20) NOT NULL,
