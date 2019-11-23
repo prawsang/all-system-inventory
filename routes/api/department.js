@@ -65,6 +65,59 @@ router.get("/:department_code/staff", async (req, res) => {
 	}
 });
 
+// List of items in a department
+router.get("/:department_code/items/", async (req, res) => {
+	const { department_code } = req.params;
+	const {
+		limit,
+		page,
+		search_col,
+		search_term,
+		is_broken,
+		type
+	} = req.query;
+	const filters = models.Item.filter({
+		is_broken,
+		type
+	});
+	
+	const q = await utils.query({
+		limit,
+		page,
+		search_col,
+		search_term,
+		cols: `${models.Item.getColumns}, ${models.Withdrawal.getColumns}, ${models.Model.getColumns}`,
+		tables: `"withdrawal_has_item"
+			JOIN "item" ON "item"."serial_no" = "withdrawal_has_item"."serial_no"
+			JOIN "withdrawal" ON "withdrawal"."id" = "withdrawal_has_item"."withdrawal_id"
+			JOIN "department" ON "department"."department_code" = "withdrawal"."for_department_code"
+			JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
+			JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
+			JOIN (
+				SELECT "serial_no", max(withdrawal.id) AS "id"
+				FROM "withdrawal"
+				JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
+				GROUP BY "serial_no"
+			) "tm" ON "withdrawal"."id" = "tm"."id" AND "item"."serial_no" = "tm"."serial_no"
+		`,
+		where: `
+			"item"."status" = 'TRANSFERRED'
+			AND "department"."department_code" = :department_code
+			${filters ? `AND ${filters}` : ""}
+			`,
+		availableCols: ["serial_no", "model_name"],
+		replacements: {
+			department_code,
+			type
+		}
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
+});
+
 // Validation
 const depValidation = [
 	check("department_code")
@@ -102,7 +155,7 @@ router.put("/:department_code/edit", depValidation, async (req,res) => {
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
-	const { name } = req.body;
+	const { name, phone } = req.body;
 	const { department_code } = req.params;
 	
 	const q = await utils.update({
@@ -110,6 +163,7 @@ router.put("/:department_code/edit", depValidation, async (req,res) => {
 		info: {
 			department_code, 
 			name, 
+			phone
 		},
 		where: `"department_code" = :department_code_2`,
 		returning: "department_code",

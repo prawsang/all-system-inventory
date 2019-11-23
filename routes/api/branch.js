@@ -60,6 +60,12 @@ router.get("/:branch_code/items/", async (req, res) => {
 			JOIN "branch" ON "branch"."branch_code" = "withdrawal"."for_branch_code"
 			JOIN "bulk" ON "bulk"."bulk_code" = "item"."from_bulk_code"
 			JOIN "model" ON "model"."model_code" = "bulk"."of_model_code"
+			JOIN (
+				SELECT "serial_no", max(withdrawal.id) AS "id"
+				FROM "withdrawal"
+				JOIN "withdrawal_has_item" ON "withdrawal_has_item"."withdrawal_id" = "withdrawal"."id"
+				GROUP BY "serial_no"
+			) "tm" ON "withdrawal"."id" = "tm"."id" AND "item"."serial_no" = "tm"."serial_no"
 		`,
 		where: `
 			NOT "item"."status" = 'IN_STOCK' 
