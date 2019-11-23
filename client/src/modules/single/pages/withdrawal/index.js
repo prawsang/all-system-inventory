@@ -5,7 +5,7 @@ import { BranchData, CustomerData } from "../../data/";
 import Modal from "@/common/components/Modal";
 import DeleteModal from "@/common/components/DeleteModal";
 import EditModal from "./EditModal";
-import ChangeCustomer from "./ChangeCustomer";
+import ChangeDepartment from "./ChangeDepartment";
 import RemarksModal from "./RemarksModal";
 import Axios from "axios";
 import { Link } from "react-router-dom";
@@ -21,7 +21,7 @@ class Withdrawal extends React.PureComponent {
 		showCancelConfirm: false,
 		showDeleteConfirm: false,
 		editRemarks: false,
-		changeCustomer: false,
+		changeDepartment: false,
 		items: null
 	};
 
@@ -73,9 +73,10 @@ class Withdrawal extends React.PureComponent {
 			edit,
 			showCancelConfirm,
 			editRemarks,
-			changeCustomer,
+			changeDepartment,
 			showDeleteConfirm,
 		} = this.state;
+		console.log(changeDepartment);
 		if (data) {
 			if (!data.row) return <p>Not found.</p>;
 		}
@@ -181,7 +182,7 @@ class Withdrawal extends React.PureComponent {
 								<hr />
 								<button
 									className="button has-mb-10"
-									onClick={() => this.setState({ changeCustomer: true })}
+									onClick={() => this.setState({ changeDepartment: true })}
 									disabled={data.row.withdrawal_status !== "PENDING"}
 								>
 									Change
@@ -260,11 +261,11 @@ class Withdrawal extends React.PureComponent {
 								active={editRemarks}
 								close={() => this.setState({ editRemarks: false })}
 							/>
-							{ data.row.type !== "TRANSFER" && (
-								<ChangeCustomer
+							{ data.row.withdrawal_type === "TRANSFER" && (
+								<ChangeDepartment
 									data={data.row}
-									active={changeCustomer}
-									close={() => this.setState({ changeCustomer: false })}
+									active={changeDepartment}
+									close={() => this.setState({ changeDepartment: false })}
 								/>
 							)}
 							<CancelConfirm

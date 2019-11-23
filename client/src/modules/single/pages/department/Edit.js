@@ -8,13 +8,14 @@ class EditDepartment extends React.Component {
 	};
 
 	edit() {
-		const { name } = this.state;
+		const { name, phone } = this.state;
 		const { department } = this.props;
 		Axios.request({
 			method: "PUT",
 			url: `/department/${department.department_code}/edit`,
 			data: {
-				name
+				name,
+				phone
 			}
 		}).then(res => window.location.reload());
 	}
@@ -25,7 +26,7 @@ class EditDepartment extends React.Component {
 	}
 
 	render() {
-		const { name } = this.state;
+		const { name, phone } = this.state;
 		const { close, active } = this.props;
 
 		return (
@@ -38,6 +39,15 @@ class EditDepartment extends React.Component {
 							placeholder="Department Name"
 							onChange={e => this.setState({ name: e.target.value })}
 							value={name}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">Department Phone</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="Department Phone"
+							onChange={e => this.setState({ phone: e.target.value })}
+							value={phone}
 						/>
 					</div>
 					<div className="buttons">
