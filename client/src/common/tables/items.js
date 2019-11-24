@@ -38,7 +38,7 @@ class ItemsTable extends React.Component {
 		currentSerial: "",
 	};
 	render() {
-		const { data, showInstallDate, showDelete, withdrawalId, showReturnDate, hideDetails } = this.props;
+		const { data, showInstallDate, showDelete, withdrawalId, showReturnDate, showPrice, hideDetails } = this.props;
 		const { showConfirm, currentSerial } = this.state;
 		return (
 			<React.Fragment>
@@ -53,6 +53,7 @@ class ItemsTable extends React.Component {
 								<td>Product Type</td>
 							)}
 							<td>Status</td>
+							{showPrice && <td>Selling Price</td>}
 							{showInstallDate && <td>Installation Date</td>}
 							{showReturnDate && <td>Return Date</td>}
 							{showDelete && <td>Remove</td>}
@@ -75,6 +76,7 @@ class ItemsTable extends React.Component {
 											<Td to={`/single/item/${e.serial_no}`}>{e.is_product_type_name}</Td>
 										)}
 										<Td to={`/single/item/${e.serial_no}`}>{e.status}</Td>
+										{showPrice && <Td to={`/single/item/${e.serial_no}`}>{e.selling_price_per_unit}</Td>}
 										{showInstallDate && <Td to={`/single/item/${e.serial_no}`}>{formatDate(e.install_date)}</Td>}
 										{showReturnDate && <Td to={`/single/item/${e.serial_no}`}>{formatDate(e.return_by)}</Td>}
 										{showDelete && (

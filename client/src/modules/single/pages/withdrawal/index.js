@@ -22,7 +22,9 @@ class Withdrawal extends React.PureComponent {
 		showDeleteConfirm: false,
 		editRemarks: false,
 		changeDepartment: false,
-		items: null
+		items: null,
+		totalCostOfItems: 0,
+		totalSellingPrice: 0
 	};
 
 	confirmWithdrawal() {
@@ -57,12 +59,19 @@ class Withdrawal extends React.PureComponent {
 	}
 
 	calculatePrice = (data) => {
-		// console.log(data);
 		let total = 0;
 		data.rows.forEach(e => {
-			total += e.price_per_unit;
+			total += parseInt(e.price_per_unit);
 		})
-		return total
+		this.setState({ totalCostOfItems: total })
+	}
+
+	calculateSellingPrice = (data) => {
+		let total = 0;
+		data.rows.forEach(e => {
+			total += parseInt(e.selling_price_per_unit);
+		})
+		this.setState({ totalSellingPrice: total })
 	}
 	// async handlePrint() {
 	// 	const { data } = this.props;
@@ -153,10 +162,6 @@ class Withdrawal extends React.PureComponent {
 										<label className="is-bold has-mr-05">Staff:</label>
 										<span>{data.row.staff_name}</span>
 									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Additional Costs:</label>
-										<span>{data.row.add_costs}</span>
-									</div>
 									{data.row.type === "LENDING" && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Return By:</label>
@@ -190,6 +195,30 @@ class Withdrawal extends React.PureComponent {
 												: "No Remarks"}
 										</span>
 									</div>
+								</div>
+								<hr/>
+								<div>
+									<h5 className="no-mt has-mb-10">
+										Costs
+									</h5>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Additional Costs:</label>
+										<span>{Number(data.row.add_costs).toLocaleString()}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Total Cost of Items:</label>
+										<span>{Number(this.state.totalCostOfItems).toLocaleString()} THB</span><br/>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Total Cost:</label>
+										<b>{ Number(this.state.totalCostOfItems + parseInt(data.row.add_costs)).toLocaleString()} THB</b><br/>
+									</div>
+									{ data.row.withdrawal_type === "INSTALLATION" && (
+										<div className="has-mb-10">
+											<label className="is-bold has-mr-05">Total Selling Price:</label>
+											<b>{Number(this.state.totalSellingPrice).toLocaleString()} THB</b>
+										</div>
+									)}
 								</div>
 								<hr />
 								{ data.row.withdrawal_type === "TRANSFER" && (
@@ -239,9 +268,8 @@ class Withdrawal extends React.PureComponent {
 								url={data && `/withdrawal/${data.row.withdrawal_id}/items`}
 								render={d => (
 									<React.Fragment>
-										<div style={{ float: 'right', paddingRight: 30 }}>
-											<b>Total Cost of Items: { d && Number(this.calculatePrice(d)).toLocaleString()} THB</b>
-										</div>
+										<p className="is-hidden">{ d && Number(this.calculatePrice(d)).toLocaleString()}</p>
+										<p className="is-hidden">{ d && Number(this.calculateSellingPrice(d)).toLocaleString()}</p>
 										<Table
 											data={d}
 											table={d => (
@@ -249,6 +277,7 @@ class Withdrawal extends React.PureComponent {
 													data={d}
 													showDelete={data.row.withdrawal_status === "PENDING"}
 													withdrawalId={data.row.withdrawal_id}
+													showPrice={true}
 												/>
 											)}
 											className="no-pt"
