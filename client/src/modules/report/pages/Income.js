@@ -75,7 +75,7 @@ class IncomeReport extends React.Component {
                                                     >
                                                         <Td to={`/single/customer/${e.customer_code}`}>{e.customer_code}</Td>
                                                         <Td to={`/single/customer/${e.customer_code}`}>{e.customer_name}</Td>
-                                                        <Td>{e.sum}</Td>
+                                                        <Td>{Number(e.sum).toLocaleString()}</Td>
                                                     </tr>
                                                 )))}
                                     </tbody>
